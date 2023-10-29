@@ -1,4 +1,4 @@
-# Thinkadus
+# dnote
 
 This is cli to work with my notes as Markdown files.
 
@@ -13,12 +13,6 @@ Nice to haves:
 
 It's also being used to learn a bit of Go.
 
-## Keg
-Found https://github.com/rwxrob/keg/ that can work as a nice reference.
-
-* Does the structure of using `docs/{id}/README.md` make sense? 
-  * It allows attachments like screenshots to fit in the directory with the note
-    * This also allow me to create notes without having to come up with a title
-      directly.
-  * Using incrementing integers as `id` makes sense. They are easy to remember.
+## Inspire by
+Found https://github.com/rwxrob/keg/ that inspired me to drop zettlekasten ids.
 

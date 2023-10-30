@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"dnote/core"
 	"fmt"
 	"io/fs"
 	"os"
@@ -20,7 +19,7 @@ func main() {
 	Migrate(vaultPath)
 }
 
-type noteEntry struct {
+type migrationNotEntry struct {
 	oldPath     string
 	base        string
 	oldId       string
@@ -31,7 +30,7 @@ type noteEntry struct {
 	newFilename string
 }
 
-func MigrateNote(directory string, note *noteEntry) error {
+func MigrateNote(directory string, note *migrationNotEntry) error {
 	err := os.Rename(note.oldPath, note.newPath)
 	if err != nil {
 		panic(err)
@@ -48,7 +47,7 @@ func MigrateNote(directory string, note *noteEntry) error {
 
 	f.Close()
 
-	err = core.UpdateLinks(directory, note.oldId, note.newId, note.title)
+	err = UpdateLinks(directory, note.oldId, note.newId, note.title)
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +60,7 @@ func Migrate(directory string) error {
 
 	newId := 1
 
-	var noteFiles []*noteEntry
+	var noteFiles []*migrationNotEntry
 
 	filepath.WalkDir(directory, func(path string, _ fs.DirEntry, e error) error {
 		if e != nil {
@@ -73,12 +72,12 @@ func Migrate(directory string) error {
 			splits := strings.Split(base, " ")
 			oldId := splits[0]
 			title := strings.TrimSuffix(strings.Join(splits[1:], " "), filepath.Ext(path))
-			timestamp, err := core.ParseZkID(oldId)
+			timestamp, err := ParseZkID(oldId)
 			if err != nil {
 				panic(err)
 			}
 
-			note := &noteEntry{
+			note := &migrationNotEntry{
 				oldPath:   path,
 				base:      base,
 				oldId:     oldId,

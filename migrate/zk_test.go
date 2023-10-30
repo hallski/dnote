@@ -1,14 +1,13 @@
-package core_test
+package main
 
 import (
-	"dnote/core"
 	"testing"
 	"time"
 )
 
 // Newer notes have IDs of the form YYMMddHHmmss
 func TestParseZkID(t *testing.T) {
-	got, err := core.ParseZkID("221219154814")
+	got, err := ParseZkID("221219154814")
 	if err != nil {
 		t.Errorf("Error in parse function: %s", err)
 	}
@@ -21,7 +20,7 @@ func TestParseZkID(t *testing.T) {
 
 // Older notes have an ID with 4 digits for year and no seconds
 func TestOldZkId(t *testing.T) {
-	got, err := core.ParseZkID("202111172324")
+	got, err := ParseZkID("202111172324")
 	if err != nil {
 		t.Errorf("Error in parse function: %s", err)
 	}
@@ -34,7 +33,7 @@ func TestOldZkId(t *testing.T) {
 
 // Test dummy ID for really old notes
 func TestSpecialZkID(t *testing.T) {
-	got, err := core.ParseZkID("210101000098")
+	got, err := ParseZkID("210101000098")
 	if err != nil {
 		t.Errorf("Error in parse function: %s", err)
 	}

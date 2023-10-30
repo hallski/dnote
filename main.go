@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	// "dnote/shell/tui"
-
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -175,11 +173,6 @@ func main() {
 		}
 	} else if cmd == "new" {
 		Create(vaultPath)
-		// }
-		// else if cmd == "tui" {
-		// 	fmt.Printf("You have %v arguments\n", argLength)
-		//
-		// 	tui.StartTui(os.Args[2])
 	} else {
 		fmt.Println("No valid command given")
 	}

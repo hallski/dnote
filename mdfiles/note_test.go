@@ -1,4 +1,4 @@
-package main
+package mdfiles
 
 import "testing"
 

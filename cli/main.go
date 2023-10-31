@@ -1,11 +1,14 @@
 package main
 
 import (
+	"dnote"
+	"dnote/mdfiles"
 	"fmt"
-	"github.com/fatih/color"
 	"log"
 	"strconv"
 	"text/tabwriter"
+
+	"github.com/fatih/color"
 
 	"os"
 	"os/exec"
@@ -25,8 +28,8 @@ func Execute(command string, arg ...string) error {
 	return cmd.Run()
 }
 
-func Edit(path string) error {
-	return Execute("nvim", path)
+func Edit(note *dnote.Note) error {
+	return Execute("nvim", note.Path)
 }
 
 func SearchAndOpenByTitle(vaultPath string) {
@@ -51,11 +54,11 @@ func getVaultPath() string {
 	return vaultPath
 }
 
-func List(vault *Vault) {
+func List(storage dnote.NoteStorage) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 	yellow := color.New(color.FgHiYellow).SprintfFunc()
 
-	for _, note := range vault.Notes {
+	for _, note := range storage.AllNotes() {
 		fmt.Fprintf(w, "%s\t%s\n", yellow("%d", note.Id), note.Title)
 	}
 
@@ -66,7 +69,7 @@ func main() {
 	argLength := len(os.Args[1:])
 	vaultPath := getVaultPath()
 
-	vault, err := LoadVault(vaultPath)
+	storage, err := mdfiles.Load(vaultPath)
 	if err != nil {
 		panic(err)
 	}
@@ -83,19 +86,26 @@ func main() {
 			log.Fatalf("Error while editing file %v", err)
 		}
 
-		note := vault.GetNote(id)
+		note := storage.FindNote(id)
 		if note == nil {
 			fmt.Printf("Couldn't find note %d", id)
 			return
 		}
 
-		if err := Edit(note.Path); err != nil {
+		if err := Edit(note); err != nil {
 			log.Fatalf("Error while editing file %v", err)
 		}
 	} else if cmd == "new" {
-		vault.CreateNote()
+		note, err := storage.CreateNote()
+		if err != nil {
+			log.Fatalf("Couldn't create new note: %s", err)
+		}
+
+		if err := Edit(note); err != nil {
+			log.Fatalf("Error opening new note %s", err)
+		}
 	} else if cmd == "ls" {
-		List(vault)
+		List(storage)
 	} else {
 		fmt.Println("No valid command given")
 	}

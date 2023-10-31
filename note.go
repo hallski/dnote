@@ -1,0 +1,98 @@
+package main
+
+import (
+	"bufio"
+	"bytes"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
+)
+
+type Note struct {
+	Id      int
+	Path    string
+	Title   string
+	Content string
+}
+
+func LoadNote(path string) (*Note, error) {
+	// Read a note
+	id, err := getFileId(path)
+	if err != nil {
+		return nil, err
+	}
+
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	note := &Note{
+		Id:      id,
+		Path:    path,
+		Content: string(content),
+	}
+
+	return note, nil
+}
+
+func CreateNote(path string, id int) (*Note, error) {
+	var out bytes.Buffer
+
+	// Replace with a template
+
+	fmt.Fprintf(&out, "\n\n[:created]: _ \"%s\"\n",
+		time.Now().Format("2006-01-02 15:04"))
+
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to create new note: %s", err)
+	}
+	f.WriteString(out.String())
+	defer f.Close()
+
+	note := &Note{
+		Id:      id,
+		Path:    path,
+		Content: out.String(),
+	}
+
+	return note, nil
+}
+
+func getFileId(path string) (int, error) {
+	base := filepath.Base(path)
+
+	fileWithoutExt, ext, found := strings.Cut(base, ".")
+	if !found || ext != "md" {
+		return -1, fmt.Errorf("Filename not following convention of id.md: %s",
+			path)
+	}
+
+	nr, err := strconv.Atoi(fileWithoutExt)
+	if err != nil {
+		return -1, fmt.Errorf("Filename not following convention of id.md: %s",
+			path)
+	}
+
+	return nr, nil
+}
+
+func addTimestampToNote(path string, timestamp time.Time) error {
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return fmt.Errorf("Failed to append timestamp: %s", err)
+	}
+	defer f.Close()
+
+	w := bufio.NewWriter(f)
+	defer w.Flush()
+
+	fmt.Fprintf(w, "\n\n[:created]: _ \"%s\"\n",
+		timestamp.Format("2006-01-02 15:04"))
+
+	return nil
+}

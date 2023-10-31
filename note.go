@@ -15,10 +15,15 @@ type NoteStorage interface {
 	DeleteNote(id int) error
 }
 
+// Unused
 type NoteEditor interface {
-	Edit(note *Note) error
+	Edit(id int, storage NoteStorage) error
 }
 
 type NoteLister interface {
-	List(note []*Note) error
+	List(storage NoteStorage) error
+}
+
+type NoteViewer interface {
+	View(id int, storage NoteStorage) error
 }

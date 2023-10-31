@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -30,10 +31,13 @@ func LoadNote(path string) (*Note, error) {
 		return nil, err
 	}
 
+	sContent := string(content)
+
 	note := &Note{
 		Id:      id,
 		Path:    path,
-		Content: string(content),
+		Content: sContent,
+		Title:   getTitle(sContent),
 	}
 
 	return note, nil
@@ -61,6 +65,17 @@ func CreateNote(path string, id int) (*Note, error) {
 	}
 
 	return note, nil
+}
+
+func getTitle(content string) string {
+	re := regexp.MustCompile("# (.*)")
+
+	result := re.FindStringSubmatch(content)
+	if result != nil {
+		return string(result[1])
+	}
+
+	return ""
 }
 
 func getFileId(path string) (int, error) {

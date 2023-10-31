@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/fatih/color"
 	"log"
 	"strconv"
+	"text/tabwriter"
 
 	"os"
 	"os/exec"
@@ -49,6 +51,17 @@ func getVaultPath() string {
 	return vaultPath
 }
 
+func List(vault *Vault) {
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
+	yellow := color.New(color.FgHiYellow).SprintfFunc()
+
+	for _, note := range vault.Notes {
+		fmt.Fprintf(w, "%s\t%s\n", yellow("%d", note.Id), note.Title)
+	}
+
+	w.Flush()
+}
+
 func main() {
 	argLength := len(os.Args[1:])
 	vaultPath := getVaultPath()
@@ -58,11 +71,9 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("main():", vault.NextId())
-
 	cmd := os.Args[1]
 	fmt.Println("Command is", cmd)
-	if cmd == "edit" {
+	if cmd == "open" {
 		if argLength < 2 {
 			panic("You must provide a command and a note id")
 		}
@@ -73,13 +84,18 @@ func main() {
 		}
 
 		note := vault.GetNote(id)
+		if note == nil {
+			fmt.Printf("Couldn't find note %d", id)
+			return
+		}
+
 		if err := Edit(note.Path); err != nil {
 			log.Fatalf("Error while editing file %v", err)
 		}
 	} else if cmd == "new" {
 		vault.CreateNote()
 	} else if cmd == "ls" {
-		fmt.Println("Listing notes")
+		List(vault)
 	} else {
 		fmt.Println("No valid command given")
 	}

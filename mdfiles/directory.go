@@ -84,10 +84,11 @@ func (mdd *MdDirectory) FindNote(id int) *dnote.Note {
 	return nil
 }
 
-func (mdd *MdDirectory) AllNotes() []*dnote.Note {
+func (mdd *MdDirectory) ListNotes() []*dnote.Note {
 	return mdd.notes
 }
 
 func (mdd *MdDirectory) DeleteNote(id int) error {
+	// TODO: Implement
 	return nil
 }

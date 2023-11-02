@@ -32,6 +32,7 @@ func loadNote(path string) (*dnote.Note, error) {
 		Path:    path,
 		Content: sContent,
 		Title:   getTitle(sContent),
+		Tags:    getTags(sContent),
 	}
 
 	return note, nil
@@ -70,6 +71,18 @@ func getTitle(content string) string {
 	}
 
 	return ""
+}
+
+func getTags(content string) []string {
+	re := regexp.MustCompile(" (#[a-zA-Z-]+)")
+
+	var tags []string
+	matches := re.FindAllStringSubmatch(content, -1)
+	for _, match := range matches {
+		tags = append(tags, match[1])
+	}
+
+	return tags
 }
 
 func getFileId(path string) (int, error) {

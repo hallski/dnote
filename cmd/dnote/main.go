@@ -41,15 +41,7 @@ func main() {
 			log.Fatalf("Error while editing file %v", err)
 		}
 
-		note := storage.FindNote(id)
-		if note == nil {
-			fmt.Printf("Couldn't find note %d", id)
-			return
-		}
-
-		if err := Edit(note); err != nil {
-			log.Fatalf("Error while editing file %v", err)
-		}
+		Open(storage, id)
 	} else if cmd == "new" {
 		note, err := storage.CreateNote()
 		if err != nil {

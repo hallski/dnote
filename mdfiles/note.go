@@ -74,12 +74,12 @@ func getTitle(content string) string {
 }
 
 func getTags(content string) []string {
-	re := regexp.MustCompile(" (#[a-zA-Z-]+)")
+	re := regexp.MustCompile(" #([a-zA-Z-]+)")
 
 	var tags []string
 	matches := re.FindAllStringSubmatch(content, -1)
 	for _, match := range matches {
-		tags = append(tags, match[1])
+		tags = append(tags, "#"+match[1])
 	}
 
 	return tags

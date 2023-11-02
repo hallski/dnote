@@ -2,6 +2,7 @@ package main
 
 import (
 	"dnote/mdfiles"
+	"dnote/search"
 	"fmt"
 	"log"
 	"os"
@@ -53,6 +54,13 @@ func main() {
 		}
 	} else if cmd == "ls" {
 		List(storage)
+	} else if cmd == "search" {
+		if argLength < 2 {
+			panic("No search query")
+		}
+
+		result := search.NewTitleSearch(os.Args[2], storage)
+		ListNoteLinks(result)
 	} else if cmd == "version" {
 		fmt.Println("Version 0.2")
 	} else {

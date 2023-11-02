@@ -7,3 +7,7 @@ type Note struct {
 	Content string
 	Tags    []string
 }
+
+type NoteLister interface {
+	ListNotes() []*Note
+}

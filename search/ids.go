@@ -2,17 +2,19 @@ package search
 
 import (
 	"dnote"
-	"strings"
+	"slices"
 )
 
-func NewTitleSearch(query string, lister dnote.NoteLister) *SearchResult {
+func NewIdsSearch(ids []int, lister dnote.NoteLister) *SearchResult {
 	var result []*dnote.Note
+
 	for _, note := range lister.ListNotes() {
-		if strings.Contains(strings.ToLower(note.Title), strings.ToLower(query)) {
+		if slices.Contains(ids, note.Id) {
 			result = append(result, note)
 		}
 	}
+
 	return &SearchResult{
-		result,
+		result: result,
 	}
 }

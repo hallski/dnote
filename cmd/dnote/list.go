@@ -3,7 +3,7 @@ package main
 import (
 	"dnote"
 	"fmt"
-	"os"
+	"io"
 	"strconv"
 	"strings"
 	"text/tabwriter"
@@ -29,8 +29,8 @@ func ellipticalTruncate(text string, maxLen int) string {
 	return text
 }
 
-func List(lister dnote.NoteLister) {
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
+func List(out io.Writer, lister dnote.NoteLister) {
+	w := tabwriter.NewWriter(out, 0, 0, 1, ' ', 0)
 	idColor := color.New(color.FgHiYellow).SprintfFunc()
 	tagColor := color.New(color.FgGreen).SprintfFunc()
 
@@ -44,15 +44,15 @@ func List(lister dnote.NoteLister) {
 	w.Flush()
 }
 
-func ListNoteLinks(lister dnote.NoteLister) {
+func ListNoteLinks(out io.Writer, lister dnote.NoteLister) {
 	const linkChars = 4
 
 	for _, note := range lister.ListNotes() {
-		truncated := ellipticalTruncate(note.Title, 60)
+		truncated := ellipticalTruncate(note.Title, 65)
 		strId := strconv.Itoa(note.Id)
 
-		padLen := 70 - len([]rune(truncated)) - linkChars - len([]rune(strId))
+		padLen := 75 - len([]rune(truncated)) - linkChars - len([]rune(strId))
 
-		fmt.Printf("%s%s[[%s]]\n", truncated, strings.Repeat(".", padLen), strId)
+		fmt.Fprintf(out, "%s%s[[%s]]\n", truncated, strings.Repeat(".", padLen), strId)
 	}
 }

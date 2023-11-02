@@ -53,14 +53,31 @@ func main() {
 			log.Fatalf("Error opening new note %s", err)
 		}
 	} else if cmd == "ls" {
-		List(storage)
+		List(os.Stdout, storage)
 	} else if cmd == "search" {
 		if argLength < 2 {
 			panic("No search query")
 		}
 
 		result := search.NewTitleSearch(os.Args[2], storage)
-		ListNoteLinks(result)
+		ListNoteLinks(os.Stdout, result)
+	} else if cmd == "ids" {
+		if argLength < 2 {
+			panic("Need to give a list of ids")
+		}
+
+		var ids []int
+		for _, strId := range os.Args[2:] {
+			id, err := strconv.Atoi(strId)
+			if err != nil {
+				continue
+			}
+
+			ids = append(ids, id)
+		}
+
+		result := search.NewIdsSearch(ids, storage)
+		ListNoteLinks(os.Stdout, result)
 	} else if cmd == "version" {
 		fmt.Println("Version 0.2")
 	} else {

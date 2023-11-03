@@ -24,6 +24,15 @@ func getNotesPath() string {
 	return path
 }
 
+func loadNotes() *mdfiles.MdDirectory {
+	notes, err := mdfiles.Load(getNotesPath())
+	if err != nil {
+		panic(err)
+	}
+
+	return notes
+}
+
 var rootCmd = &cobra.Command{
 	Use:     "dnote",
 	Short:   "dNote system",
@@ -37,12 +46,8 @@ var openCmd = &cobra.Command{
 	Long:  "Opens note with ID in Vim",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		path := getNotesPath()
+		notes := loadNotes()
 
-		notes, err := mdfiles.Load(path)
-		if err != nil {
-			panic(err)
-		}
 		id, err := strconv.Atoi(args[0])
 		if err != nil {
 			log.Fatalf("Error while editing file %v", err)
@@ -57,12 +62,7 @@ var newCmd = &cobra.Command{
 	Short: "Create and open new note",
 	Long:  "Creates a new note with the next available ID and opens it in editor",
 	Run: func(cmd *cobra.Command, _ []string) {
-		path := getNotesPath()
-
-		notes, err := mdfiles.Load(path)
-		if err != nil {
-			panic(err)
-		}
+		notes := loadNotes()
 
 		note, err := notes.CreateNote()
 		if err != nil {
@@ -80,13 +80,8 @@ var lsCmd = &cobra.Command{
 	Short: "List all notes",
 	Long:  "List all files together with ID",
 	Run: func(cmd *cobra.Command, args []string) {
+		notes := loadNotes()
 
-		path := getNotesPath()
-
-		notes, err := mdfiles.Load(path)
-		if err != nil {
-			panic(err)
-		}
 		List(notes, os.Stdout)
 	},
 }
@@ -97,13 +92,7 @@ var searchCmd = &cobra.Command{
 	Long:  "Search note titles for strings containing query and list as index",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-
-		path := getNotesPath()
-
-		notes, err := mdfiles.Load(path)
-		if err != nil {
-			panic(err)
-		}
+		notes := loadNotes()
 
 		result := search.NewTitleSearch(os.Args[2], notes)
 		ListNoteLinks(result, os.Stdout)
@@ -116,13 +105,7 @@ var idsCmd = &cobra.Command{
 	Long:  "Show matching IDs in an index link list",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-
-		path := getNotesPath()
-
-		notes, err := mdfiles.Load(path)
-		if err != nil {
-			panic(err)
-		}
+		notes := loadNotes()
 
 		var ids []int
 		for _, strId := range os.Args[2:] {

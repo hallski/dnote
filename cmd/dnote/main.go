@@ -1,12 +1,14 @@
 package main
 
 import (
-	"dnote/mdfiles"
-	"dnote/search"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
+
+	"dnote/mdfiles"
+	"dnote/search"
+
+	"github.com/spf13/cobra"
 )
 
 func getNotesPath() string {
@@ -22,28 +24,46 @@ func getNotesPath() string {
 	return path
 }
 
-func main() {
-	argLen := len(os.Args[1:])
-	path := getNotesPath()
+var rootCmd = &cobra.Command{
+	Use:     "dnote",
+	Short:   "dNote system",
+	Long:    "My personal note system",
+	Version: "0.1",
+}
 
-	notes, err := mdfiles.Load(path)
-	if err != nil {
-		panic(err)
-	}
+var openCmd = &cobra.Command{
+	Use:   "open",
+	Short: "Open a note",
+	Long:  "Opens note with ID in Vim",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		path := getNotesPath()
 
-	cmd := os.Args[1]
-	if cmd == "open" {
-		if argLen < 2 {
-			panic("You must provide a command and a note id")
+		notes, err := mdfiles.Load(path)
+		if err != nil {
+			panic(err)
 		}
-
-		id, err := strconv.Atoi(os.Args[2])
+		id, err := strconv.Atoi(args[0])
 		if err != nil {
 			log.Fatalf("Error while editing file %v", err)
 		}
 
 		Open(id, notes)
-	} else if cmd == "new" {
+	},
+}
+
+var newCmd = &cobra.Command{
+	Use:   "new",
+	Short: "Create and open new note",
+	Long:  "Creates a new note with the next available ID and opens it in editor",
+	Run: func(cmd *cobra.Command, _ []string) {
+		path := getNotesPath()
+
+		notes, err := mdfiles.Load(path)
+		if err != nil {
+			panic(err)
+		}
+
 		note, err := notes.CreateNote()
 		if err != nil {
 			log.Fatalf("Couldn't create new note: %s", err)
@@ -52,18 +72,56 @@ func main() {
 		if err := Edit(note); err != nil {
 			log.Fatalf("Error opening new note %s", err)
 		}
-	} else if cmd == "ls" {
+	},
+}
+
+var lsCmd = &cobra.Command{
+	Use:   "ls",
+	Short: "List all notes",
+	Long:  "List all files together with ID",
+	Run: func(cmd *cobra.Command, args []string) {
+
+		path := getNotesPath()
+
+		notes, err := mdfiles.Load(path)
+		if err != nil {
+			panic(err)
+		}
 		List(notes, os.Stdout)
-	} else if cmd == "search" {
-		if argLen < 2 {
-			panic("No search query")
+	},
+}
+
+var searchCmd = &cobra.Command{
+	Use:   "search",
+	Short: "Search note titles",
+	Long:  "Search note titles for strings containing query and list as index",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+
+		path := getNotesPath()
+
+		notes, err := mdfiles.Load(path)
+		if err != nil {
+			panic(err)
 		}
 
 		result := search.NewTitleSearch(os.Args[2], notes)
 		ListNoteLinks(result, os.Stdout)
-	} else if cmd == "ids" {
-		if argLen < 2 {
-			panic("Need to give a list of ids")
+	},
+}
+
+var idsCmd = &cobra.Command{
+	Use:   "ids",
+	Short: "Show matching IDs",
+	Long:  "Show matching IDs in an index link list",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+
+		path := getNotesPath()
+
+		notes, err := mdfiles.Load(path)
+		if err != nil {
+			panic(err)
 		}
 
 		var ids []int
@@ -78,9 +136,15 @@ func main() {
 
 		result := search.NewIdsSearch(ids, notes)
 		ListNoteLinks(result, os.Stdout)
-	} else if cmd == "version" {
-		fmt.Println("Version 0.2")
-	} else {
-		fmt.Println("No valid command given")
-	}
+	},
+}
+
+func main() {
+	rootCmd.AddCommand(openCmd)
+	rootCmd.AddCommand(newCmd)
+	rootCmd.AddCommand(lsCmd)
+	rootCmd.AddCommand(searchCmd)
+	rootCmd.AddCommand(idsCmd)
+
+	rootCmd.Execute()
 }

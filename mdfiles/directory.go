@@ -14,10 +14,8 @@ type MdDirectory struct {
 	notes []*dnote.Note
 }
 
-func Load(dirPath string) (*MdDirectory, error) {
-	var notes []*dnote.Note
-
-	err := filepath.WalkDir(dirPath, func(path string, _ fs.DirEntry, e error) error {
+func noteLoader(notes *[]*dnote.Note) fs.WalkDirFunc {
+	return func(path string, _ fs.DirEntry, e error) error {
 		if e != nil {
 			return e
 		}
@@ -28,14 +26,18 @@ func Load(dirPath string) (*MdDirectory, error) {
 
 		note, err := loadNote(path)
 		if err != nil {
-			return fmt.Errorf("Failed to read note %s, error %s",
-				path, err)
+			return fmt.Errorf("Failed to read note %s, error %s", path, err)
 		}
 
-		notes = append(notes, note)
+		*notes = append(*notes, note)
 		return nil
-	})
+	}
+}
 
+func Load(dir string) (*MdDirectory, error) {
+	var notes []*dnote.Note
+
+	err := filepath.WalkDir(dir, noteLoader(&notes))
 	if err != nil {
 		return nil, err
 	}
@@ -44,27 +46,25 @@ func Load(dirPath string) (*MdDirectory, error) {
 		return notes[i].Id < notes[j].Id
 	})
 
-	vault := &MdDirectory{
-		Path:  dirPath,
+	mdd := &MdDirectory{
+		Path:  dir,
 		notes: notes,
 	}
 
-	// Read from a directory
-	return vault, nil
+	return mdd, nil
 }
 
 func (mdd *MdDirectory) nextId() int {
 	return mdd.notes[len(mdd.notes)-1].Id + 1
 }
 
-// NoteStorage interface
 func (mdd *MdDirectory) CreateNote() (*dnote.Note, error) {
-	newId := mdd.nextId()
+	id := mdd.nextId()
 
-	filename := fmt.Sprintf("%d.md", newId)
-	notePath := path.Join(mdd.Path, filename)
+	filename := fmt.Sprintf("%d.md", id)
+	path := path.Join(mdd.Path, filename)
 
-	note, err := createNote(notePath, newId)
+	note, err := createNote(path, id)
 	if err != nil {
 		return nil, err
 	}

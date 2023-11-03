@@ -2,10 +2,10 @@ package search
 
 import "dnote"
 
-type SearchResult struct {
+type Result struct {
 	result []*dnote.Note
 }
 
-func (sr *SearchResult) ListNotes() []*dnote.Note {
+func (sr *Result) ListNotes() []*dnote.Note {
 	return sr.result
 }

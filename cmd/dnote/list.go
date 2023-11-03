@@ -29,7 +29,7 @@ func ellipticalTruncate(text string, maxLen int) string {
 	return text
 }
 
-func List(out io.Writer, lister dnote.NoteLister) {
+func List(lister dnote.NoteLister, out io.Writer) {
 	w := tabwriter.NewWriter(out, 0, 0, 1, ' ', 0)
 	idColor := color.New(color.FgHiYellow).SprintfFunc()
 	tagColor := color.New(color.FgGreen).SprintfFunc()
@@ -44,7 +44,7 @@ func List(out io.Writer, lister dnote.NoteLister) {
 	w.Flush()
 }
 
-func ListNoteLinks(out io.Writer, lister dnote.NoteLister) {
+func ListNoteLinks(lister dnote.NoteLister, out io.Writer) {
 	const linkChars = 4
 
 	for _, note := range lister.ListNotes() {

@@ -10,7 +10,7 @@ type NoteFinder interface {
 	FindNote(id int) *dnote.Note
 }
 
-func Open(finder NoteFinder, id int) {
+func Open(id int, finder NoteFinder) {
 	note := finder.FindNote(id)
 	if note == nil {
 		fmt.Printf("Couldn't find note %d", id)

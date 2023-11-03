@@ -10,30 +10,30 @@ import (
 )
 
 func getNotesPath() string {
-	vaultPath := os.Getenv("DNOTES")
-	if vaultPath == "" {
+	path := os.Getenv("DNOTES")
+	if path == "" {
 		var err error
-		vaultPath, err = os.Getwd()
+		path, err = os.Getwd()
 		if err != nil {
-			vaultPath = "."
+			path = "."
 		}
 	}
 
-	return vaultPath
+	return path
 }
 
 func main() {
-	argLength := len(os.Args[1:])
+	argLen := len(os.Args[1:])
 	path := getNotesPath()
 
-	storage, err := mdfiles.Load(path)
+	notes, err := mdfiles.Load(path)
 	if err != nil {
 		panic(err)
 	}
 
 	cmd := os.Args[1]
 	if cmd == "open" {
-		if argLength < 2 {
+		if argLen < 2 {
 			panic("You must provide a command and a note id")
 		}
 
@@ -42,9 +42,9 @@ func main() {
 			log.Fatalf("Error while editing file %v", err)
 		}
 
-		Open(storage, id)
+		Open(id, notes)
 	} else if cmd == "new" {
-		note, err := storage.CreateNote()
+		note, err := notes.CreateNote()
 		if err != nil {
 			log.Fatalf("Couldn't create new note: %s", err)
 		}
@@ -53,16 +53,16 @@ func main() {
 			log.Fatalf("Error opening new note %s", err)
 		}
 	} else if cmd == "ls" {
-		List(os.Stdout, storage)
+		List(notes, os.Stdout)
 	} else if cmd == "search" {
-		if argLength < 2 {
+		if argLen < 2 {
 			panic("No search query")
 		}
 
-		result := search.NewTitleSearch(os.Args[2], storage)
-		ListNoteLinks(os.Stdout, result)
+		result := search.NewTitleSearch(os.Args[2], notes)
+		ListNoteLinks(result, os.Stdout)
 	} else if cmd == "ids" {
-		if argLength < 2 {
+		if argLen < 2 {
 			panic("Need to give a list of ids")
 		}
 
@@ -76,8 +76,8 @@ func main() {
 			ids = append(ids, id)
 		}
 
-		result := search.NewIdsSearch(ids, storage)
-		ListNoteLinks(os.Stdout, result)
+		result := search.NewIdsSearch(ids, notes)
+		ListNoteLinks(result, os.Stdout)
 	} else if cmd == "version" {
 		fmt.Println("Version 0.2")
 	} else {

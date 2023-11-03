@@ -5,7 +5,7 @@ import (
 	"slices"
 )
 
-func NewIdsSearch(ids []int, lister dnote.NoteLister) *SearchResult {
+func NewIdsSearch(ids []int, lister dnote.NoteLister) *Result {
 	var result []*dnote.Note
 
 	for _, note := range lister.ListNotes() {
@@ -14,7 +14,7 @@ func NewIdsSearch(ids []int, lister dnote.NoteLister) *SearchResult {
 		}
 	}
 
-	return &SearchResult{
+	return &Result{
 		result: result,
 	}
 }

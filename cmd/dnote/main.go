@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
-	"strconv"
 
 	"dnote/mdfiles"
 	"dnote/search"
@@ -48,12 +48,7 @@ var openCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		notes := loadNotes()
 
-		id, err := strconv.Atoi(args[0])
-		if err != nil {
-			log.Fatalf("Error while editing file %v", err)
-		}
-
-		Open(id, notes)
+		Open(mdfiles.PadID(os.Args[0]), notes)
 	},
 }
 
@@ -107,18 +102,39 @@ var idsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		notes := loadNotes()
 
-		var ids []int
-		for _, strId := range os.Args[2:] {
-			id, err := strconv.Atoi(strId)
-			if err != nil {
-				continue
-			}
-
-			ids = append(ids, id)
+		var ids []string
+		for _, id := range os.Args[2:] {
+			ids = append(ids, mdfiles.PadID(id))
 		}
 
 		result := search.NewIdsSearch(ids, notes)
+
 		ListNoteLinks(result, os.Stdout)
+	},
+}
+
+var renameCmd = &cobra.Command{
+	Use:   "rename",
+	Short: "Rename a note file",
+	Long:  "Rename a note file and update all links to it",
+	Args:  cobra.MinimumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		notes := loadNotes()
+		if err := notes.Rename(args[0], args[1]); err != nil {
+			fmt.Printf("Failed to rename %s to %s: %s\n", args[0], args[1], err)
+		}
+	},
+}
+
+var migrateCmd = &cobra.Command{
+	Use:   "migrate",
+	Short: "Migrate notebook",
+	Long:  "Migrate notebook to latest version",
+	Run: func(cmd *cobra.Command, args []string) {
+		notes := loadNotes()
+		if err := notes.Migrate(); err != nil {
+			fmt.Printf("Failed to migrate notebook: %s\n", err)
+		}
 	},
 }
 
@@ -128,6 +144,8 @@ func main() {
 	rootCmd.AddCommand(lsCmd)
 	rootCmd.AddCommand(searchCmd)
 	rootCmd.AddCommand(idsCmd)
+	rootCmd.AddCommand(renameCmd)
+	rootCmd.AddCommand(migrateCmd)
 
 	rootCmd.Execute()
 }

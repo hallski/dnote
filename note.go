@@ -1,7 +1,7 @@
 package dnote
 
 type Note struct {
-	Id      int
+	ID      string
 	Path    string
 	Title   string
 	Content string

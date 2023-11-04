@@ -8,14 +8,13 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 )
 
 func loadNote(path string) (*dnote.Note, error) {
 	// Read a note
-	id, err := getFileId(path)
+	id, err := getFileID(path)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +27,7 @@ func loadNote(path string) (*dnote.Note, error) {
 	sContent := string(content)
 
 	note := &dnote.Note{
-		Id:      id,
+		ID:      id,
 		Path:    path,
 		Content: sContent,
 		Title:   getTitle(sContent),
@@ -38,7 +37,7 @@ func loadNote(path string) (*dnote.Note, error) {
 	return note, nil
 }
 
-func createNote(path string, id int) (*dnote.Note, error) {
+func createNote(path string, id string) (*dnote.Note, error) {
 	var out bytes.Buffer
 
 	// Replace with a template
@@ -54,7 +53,7 @@ func createNote(path string, id int) (*dnote.Note, error) {
 	defer f.Close()
 
 	note := &dnote.Note{
-		Id:      id,
+		ID:      id,
 		Path:    path,
 		Content: out.String(),
 	}
@@ -85,22 +84,16 @@ func getTags(content string) []string {
 	return tags
 }
 
-func getFileId(path string) (int, error) {
+func getFileID(path string) (string, error) {
 	base := filepath.Base(path)
 
 	fileWithoutExt, ext, found := strings.Cut(base, ".")
 	if !found || ext != "md" {
-		return -1, fmt.Errorf("Filename not following convention of id.md: %s",
+		return "", fmt.Errorf("Filename not following convention of id.md: %s",
 			path)
 	}
 
-	nr, err := strconv.Atoi(fileWithoutExt)
-	if err != nil {
-		return -1, fmt.Errorf("Filename not following convention of id.md: %s",
-			path)
-	}
-
-	return nr, nil
+	return fileWithoutExt, nil
 }
 
 func addTimestampToNote(path string, timestamp time.Time) error {
@@ -117,4 +110,13 @@ func addTimestampToNote(path string, timestamp time.Time) error {
 		timestamp.Format("2006-01-02 15:04"))
 
 	return nil
+}
+
+func PadID(id string) string {
+	if len(id) >= 3 {
+		return id
+	}
+
+	zPad := strings.Repeat("0", 3-len(id))
+	return zPad + id
 }

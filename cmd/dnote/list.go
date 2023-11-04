@@ -4,7 +4,6 @@ import (
 	"dnote"
 	"fmt"
 	"io"
-	"strconv"
 	"strings"
 	"text/tabwriter"
 	"unicode"
@@ -36,7 +35,7 @@ func List(lister dnote.NoteLister, out io.Writer) {
 
 	for _, note := range lister.ListNotes() {
 		fmt.Fprintf(w, "%s\t%s\t%s\n",
-			idColor("%d", note.Id),
+			idColor("%s", note.ID),
 			ellipticalTruncate(note.Title, 42),
 			tagColor(strings.Join(note.Tags, ", ")))
 	}
@@ -49,10 +48,10 @@ func ListNoteLinks(lister dnote.NoteLister, out io.Writer) {
 
 	for _, note := range lister.ListNotes() {
 		truncated := ellipticalTruncate(note.Title, 65)
-		strId := strconv.Itoa(note.Id)
 
-		padLen := 75 - len([]rune(truncated)) - linkChars - len([]rune(strId))
+		padLen := 75 - len([]rune(truncated)) - linkChars - len([]rune(note.ID))
+		dots := strings.Repeat(".", padLen)
 
-		fmt.Fprintf(out, "%s%s[[%s]]\n", truncated, strings.Repeat(".", padLen), strId)
+		fmt.Fprintf(out, "%s%s[[%s]]\n", truncated, dots, note.ID)
 	}
 }

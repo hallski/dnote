@@ -7,6 +7,8 @@ import (
 	"path"
 	"path/filepath"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 type MdDirectory struct {
@@ -43,7 +45,7 @@ func Load(dir string) (*MdDirectory, error) {
 	}
 
 	sort.Slice(notes, func(i, j int) bool {
-		return notes[i].Id < notes[j].Id
+		return notes[i].ID < notes[j].ID
 	})
 
 	mdd := &MdDirectory{
@@ -54,14 +56,24 @@ func Load(dir string) (*MdDirectory, error) {
 	return mdd, nil
 }
 
-func (mdd *MdDirectory) nextId() int {
-	return mdd.notes[len(mdd.notes)-1].Id + 1
+func (mdd *MdDirectory) nextID() string {
+	idx := len(mdd.notes) - 1
+	lastID, err := strconv.Atoi(mdd.notes[idx].ID)
+	if err != nil {
+		return "err"
+	}
+	return PadID(strconv.Itoa(lastID + 1))
+}
+
+func (mdd *MdDirectory) notePath(id string) string {
+	filename := fmt.Sprintf("%s.md", id)
+	return path.Join(mdd.Path, filename)
 }
 
 func (mdd *MdDirectory) CreateNote() (*dnote.Note, error) {
-	id := mdd.nextId()
+	id := mdd.nextID()
 
-	filename := fmt.Sprintf("%d.md", id)
+	filename := fmt.Sprintf("%s.md", id)
 	path := path.Join(mdd.Path, filename)
 
 	note, err := createNote(path, id)
@@ -74,9 +86,9 @@ func (mdd *MdDirectory) CreateNote() (*dnote.Note, error) {
 	return note, nil
 }
 
-func (mdd *MdDirectory) FindNote(id int) *dnote.Note {
+func (mdd *MdDirectory) FindNote(id string) *dnote.Note {
 	for _, note := range mdd.notes {
-		if note.Id == id {
+		if note.ID == id {
 			return note
 		}
 	}
@@ -90,5 +102,21 @@ func (mdd *MdDirectory) ListNotes() []*dnote.Note {
 
 func (mdd *MdDirectory) DeleteNote(id int) error {
 	// TODO: Implement
+	return nil
+}
+
+func (mdd *MdDirectory) Rename(oldID, newID string) error {
+	return changeID(mdd, oldID, newID)
+}
+
+func (mdd *MdDirectory) Migrate() error {
+	for _, note := range mdd.notes {
+		if len(note.ID) < 3 {
+			zPad := strings.Repeat("0", 3-len(note.ID))
+			newID := zPad + note.ID
+			mdd.Rename(note.ID, newID)
+		}
+	}
+
 	return nil
 }

@@ -90,7 +90,7 @@ var searchCmd = &cobra.Command{
 		notes := loadNotes()
 
 		result := search.NewTitleSearch(os.Args[2], notes)
-		ListNoteLinks(result, os.Stdout)
+		List(result, os.Stdout)
 	},
 }
 

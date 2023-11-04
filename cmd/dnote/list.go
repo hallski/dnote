@@ -8,8 +8,16 @@ import (
 	"text/tabwriter"
 	"unicode"
 
-	"github.com/fatih/color"
+	"github.com/charmbracelet/lipgloss"
 )
+
+var bracketStyle = lipgloss.NewStyle().
+	Foreground(lipgloss.Color("4"))
+var idStyle = lipgloss.NewStyle().
+	Foreground(lipgloss.Color("11"))
+
+var tagStyle = lipgloss.NewStyle().
+	Foreground(lipgloss.Color("10"))
 
 // https://stackoverflow.com/a/73939904
 func ellipticalTruncate(text string, maxLen int) string {
@@ -30,14 +38,14 @@ func ellipticalTruncate(text string, maxLen int) string {
 
 func List(lister dnote.NoteLister, out io.Writer) {
 	w := tabwriter.NewWriter(out, 0, 0, 1, ' ', 0)
-	idColor := color.New(color.FgHiYellow).SprintfFunc()
-	tagColor := color.New(color.FgGreen).SprintfFunc()
 
 	for _, note := range lister.ListNotes() {
-		fmt.Fprintf(w, "%s\t%s\t%s\n",
-			idColor("%s", note.ID),
+		fmt.Fprintf(w, "%s%s%s\t%s\t%s\n",
+			bracketStyle.Render("["),
+			idStyle.Render(fmt.Sprintf("%s", note.ID)),
+			bracketStyle.Render("]"),
 			ellipticalTruncate(note.Title, 42),
-			tagColor(strings.Join(note.Tags, ", ")))
+			tagStyle.Render(strings.Join(note.Tags, ", ")))
 	}
 
 	w.Flush()

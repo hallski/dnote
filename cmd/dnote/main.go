@@ -138,6 +138,18 @@ var migrateCmd = &cobra.Command{
 	},
 }
 
+var viewCmd = &cobra.Command{
+	Use:   "view",
+	Short: "View note",
+	Long:  "View a note without opening it in editor",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		notes := loadNotes()
+		note := notes.FindNote(args[0])
+		View(note)
+	},
+}
+
 func main() {
 	rootCmd.AddCommand(openCmd)
 	rootCmd.AddCommand(newCmd)
@@ -146,6 +158,7 @@ func main() {
 	rootCmd.AddCommand(idsCmd)
 	rootCmd.AddCommand(renameCmd)
 	rootCmd.AddCommand(migrateCmd)
+	rootCmd.AddCommand(viewCmd)
 
 	rootCmd.Execute()
 }

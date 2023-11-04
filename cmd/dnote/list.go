@@ -12,9 +12,9 @@ import (
 )
 
 var bracketStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color("4"))
-var idStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color("11"))
+var idStyle = lipgloss.NewStyle().
+	Foreground(lipgloss.Color("9"))
 
 var tagStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color("10"))

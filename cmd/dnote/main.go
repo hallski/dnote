@@ -48,7 +48,7 @@ var openCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		notes := loadNotes()
 
-		Open(mdfiles.PadID(os.Args[0]), notes)
+		Open(mdfiles.PadID(args[0]), notes)
 	},
 }
 

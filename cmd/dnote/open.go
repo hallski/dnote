@@ -13,7 +13,7 @@ type NoteFinder interface {
 func Open(id string, finder NoteFinder) {
 	note := finder.FindNote(id)
 	if note == nil {
-		fmt.Printf("Couldn't find note %d", id)
+		fmt.Printf("Couldn't find note %s", id)
 		return
 	}
 

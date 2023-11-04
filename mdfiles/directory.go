@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 type MdDirectory struct {
@@ -111,9 +110,8 @@ func (mdd *MdDirectory) Rename(oldID, newID string) error {
 
 func (mdd *MdDirectory) Migrate() error {
 	for _, note := range mdd.notes {
-		if len(note.ID) < 3 {
-			zPad := strings.Repeat("0", 3-len(note.ID))
-			newID := zPad + note.ID
+		newID := PadID(note.ID)
+		if newID != note.ID {
 			mdd.Rename(note.ID, newID)
 		}
 	}

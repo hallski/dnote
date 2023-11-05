@@ -6,6 +6,7 @@ type Note struct {
 	Title   string
 	Content string
 	Tags    []string
+	Links   []string
 }
 
 type NoteLister interface {

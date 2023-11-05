@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"dnote/mdfiles"
 	"dnote/search"
@@ -94,10 +95,10 @@ var searchCmd = &cobra.Command{
 	},
 }
 
-var idsCmd = &cobra.Command{
-	Use:   "ids",
-	Short: "Show matching IDs",
-	Long:  "Show matching IDs in an index link list",
+var linksCmd = &cobra.Command{
+	Use:   "links",
+	Short: "Create links for IDs",
+	Long:  "Create an index link list for notes with IDs",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		notes := loadNotes()
@@ -150,15 +151,28 @@ var viewCmd = &cobra.Command{
 	},
 }
 
+var outCmd = &cobra.Command{
+	Use:   "out",
+	Short: "View outgoing links from note",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		note := loadNotes().FindNote(mdfiles.PadID(args[0]))
+		if note != nil {
+			fmt.Println(strings.Join(note.Links, " "))
+		}
+	},
+}
+
 func main() {
 	rootCmd.AddCommand(openCmd)
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(lsCmd)
 	rootCmd.AddCommand(searchCmd)
-	rootCmd.AddCommand(idsCmd)
+	rootCmd.AddCommand(outCmd)
 	rootCmd.AddCommand(renameCmd)
 	rootCmd.AddCommand(migrateCmd)
 	rootCmd.AddCommand(viewCmd)
+	rootCmd.AddCommand(linksCmd)
 
 	rootCmd.Execute()
 }

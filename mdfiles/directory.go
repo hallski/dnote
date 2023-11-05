@@ -10,9 +10,12 @@ import (
 	"strconv"
 )
 
+type BackLinks map[string][]string
+
 type MdDirectory struct {
-	Path  string
-	notes []*dnote.Note
+	Path      string
+	notes     []*dnote.Note
+	backlinks BackLinks
 }
 
 func noteLoader(notes *[]*dnote.Note) fs.WalkDirFunc {
@@ -43,13 +46,22 @@ func Load(dir string) (*MdDirectory, error) {
 		return nil, err
 	}
 
+	backlinks := make(BackLinks)
+
+	for _, note := range notes {
+		for _, link := range note.Links {
+			backlinks[link] = append(backlinks[link], note.ID)
+		}
+	}
+
 	sort.Slice(notes, func(i, j int) bool {
 		return notes[i].ID < notes[j].ID
 	})
 
 	mdd := &MdDirectory{
-		Path:  dir,
-		notes: notes,
+		Path:      dir,
+		notes:     notes,
+		backlinks: backlinks,
 	}
 
 	return mdd, nil
@@ -117,4 +129,26 @@ func (mdd *MdDirectory) Migrate() error {
 	}
 
 	return nil
+}
+
+type Result struct {
+	result []*dnote.Note
+}
+
+func (sr *Result) ListNotes() []*dnote.Note {
+	return sr.result
+}
+
+// Should this be in search?
+func (mdd *MdDirectory) Backlinks(id string) *Result {
+	var result []*dnote.Note
+
+	for _, id := range mdd.backlinks[id] {
+		note := mdd.FindNote(id)
+		if note != nil {
+			result = append(result, note)
+		}
+	}
+
+	return &Result{result: result}
 }

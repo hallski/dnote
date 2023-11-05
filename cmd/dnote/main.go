@@ -163,6 +163,17 @@ var outCmd = &cobra.Command{
 	},
 }
 
+var blCmd = &cobra.Command{
+	Use:   "bl",
+	Short: "View backlinks to note",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		notes := loadNotes()
+		result := notes.Backlinks(mdfiles.PadID(args[0]))
+		ListNoteLinks(result, os.Stdout)
+	},
+}
+
 func main() {
 	rootCmd.AddCommand(openCmd)
 	rootCmd.AddCommand(addCmd)
@@ -173,6 +184,7 @@ func main() {
 	rootCmd.AddCommand(migrateCmd)
 	rootCmd.AddCommand(viewCmd)
 	rootCmd.AddCommand(linksCmd)
+	rootCmd.AddCommand(blCmd)
 
 	rootCmd.Execute()
 }

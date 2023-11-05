@@ -145,7 +145,7 @@ var viewCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		notes := loadNotes()
-		note := notes.FindNote(args[0])
+		note := notes.FindNote(mdfiles.PadID(args[0]))
 		View(note)
 	},
 }

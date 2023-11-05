@@ -113,11 +113,10 @@ func addTimestampToNote(path string, timestamp time.Time) error {
 }
 
 func PadID(id string) string {
-	const idLen = 3
-	if len(id) >= idLen {
+	if len(id) >= dnote.IDLength {
 		return id
 	}
 
-	zPad := strings.Repeat("0", idLen-len(id))
+	zPad := strings.Repeat("0", dnote.IDLength-len(id))
 	return zPad + id
 }

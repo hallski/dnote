@@ -52,8 +52,8 @@ var openCmd = &cobra.Command{
 	},
 }
 
-var newCmd = &cobra.Command{
-	Use:   "new",
+var addCmd = &cobra.Command{
+	Use:   "add",
 	Short: "Create and open new note",
 	Long:  "Creates a new note with the next available ID and opens it in editor",
 	Run: func(cmd *cobra.Command, _ []string) {
@@ -152,7 +152,7 @@ var viewCmd = &cobra.Command{
 
 func main() {
 	rootCmd.AddCommand(openCmd)
-	rootCmd.AddCommand(newCmd)
+	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(lsCmd)
 	rootCmd.AddCommand(searchCmd)
 	rootCmd.AddCommand(idsCmd)

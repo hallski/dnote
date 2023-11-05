@@ -52,12 +52,13 @@ func List(lister dnote.NoteLister, out io.Writer) {
 }
 
 func ListNoteLinks(lister dnote.NoteLister, out io.Writer) {
-	const linkChars = 4
+	const linkLen = 4 + dnote.IDLength
+	const maxLen = 76
 
 	for _, note := range lister.ListNotes() {
-		truncated := ellipticalTruncate(note.Title, 65)
+		truncated := ellipticalTruncate(note.Title, maxLen-linkLen)
 
-		padLen := 75 - len([]rune(truncated)) - linkChars - len([]rune(note.ID))
+		padLen := maxLen - linkLen - len([]rune(truncated))
 		dots := strings.Repeat(".", padLen)
 
 		fmt.Fprintf(out, "%s%s[[%s]]\n", truncated, dots, note.ID)

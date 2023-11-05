@@ -11,3 +11,5 @@ type Note struct {
 type NoteLister interface {
 	ListNotes() []*Note
 }
+
+const IDLength = 3

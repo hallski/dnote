@@ -21,6 +21,8 @@ var tagStyle = lipgloss.NewStyle().
 
 // https://stackoverflow.com/a/73939904
 func ellipticalTruncate(text string, maxLen int) string {
+	// Make room for ...
+	maxLen -= 3
 	lastSpaceIx := maxLen
 	len := 0
 	for i, r := range text {

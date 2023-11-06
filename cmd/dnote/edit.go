@@ -6,6 +6,8 @@ import (
 	"os/exec"
 )
 
+const editor = "nvim"
+
 func Execute(command string, arg ...string) error {
 	editorPath, err := exec.LookPath(command)
 	if err != nil {
@@ -21,5 +23,9 @@ func Execute(command string, arg ...string) error {
 }
 
 func Edit(note *dnote.Note) error {
-	return Execute("nvim", note.Path)
+	return Execute(editor, note.Path)
+}
+
+func OpenEditor() error {
+	return Execute(editor)
 }

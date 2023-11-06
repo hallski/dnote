@@ -46,9 +46,6 @@ var openCmd = &cobra.Command{
 	Short: "Open a note",
 	Long:  "Opens note with ID in Vim",
 	Run: func(cmd *cobra.Command, args []string) {
-		dir := getNotesPath()
-		os.Chdir(dir)
-
 		if len(args) >= 1 {
 			notes := loadNotes()
 			Open(mdfiles.PadID(args[0]), notes)
@@ -190,6 +187,9 @@ func main() {
 	rootCmd.AddCommand(viewCmd)
 	rootCmd.AddCommand(linksCmd)
 	rootCmd.AddCommand(blCmd)
+
+	dir := getNotesPath()
+	os.Chdir(dir)
 
 	rootCmd.Execute()
 }

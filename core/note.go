@@ -1,4 +1,4 @@
-package dnote
+package core
 
 type Note struct {
 	ID      string

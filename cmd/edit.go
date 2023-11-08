@@ -1,14 +1,15 @@
-package main
+package cmd
 
 import (
-	"dnote"
 	"os"
 	"os/exec"
+
+	"dnote/core"
 )
 
 const editor = "nvim"
 
-func Execute(command string, arg ...string) error {
+func RunCmd(command string, arg ...string) error {
 	editorPath, err := exec.LookPath(command)
 	if err != nil {
 		return err
@@ -22,10 +23,10 @@ func Execute(command string, arg ...string) error {
 	return cmd.Run()
 }
 
-func Edit(note *dnote.Note) error {
-	return Execute(editor, note.Path)
+func Edit(note *core.Note) error {
+	return RunCmd(editor, note.Path)
 }
 
 func OpenEditor() error {
-	return Execute(editor)
+	return RunCmd(editor)
 }

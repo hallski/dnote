@@ -1,13 +1,14 @@
-package main
+package cmd
 
 import (
-	"dnote"
 	"fmt"
 	"log"
+
+	"dnote/core"
 )
 
 type NoteFinder interface {
-	FindNote(id string) *dnote.Note
+	FindNote(id string) *core.Note
 }
 
 func Open(id string, finder NoteFinder) {

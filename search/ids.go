@@ -1,12 +1,13 @@
 package search
 
 import (
-	"dnote"
 	"slices"
+
+	"dnote/core"
 )
 
-func NewIdsSearch(ids []string, lister dnote.NoteLister) *Result {
-	var result []*dnote.Note
+func NewIdsSearch(ids []string, lister core.NoteLister) *Result {
+	var result []*core.Note
 
 	for _, note := range lister.ListNotes() {
 		if slices.Contains(ids, note.ID) {

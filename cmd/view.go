@@ -1,13 +1,14 @@
-package main
+package cmd
 
 import (
-	"dnote"
 	"fmt"
+
+	"dnote/core"
 
 	"github.com/charmbracelet/glamour"
 )
 
-func View(note *dnote.Note) {
+func View(note *core.Note) {
 	out, err := glamour.Render(note.Content, "dracula")
 	if err != nil {
 		fmt.Printf("Failed to render note: %s\n", note.ID)

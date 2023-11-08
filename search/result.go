@@ -1,11 +1,11 @@
 package search
 
-import "dnote"
+import "dnote/core"
 
 type Result struct {
-	result []*dnote.Note
+	result []*core.Note
 }
 
-func (sr *Result) ListNotes() []*dnote.Note {
+func (sr *Result) ListNotes() []*core.Note {
 	return sr.result
 }

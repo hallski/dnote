@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -180,7 +180,7 @@ var blCmd = &cobra.Command{
 	},
 }
 
-func main() {
+func Execute() {
 	addCmd.PersistentFlags().StringVarP(&title, "title", "t", "", "Title of the new note")
 
 	rootCmd.AddCommand(openCmd)

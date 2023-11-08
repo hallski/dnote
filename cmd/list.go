@@ -1,12 +1,13 @@
-package main
+package cmd
 
 import (
-	"dnote"
 	"fmt"
 	"io"
 	"strings"
 	"text/tabwriter"
 	"unicode"
+
+	"dnote/core"
 
 	"github.com/charmbracelet/lipgloss"
 )
@@ -38,7 +39,7 @@ func ellipticalTruncate(text string, maxLen int) string {
 	return text
 }
 
-func List(lister dnote.NoteLister, out io.Writer) {
+func List(lister core.NoteLister, out io.Writer) {
 	w := tabwriter.NewWriter(out, 0, 0, 1, ' ', 0)
 
 	for _, note := range lister.ListNotes() {
@@ -53,8 +54,8 @@ func List(lister dnote.NoteLister, out io.Writer) {
 	w.Flush()
 }
 
-func ListNoteLinks(lister dnote.NoteLister, out io.Writer) {
-	const linkLen = 4 + dnote.IDLength
+func ListNoteLinks(lister core.NoteLister, out io.Writer) {
+	const linkLen = 4 + core.IDLength
 	const maxLen = 74
 
 	for _, note := range lister.ListNotes() {

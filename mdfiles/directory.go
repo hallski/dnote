@@ -1,24 +1,25 @@
 package mdfiles
 
 import (
-	"dnote"
 	"fmt"
 	"io/fs"
 	"path"
 	"path/filepath"
 	"sort"
 	"strconv"
+
+	"dnote/core"
 )
 
 type BackLinks map[string][]string
 
 type MdDirectory struct {
 	Path      string
-	notes     []*dnote.Note
+	notes     []*core.Note
 	backlinks BackLinks
 }
 
-func noteLoader(notes *[]*dnote.Note) fs.WalkDirFunc {
+func noteLoader(notes *[]*core.Note) fs.WalkDirFunc {
 	return func(path string, _ fs.DirEntry, e error) error {
 		if e != nil {
 			return e
@@ -39,7 +40,7 @@ func noteLoader(notes *[]*dnote.Note) fs.WalkDirFunc {
 }
 
 func Load(dir string) (*MdDirectory, error) {
-	var notes []*dnote.Note
+	var notes []*core.Note
 
 	err := filepath.WalkDir(dir, noteLoader(&notes))
 	if err != nil {
@@ -81,7 +82,7 @@ func (mdd *MdDirectory) notePath(id string) string {
 	return path.Join(mdd.Path, filename)
 }
 
-func (mdd *MdDirectory) CreateNote(title string) (*dnote.Note, error) {
+func (mdd *MdDirectory) CreateNote(title string) (*core.Note, error) {
 	id := mdd.nextID()
 
 	filename := fmt.Sprintf("%s.md", id)
@@ -97,7 +98,7 @@ func (mdd *MdDirectory) CreateNote(title string) (*dnote.Note, error) {
 	return note, nil
 }
 
-func (mdd *MdDirectory) FindNote(id string) *dnote.Note {
+func (mdd *MdDirectory) FindNote(id string) *core.Note {
 	for _, note := range mdd.notes {
 		if note.ID == id {
 			return note
@@ -107,7 +108,7 @@ func (mdd *MdDirectory) FindNote(id string) *dnote.Note {
 	return nil
 }
 
-func (mdd *MdDirectory) ListNotes() []*dnote.Note {
+func (mdd *MdDirectory) ListNotes() []*core.Note {
 	return mdd.notes
 }
 
@@ -132,16 +133,16 @@ func (mdd *MdDirectory) Migrate() error {
 }
 
 type Result struct {
-	result []*dnote.Note
+	result []*core.Note
 }
 
-func (sr *Result) ListNotes() []*dnote.Note {
+func (sr *Result) ListNotes() []*core.Note {
 	return sr.result
 }
 
 // Should this be in search?
 func (mdd *MdDirectory) Backlinks(id string) *Result {
-	var result []*dnote.Note
+	var result []*core.Note
 
 	for _, id := range mdd.backlinks[id] {
 		note := mdd.FindNote(id)

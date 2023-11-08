@@ -3,16 +3,17 @@ package mdfiles
 import (
 	"bufio"
 	"bytes"
-	"dnote"
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
+
+	"dnote/core"
 )
 
-func loadNote(path string) (*dnote.Note, error) {
+func loadNote(path string) (*core.Note, error) {
 	// Read a note
 	id, err := getFileID(path)
 	if err != nil {
@@ -26,7 +27,7 @@ func loadNote(path string) (*dnote.Note, error) {
 
 	sContent := string(content)
 
-	note := &dnote.Note{
+	note := &core.Note{
 		ID:      id,
 		Path:    path,
 		Content: sContent,
@@ -38,7 +39,7 @@ func loadNote(path string) (*dnote.Note, error) {
 	return note, nil
 }
 
-func createNote(path string, id string, title string) (*dnote.Note, error) {
+func createNote(path string, id string, title string) (*core.Note, error) {
 	var out bytes.Buffer
 
 	// Replace with a template
@@ -55,7 +56,7 @@ func createNote(path string, id string, title string) (*dnote.Note, error) {
 	f.WriteString(out.String())
 	defer f.Close()
 
-	note := &dnote.Note{
+	note := &core.Note{
 		ID:      id,
 		Path:    path,
 		Content: out.String(),
@@ -88,7 +89,7 @@ func getTags(content string) []string {
 }
 
 var linkRegexp = regexp.MustCompile(fmt.Sprintf("\\[\\[([0-9]{%d})\\]\\]",
-	dnote.IDLength))
+	core.IDLength))
 
 func getLinks(content string) []string {
 	var links []string
@@ -129,10 +130,10 @@ func addTimestampToNote(path string, timestamp time.Time) error {
 }
 
 func PadID(id string) string {
-	if len(id) >= dnote.IDLength {
+	if len(id) >= core.IDLength {
 		return id
 	}
 
-	zPad := strings.Repeat("0", dnote.IDLength-len(id))
+	zPad := strings.Repeat("0", core.IDLength-len(id))
 	return zPad + id
 }

@@ -1,12 +1,12 @@
 package search
 
 import (
-	"dnote"
+	"dnote/core"
 	"strings"
 )
 
-func NewTitleSearch(query string, lister dnote.NoteLister) *Result {
-	var result []*dnote.Note
+func NewTitleSearch(query string, lister core.NoteLister) *Result {
+	var result []*core.Note
 	for _, note := range lister.ListNotes() {
 		if strings.Contains(strings.ToLower(note.Title), strings.ToLower(query)) {
 			result = append(result, note)

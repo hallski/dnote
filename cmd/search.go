@@ -14,7 +14,7 @@ var searchCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		result := search.NewTitleSearch(os.Args[2], notes)
-		List(result, os.Stdout)
+		List(result, os.Stdout, false)
 	},
 }
 

@@ -12,11 +12,13 @@ var outCmd = &cobra.Command{
 	Use:   "out",
 	Short: "View outgoing links from note",
 	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		note := notes.FindNote(mdfiles.PadID(args[0]))
 		if note != nil {
-			fmt.Println(strings.Join(note.Links, " "))
+			return fmt.Errorf(strings.Join(note.Links, " "))
 		}
+
+		return nil
 	},
 }
 

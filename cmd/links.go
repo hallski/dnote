@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"dnote/core"
 	"dnote/mdfiles"
 	"dnote/search"
 	"os"
@@ -23,7 +24,7 @@ var linksCmd = &cobra.Command{
 
 		result := search.NewIdsSearch(ids, notes)
 
-		ListNoteLinks(result, os.Stdout)
+		core.ListNoteLinks(result, os.Stdout)
 	},
 }
 

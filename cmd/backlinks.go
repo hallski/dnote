@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"dnote/core"
 	"dnote/mdfiles"
 	"os"
 
@@ -13,7 +14,7 @@ var blCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		result := notes.Backlinks(mdfiles.PadID(args[0]))
-		ListNoteLinks(result, os.Stdout)
+		core.ListNoteLinks(result, os.Stdout)
 	},
 }
 

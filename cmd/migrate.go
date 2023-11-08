@@ -10,10 +10,12 @@ var migrateCmd = &cobra.Command{
 	Use:   "migrate",
 	Short: "Migrate notebook",
 	Long:  "Migrate notebook to latest version",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := notes.Migrate(); err != nil {
-			fmt.Printf("Failed to migrate notebook: %s\n", err)
+			return fmt.Errorf("Failed to migrate notebook: %s\n", err)
 		}
+
+		return nil
 	},
 }
 

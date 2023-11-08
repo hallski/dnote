@@ -1,5 +1,12 @@
 package core
 
+import (
+	"fmt"
+	"io"
+	"strings"
+	"unicode"
+)
+
 type Note struct {
 	ID      string
 	Path    string
@@ -14,3 +21,36 @@ type NoteLister interface {
 }
 
 const IDLength = 3
+
+// https://stackoverflow.com/a/73939904
+func EllipticalTruncate(text string, maxLen int) string {
+	// Make room for ...
+	maxLen -= 3
+	lastSpaceIx := maxLen
+	len := 0
+	for i, r := range text {
+		if unicode.IsSpace(r) {
+			lastSpaceIx = i
+		}
+		len++
+		if len > maxLen {
+			return text[:lastSpaceIx] + "..."
+		}
+	}
+	// If here, string is shorter or equal to maxLen
+	return text
+}
+
+func ListNoteLinks(lister NoteLister, out io.Writer) {
+	const linkLen = 4 + IDLength
+	const maxLen = 74
+
+	for _, note := range lister.ListNotes() {
+		truncated := EllipticalTruncate(note.Title, maxLen-linkLen)
+
+		padLen := maxLen - linkLen - len([]rune(truncated))
+		dots := strings.Repeat(".", padLen)
+
+		fmt.Fprintf(out, "- %s%s[[%s]]\n", truncated, dots, note.ID)
+	}
+}

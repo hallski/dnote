@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 	"text/tabwriter"
-	"unicode"
 
 	"dnote/core"
 
@@ -18,28 +17,8 @@ var bracketStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color("8"))
 var idStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color("4"))
-
 var tagStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color("10"))
-
-// https://stackoverflow.com/a/73939904
-func ellipticalTruncate(text string, maxLen int) string {
-	// Make room for ...
-	maxLen -= 3
-	lastSpaceIx := maxLen
-	len := 0
-	for i, r := range text {
-		if unicode.IsSpace(r) {
-			lastSpaceIx = i
-		}
-		len++
-		if len > maxLen {
-			return text[:lastSpaceIx] + "..."
-		}
-	}
-	// If here, string is shorter or equal to maxLen
-	return text
-}
 
 func List(lister core.NoteLister, out io.Writer) {
 	w := tabwriter.NewWriter(out, 0, 0, 1, ' ', 0)
@@ -49,25 +28,11 @@ func List(lister core.NoteLister, out io.Writer) {
 			bracketStyle.Render("["),
 			idStyle.Render(fmt.Sprintf("%s", note.ID)),
 			bracketStyle.Render("]"),
-			ellipticalTruncate(note.Title, 42),
+			core.EllipticalTruncate(note.Title, 42),
 			tagStyle.Render(strings.Join(note.Tags, ", ")))
 	}
 
 	w.Flush()
-}
-
-func ListNoteLinks(lister core.NoteLister, out io.Writer) {
-	const linkLen = 4 + core.IDLength
-	const maxLen = 74
-
-	for _, note := range lister.ListNotes() {
-		truncated := ellipticalTruncate(note.Title, maxLen-linkLen)
-
-		padLen := maxLen - linkLen - len([]rune(truncated))
-		dots := strings.Repeat(".", padLen)
-
-		fmt.Fprintf(out, "- %s%s[[%s]]\n", truncated, dots, note.ID)
-	}
 }
 
 var lsCmd = &cobra.Command{

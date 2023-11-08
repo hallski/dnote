@@ -26,13 +26,12 @@ func getNotesPath() string {
 }
 
 func loadNotes() *mdfiles.MdDirectory {
-	var err error
-	notes, err = mdfiles.Load(getNotesPath())
+	loadedNotes, err := mdfiles.Load(getNotesPath())
 	if err != nil {
 		panic(err)
 	}
 
-	return notes
+	return loadedNotes
 }
 
 var rootCmd = &cobra.Command{
@@ -46,7 +45,7 @@ func Execute() {
 	dir := getNotesPath()
 	os.Chdir(dir)
 
-	loadNotes()
+	notes = loadNotes()
 
 	rootCmd.Execute()
 }

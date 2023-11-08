@@ -38,10 +38,12 @@ func loadNote(path string) (*dnote.Note, error) {
 	return note, nil
 }
 
-func createNote(path string, id string) (*dnote.Note, error) {
+func createNote(path string, id string, title string) (*dnote.Note, error) {
 	var out bytes.Buffer
 
 	// Replace with a template
+
+	fmt.Fprintf(&out, "# %s\n", title)
 
 	fmt.Fprintf(&out, "\n\n[:created]: _ \"%s\"\n",
 		time.Now().Format("2006-01-02 15:04"))

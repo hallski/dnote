@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -11,6 +10,8 @@ import (
 
 	"github.com/spf13/cobra"
 )
+
+var title string
 
 func getNotesPath() string {
 	path := os.Getenv("DNOTES")
@@ -59,17 +60,20 @@ var addCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Create and open new note",
 	Long:  "Creates a new note with the next available ID and opens it in editor",
-	Run: func(cmd *cobra.Command, _ []string) {
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		title, err := cmd.Flags().GetString("title")
+		if err != nil {
+			return err
+		}
+
 		notes := loadNotes()
 
-		note, err := notes.CreateNote()
+		note, err := notes.CreateNote(title)
 		if err != nil {
-			log.Fatalf("Couldn't create new note: %s", err)
+			return err
 		}
 
-		if err := Edit(note); err != nil {
-			log.Fatalf("Error opening new note %s", err)
-		}
+		return Edit(note)
 	},
 }
 
@@ -177,6 +181,8 @@ var blCmd = &cobra.Command{
 }
 
 func main() {
+	addCmd.PersistentFlags().StringVarP(&title, "title", "t", "", "Title of the new note")
+
 	rootCmd.AddCommand(openCmd)
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(lsCmd)

@@ -81,13 +81,13 @@ func (mdd *MdDirectory) notePath(id string) string {
 	return path.Join(mdd.Path, filename)
 }
 
-func (mdd *MdDirectory) CreateNote() (*dnote.Note, error) {
+func (mdd *MdDirectory) CreateNote(title string) (*dnote.Note, error) {
 	id := mdd.nextID()
 
 	filename := fmt.Sprintf("%s.md", id)
 	path := path.Join(mdd.Path, filename)
 
-	note, err := createNote(path, id)
+	note, err := createNote(path, id, title)
 	if err != nil {
 		return nil, err
 	}

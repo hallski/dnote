@@ -12,7 +12,6 @@ var blCmd = &cobra.Command{
 	Short: "View backlinks to note",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		notes := loadNotes()
 		result := notes.Backlinks(mdfiles.PadID(args[0]))
 		ListNoteLinks(result, os.Stdout)
 	},

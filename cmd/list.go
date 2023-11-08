@@ -75,8 +75,6 @@ var lsCmd = &cobra.Command{
 	Short: "List all notes",
 	Long:  "List all files together with ID",
 	Run: func(cmd *cobra.Command, args []string) {
-		notes := loadNotes()
-
 		List(notes, os.Stdout)
 	},
 }

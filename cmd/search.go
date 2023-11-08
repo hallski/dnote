@@ -13,8 +13,6 @@ var searchCmd = &cobra.Command{
 	Long:  "Search note titles for strings containing query and list as index",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		notes := loadNotes()
-
 		result := search.NewTitleSearch(os.Args[2], notes)
 		List(result, os.Stdout)
 	},

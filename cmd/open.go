@@ -32,7 +32,6 @@ var openCmd = &cobra.Command{
 	Long:  "Opens note with ID in Vim",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) >= 1 {
-			notes := loadNotes()
 			Open(mdfiles.PadID(args[0]), notes)
 		} else {
 			OpenEditor()

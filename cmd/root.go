@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var notes *mdfiles.MdDirectory
+
 var title string
 
 func getNotesPath() string {
@@ -24,7 +26,8 @@ func getNotesPath() string {
 }
 
 func loadNotes() *mdfiles.MdDirectory {
-	notes, err := mdfiles.Load(getNotesPath())
+	var err error
+	notes, err = mdfiles.Load(getNotesPath())
 	if err != nil {
 		panic(err)
 	}
@@ -42,6 +45,8 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	dir := getNotesPath()
 	os.Chdir(dir)
+
+	loadNotes()
 
 	rootCmd.Execute()
 }

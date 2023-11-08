@@ -25,7 +25,6 @@ var viewCmd = &cobra.Command{
 	Long:  "View a note without opening it in editor",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		notes := loadNotes()
 		note := notes.FindNote(mdfiles.PadID(args[0]))
 		View(note)
 	},

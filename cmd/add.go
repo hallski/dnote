@@ -12,8 +12,6 @@ var addCmd = &cobra.Command{
 			return err
 		}
 
-		notes := loadNotes()
-
 		note, err := notes.CreateNote(title)
 		if err != nil {
 			return err

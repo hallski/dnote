@@ -15,8 +15,6 @@ var linksCmd = &cobra.Command{
 	Long:  "Create an index link list for notes with IDs",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		notes := loadNotes()
-
 		var ids []string
 		for _, id := range os.Args[2:] {
 			ids = append(ids, mdfiles.PadID(id))

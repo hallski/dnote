@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"io"
+	"os"
 	"strings"
 	"text/tabwriter"
 	"unicode"
@@ -10,6 +11,7 @@ import (
 	"dnote/core"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/spf13/cobra"
 )
 
 var bracketStyle = lipgloss.NewStyle().
@@ -66,4 +68,19 @@ func ListNoteLinks(lister core.NoteLister, out io.Writer) {
 
 		fmt.Fprintf(out, "- %s%s[[%s]]\n", truncated, dots, note.ID)
 	}
+}
+
+var lsCmd = &cobra.Command{
+	Use:   "ls",
+	Short: "List all notes",
+	Long:  "List all files together with ID",
+	Run: func(cmd *cobra.Command, args []string) {
+		notes := loadNotes()
+
+		List(notes, os.Stdout)
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(lsCmd)
 }

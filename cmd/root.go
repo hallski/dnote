@@ -1,12 +1,9 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
-	"strings"
 
 	"dnote/mdfiles"
-	"dnote/search"
 
 	"github.com/spf13/cobra"
 )
@@ -42,158 +39,7 @@ var rootCmd = &cobra.Command{
 	Version: "0.1",
 }
 
-var openCmd = &cobra.Command{
-	Use:   "open",
-	Short: "Open a note",
-	Long:  "Opens note with ID in Vim",
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) >= 1 {
-			notes := loadNotes()
-			Open(mdfiles.PadID(args[0]), notes)
-		} else {
-			OpenEditor()
-		}
-	},
-}
-
-var addCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Create and open new note",
-	Long:  "Creates a new note with the next available ID and opens it in editor",
-	RunE: func(cmd *cobra.Command, _ []string) error {
-		title, err := cmd.Flags().GetString("title")
-		if err != nil {
-			return err
-		}
-
-		notes := loadNotes()
-
-		note, err := notes.CreateNote(title)
-		if err != nil {
-			return err
-		}
-
-		return Edit(note)
-	},
-}
-
-var lsCmd = &cobra.Command{
-	Use:   "ls",
-	Short: "List all notes",
-	Long:  "List all files together with ID",
-	Run: func(cmd *cobra.Command, args []string) {
-		notes := loadNotes()
-
-		List(notes, os.Stdout)
-	},
-}
-
-var searchCmd = &cobra.Command{
-	Use:   "search",
-	Short: "Search note titles",
-	Long:  "Search note titles for strings containing query and list as index",
-	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		notes := loadNotes()
-
-		result := search.NewTitleSearch(os.Args[2], notes)
-		List(result, os.Stdout)
-	},
-}
-
-var linksCmd = &cobra.Command{
-	Use:   "links",
-	Short: "Create links for IDs",
-	Long:  "Create an index link list for notes with IDs",
-	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		notes := loadNotes()
-
-		var ids []string
-		for _, id := range os.Args[2:] {
-			ids = append(ids, mdfiles.PadID(id))
-		}
-
-		result := search.NewIdsSearch(ids, notes)
-
-		ListNoteLinks(result, os.Stdout)
-	},
-}
-
-var renameCmd = &cobra.Command{
-	Use:   "rename",
-	Short: "Rename a note file",
-	Long:  "Rename a note file and update all links to it",
-	Args:  cobra.MinimumNArgs(2),
-	Run: func(cmd *cobra.Command, args []string) {
-		notes := loadNotes()
-		if err := notes.Rename(args[0], args[1]); err != nil {
-			fmt.Printf("Failed to rename %s to %s: %s\n", args[0], args[1], err)
-		}
-	},
-}
-
-var migrateCmd = &cobra.Command{
-	Use:   "migrate",
-	Short: "Migrate notebook",
-	Long:  "Migrate notebook to latest version",
-	Run: func(cmd *cobra.Command, args []string) {
-		notes := loadNotes()
-		if err := notes.Migrate(); err != nil {
-			fmt.Printf("Failed to migrate notebook: %s\n", err)
-		}
-	},
-}
-
-var viewCmd = &cobra.Command{
-	Use:   "view",
-	Short: "View note",
-	Long:  "View a note without opening it in editor",
-	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		notes := loadNotes()
-		note := notes.FindNote(mdfiles.PadID(args[0]))
-		View(note)
-	},
-}
-
-var outCmd = &cobra.Command{
-	Use:   "out",
-	Short: "View outgoing links from note",
-	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		note := loadNotes().FindNote(mdfiles.PadID(args[0]))
-		if note != nil {
-			fmt.Println(strings.Join(note.Links, " "))
-		}
-	},
-}
-
-var blCmd = &cobra.Command{
-	Use:   "bl",
-	Short: "View backlinks to note",
-	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		notes := loadNotes()
-		result := notes.Backlinks(mdfiles.PadID(args[0]))
-		ListNoteLinks(result, os.Stdout)
-	},
-}
-
 func Execute() {
-	addCmd.PersistentFlags().StringVarP(&title, "title", "t", "", "Title of the new note")
-
-	rootCmd.AddCommand(openCmd)
-	rootCmd.AddCommand(addCmd)
-	rootCmd.AddCommand(lsCmd)
-	rootCmd.AddCommand(searchCmd)
-	rootCmd.AddCommand(outCmd)
-	rootCmd.AddCommand(renameCmd)
-	rootCmd.AddCommand(migrateCmd)
-	rootCmd.AddCommand(viewCmd)
-	rootCmd.AddCommand(linksCmd)
-	rootCmd.AddCommand(blCmd)
-
 	dir := getNotesPath()
 	os.Chdir(dir)
 

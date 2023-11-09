@@ -20,10 +20,13 @@ var idStyle = lipgloss.NewStyle().
 var tagStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color("10"))
 
+const termWidth = 80
+
 func List(lister core.NoteLister, out io.Writer, showTags bool) {
 	w := tabwriter.NewWriter(out, 0, 0, 1, ' ', 0)
 
-	var titleLen = 80
+	const IDLen = 2 + core.IDLength + 1
+	var titleLen = termWidth - IDLen
 	if showTags {
 		titleLen = 42
 	}

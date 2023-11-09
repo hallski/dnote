@@ -12,12 +12,15 @@ type model struct {
 	noteBook *mdfiles.MdDirectory
 	msg      string
 
+	width  int
+	height int
+
 	viewport viewport.Model
 }
 
 func initialModel(noteBook *mdfiles.MdDirectory) model {
-	viewport := viewport.New(80, 25)
-	return model{noteBook, "Hello there", viewport}
+	viewport := viewport.New(0, 0)
+	return model{noteBook, "Hello there", 0, 0, viewport}
 }
 
 func (m model) Init() tea.Cmd {
@@ -32,21 +35,36 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		}
-	case tea.WindowSizeMsg:
 		var cmd tea.Cmd
 		m.viewport, cmd = m.viewport.Update(msg)
 		return m, cmd
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+
+		return m.SetupViewport(), nil
 	}
 
 	return m, nil
 }
 
-func (m model) View() string {
-	md, err := glamour.Render(m.noteBook.FindNote("001").Content, "dark")
+func (m model) SetupViewport() tea.Model {
+	m.viewport = viewport.New(m.width, m.height)
+
+	r, err := glamour.NewTermRenderer(
+		glamour.WithStandardStyle("dark"),
+		glamour.WithWordWrap(m.width),
+	)
+	md, err := r.Render(m.noteBook.FindNote("074").Content)
 	if err != nil {
 		panic(err)
 	}
 	m.viewport.SetContent(md)
+
+	return m
+}
+
+func (m model) View() string {
 	// Render the entire UI
 	return m.viewport.View()
 }

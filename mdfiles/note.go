@@ -88,12 +88,12 @@ func getTags(content string) []string {
 	return tags
 }
 
-var linkRegexp = regexp.MustCompile(fmt.Sprintf("\\[\\[([0-9]{%d})\\]\\]",
+var LinkRegexp = regexp.MustCompile(fmt.Sprintf("\\[\\[([0-9]{%d})\\]\\]",
 	core.IDLength))
 
 func getLinks(content string) []string {
 	var links []string
-	matches := linkRegexp.FindAllStringSubmatch(content, -1)
+	matches := LinkRegexp.FindAllStringSubmatch(content, -1)
 	for _, match := range matches {
 		links = append(links, match[1])
 	}

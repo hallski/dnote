@@ -2,12 +2,15 @@ package tui
 
 import (
 	"dnote/core"
+	"dnote/mdfiles"
 	"fmt"
+	"regexp"
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/glamour"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type docKeymap struct {
@@ -77,18 +80,37 @@ func (m docModel) View() string {
 	return m.viewport.View()
 }
 
-func (m *docModel) renderNote(note *core.Note) {
+func renderMdWithWikilinks(src string, wrap int) string {
+	tmp := mdfiles.LinkRegexp.ReplaceAllStringFunc(src,
+		func(s string) string {
+			return "||" + s[2:5] + "||"
+		},
+	)
 	r, err := glamour.NewTermRenderer(
 		glamour.WithStandardStyle("dark"),
-		glamour.WithWordWrap(m.width),
+		glamour.WithWordWrap(wrap),
 	)
-	md, err := r.Render(note.Content)
+
+	md, err := r.Render(tmp)
 	if err != nil {
 		panic(err)
 	}
 
-	m.renderedMd = md
-	m.viewport.SetContent(md)
+	// TODO: Color selected link differently
+	style := lipgloss.NewStyle().Foreground(lipgloss.Color("#ff00ff"))
+	re := regexp.MustCompile(fmt.Sprintf("\\|\\|([0-9]{%d})\\|\\|", core.IDLength))
+	md = re.ReplaceAllStringFunc(md,
+		func(r2 string) string {
+			return style.Render("[[" + r2[2:5] + "]]")
+		},
+	)
+
+	return md
+}
+
+func (m *docModel) renderNote(note *core.Note) {
+	m.renderedMd = renderMdWithWikilinks(note.Content, m.width)
+	m.viewport.SetContent(m.renderedMd)
 }
 
 func (m *docModel) setSize(width, height int) {

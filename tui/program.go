@@ -50,7 +50,7 @@ func initialModel(noteBook *mdfiles.MdDirectory) model {
 		noteBook,
 		"Hello there",
 		0, 0,
-		newDoc(0, 0, noteBook.FindNote("074"))}
+		newDoc(0, 0, noteBook.FindNote("341"))}
 }
 
 func (m model) Init() tea.Cmd {

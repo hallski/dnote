@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"dnote/mdfiles"
 	"dnote/tui"
 
 	"github.com/spf13/cobra"
@@ -11,7 +12,11 @@ var browseCmd = &cobra.Command{
 	Short: "Open TUI",
 	Long:  "Open terminal UI for interactiving with notes",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return tui.Run(notes)
+		var openId = ""
+		if len(args) > 0 {
+			openId = mdfiles.PadID(args[0])
+		}
+		return tui.Run(notes, openId)
 	},
 }
 

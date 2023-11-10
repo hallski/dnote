@@ -45,12 +45,12 @@ type model struct {
 	doc docModel
 }
 
-func initialModel(noteBook *mdfiles.MdDirectory) model {
+func initialModel(noteBook *mdfiles.MdDirectory, openId string) model {
 	return model{
 		noteBook,
 		"Hello there",
 		0, 0,
-		newDoc(0, 0, noteBook.FindNote("341"))}
+		newDoc(0, 0, noteBook.FindNote(openId))}
 }
 
 func (m model) Init() tea.Cmd {
@@ -78,6 +78,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.doc, cmd = m.doc.Update(msg)
 		return m, cmd
 	case openLinkMsg:
+		m.openNote(msg.id)
 		m.msg = fmt.Sprintf("Opening %s", msg.id)
 		return m, nil
 	case tea.WindowSizeMsg:
@@ -96,8 +97,15 @@ func (m model) View() string {
 	return lipgloss.JoinVertical(0, m.doc.View(), m.msg)
 }
 
-func Run(noteBook *mdfiles.MdDirectory) error {
-	p := tea.NewProgram(initialModel(noteBook))
+func (m *model) openNote(id string) {
+	note := m.noteBook.FindNote(id)
+	if note != nil {
+		m.doc.renderNote(note)
+	}
+}
+
+func Run(noteBook *mdfiles.MdDirectory, openId string) error {
+	p := tea.NewProgram(initialModel(noteBook, openId))
 
 	_, err := p.Run()
 

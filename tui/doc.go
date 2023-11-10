@@ -39,8 +39,13 @@ func openLinkCmd(id string) tea.Cmd {
 	}
 }
 
+type preparedSource struct {
+	links        []string
+	preprocessed string
+}
 type selectedLink struct {
-	ID string
+	ID    string
+	index int
 }
 
 type docModel struct {
@@ -49,9 +54,8 @@ type docModel struct {
 	width  int
 	height int
 
-	renderedMd string
-
-	selectedLink selectedLink
+	src          preparedSource
+	selectedLink int
 
 	viewport viewport.Model
 }
@@ -65,9 +69,11 @@ func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keymap.NextLink):
-			// Move to next link
+			m.selectedLink = (m.selectedLink + 1) % len(m.src.links)
+			m.rerender()
+			return m, nil
 		case key.Matches(msg, m.keymap.OpenLink):
-			return m, openLinkCmd(m.selectedLink.ID)
+			return m, openLinkCmd(m.src.links[m.selectedLink])
 		}
 		var cmd tea.Cmd
 		m.viewport, cmd = m.viewport.Update(msg)
@@ -80,49 +86,70 @@ func (m docModel) View() string {
 	return m.viewport.View()
 }
 
-func renderMdWithWikilinks(src string, wrap int) string {
-	tmp := mdfiles.LinkRegexp.ReplaceAllStringFunc(src,
+func processNoteContent(content string) preparedSource {
+	var links []string
+	processed := mdfiles.LinkRegexp.ReplaceAllStringFunc(content,
 		func(s string) string {
-			return "||" + s[2:5] + "||"
+			id := s[2:5]
+			links = append(links, id)
+			return "||" + id + "||"
 		},
 	)
+
+	return preparedSource{links, processed}
+
+}
+
+func (m *docModel) rerender() {
 	r, err := glamour.NewTermRenderer(
 		glamour.WithStandardStyle("dark"),
-		glamour.WithWordWrap(wrap),
+		glamour.WithWordWrap(m.width),
 	)
 
-	md, err := r.Render(tmp)
+	md, err := r.Render(m.src.preprocessed)
 	if err != nil {
 		panic(err)
 	}
 
 	// TODO: Color selected link differently
-	style := lipgloss.NewStyle().Foreground(lipgloss.Color("#ff00ff"))
+	inactiveStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#ff00ff"))
+	activeStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00ffff"))
 	re := regexp.MustCompile(fmt.Sprintf("\\|\\|([0-9]{%d})\\|\\|", core.IDLength))
+
+	var idx = 0
 	md = re.ReplaceAllStringFunc(md,
-		func(r2 string) string {
-			return style.Render("[[" + r2[2:5] + "]]")
+		func(s string) string {
+			var style = inactiveStyle
+			if idx == m.selectedLink {
+				style = activeStyle
+			}
+
+			idx++
+
+			return style.Render("[[" + s[2:5] + "]]")
 		},
 	)
 
-	return md
+	m.viewport.SetContent(md)
 }
 
 func (m *docModel) renderNote(note *core.Note) {
-	m.renderedMd = renderMdWithWikilinks(note.Content, m.width)
-	m.viewport.SetContent(m.renderedMd)
+	m.src = processNoteContent(note.Content)
+
+	m.rerender()
 }
 
 func (m *docModel) setSize(width, height int) {
 	m.viewport = viewport.New(width, height)
-	m.viewport.SetContent(m.renderedMd)
+	m.rerender()
 }
 
 func newDoc(width, height int, note *core.Note) docModel {
 	m := docModel{
 		keymap:       DefaultDocKeyMap,
 		viewport:     viewport.New(width, height),
-		selectedLink: selectedLink{ID: "1337"},
+		selectedLink: -1,
+		src:          processNoteContent(note.Content),
 	}
 
 	if note != nil {

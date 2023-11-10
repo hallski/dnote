@@ -2,11 +2,38 @@ package tui
 
 import (
 	"dnote/mdfiles"
+	"fmt"
 
-	"github.com/charmbracelet/bubbles/viewport"
+	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/glamour"
+	"github.com/charmbracelet/lipgloss"
 )
+
+type appKeyMap struct {
+	Quit     key.Binding
+	Search   key.Binding
+	AddNote  key.Binding
+	EditNode key.Binding
+}
+
+var DefaultKeyMap = appKeyMap{
+	Quit: key.NewBinding(
+		key.WithKeys("q", "ctrl+c"),
+		key.WithHelp("q", "quit"),
+	),
+	Search: key.NewBinding(
+		key.WithKeys("s"),
+		key.WithHelp("s", "search"),
+	),
+	AddNote: key.NewBinding(
+		key.WithKeys("a"),
+		key.WithHelp("a", "add note"),
+	),
+	EditNode: key.NewBinding(
+		key.WithKeys("e"),
+		key.WithHelp("e", "edit note"),
+	),
+}
 
 type model struct {
 	noteBook *mdfiles.MdDirectory
@@ -15,12 +42,15 @@ type model struct {
 	width  int
 	height int
 
-	viewport viewport.Model
+	doc docModel
 }
 
 func initialModel(noteBook *mdfiles.MdDirectory) model {
-	viewport := viewport.New(0, 0)
-	return model{noteBook, "Hello there", 0, 0, viewport}
+	return model{
+		noteBook,
+		"Hello there",
+		0, 0,
+		newDoc(0, 0, noteBook.FindNote("074"))}
 }
 
 func (m model) Init() tea.Cmd {
@@ -31,42 +61,39 @@ func (m model) Init() tea.Cmd {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "ctrl+c", "q":
+		switch {
+		case key.Matches(msg, DefaultKeyMap.Quit):
 			return m, tea.Quit
+		case key.Matches(msg, DefaultKeyMap.Search):
+			m.msg = "Searching!"
+			return m, nil
+		case key.Matches(msg, DefaultKeyMap.AddNote):
+			m.msg = "Add new note"
+			return m, nil
+		case key.Matches(msg, DefaultKeyMap.EditNode):
+			m.msg = "Edit note"
+			return m, nil
 		}
 		var cmd tea.Cmd
-		m.viewport, cmd = m.viewport.Update(msg)
+		m.doc, cmd = m.doc.Update(msg)
 		return m, cmd
+	case openLinkMsg:
+		m.msg = fmt.Sprintf("Opening %s", msg.id)
+		return m, nil
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
 
-		return m.SetupViewport(), nil
+		m.doc.setSize(m.width, m.height-1)
+		return m, nil
 	}
 
 	return m, nil
 }
 
-func (m model) SetupViewport() tea.Model {
-	m.viewport = viewport.New(m.width, m.height)
-
-	r, err := glamour.NewTermRenderer(
-		glamour.WithStandardStyle("dark"),
-		glamour.WithWordWrap(m.width),
-	)
-	md, err := r.Render(m.noteBook.FindNote("074").Content)
-	if err != nil {
-		panic(err)
-	}
-	m.viewport.SetContent(md)
-
-	return m
-}
-
 func (m model) View() string {
 	// Render the entire UI
-	return m.viewport.View()
+	return lipgloss.JoinVertical(0, m.doc.View(), m.msg)
 }
 
 func Run(noteBook *mdfiles.MdDirectory) error {

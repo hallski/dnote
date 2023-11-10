@@ -1,15 +1,11 @@
-package cmd
+package ext
 
 import (
 	"os"
 	"os/exec"
-
-	"dnote/core"
 )
 
-const editor = "nvim"
-
-func RunCmd(command string, arg ...string) error {
+func Exec(command string, arg ...string) error {
 	editorPath, err := exec.LookPath(command)
 	if err != nil {
 		return err
@@ -21,12 +17,4 @@ func RunCmd(command string, arg ...string) error {
 	cmd.Stdin = os.Stdin
 
 	return cmd.Run()
-}
-
-func Edit(note *core.Note) error {
-	return RunCmd(editor, note.Path)
-}
-
-func OpenEditor() error {
-	return RunCmd(editor)
 }

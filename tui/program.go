@@ -1,8 +1,10 @@
 package tui
 
 import (
+	"dnote/ext"
 	"dnote/mdfiles"
 	"fmt"
+	"os/exec"
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
@@ -41,8 +43,10 @@ var DefaultKeyMap = appKeyMap{
 }
 
 type model struct {
-	noteBook *mdfiles.MdDirectory
-	msg      string
+	noteBook      *mdfiles.MdDirectory
+	currentNoteId string
+
+	msg string
 
 	navStack []string
 
@@ -55,6 +59,7 @@ type model struct {
 func initialModel(noteBook *mdfiles.MdDirectory) model {
 	return model{
 		noteBook,
+		"",
 		"Hello there",
 		[]string{},
 		0, 0,
@@ -66,6 +71,8 @@ func (m model) Init() tea.Cmd {
 	// Trigger any initial command
 	return nil
 }
+
+type statusMsg struct{ s string }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
@@ -80,8 +87,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.msg = "Add new note"
 			return m, nil
 		case key.Matches(msg, DefaultKeyMap.EditNode):
-			m.msg = "Edit note"
-			return m, nil
+			return m, openEditor(m.noteBook, m.currentNoteId)
 		case key.Matches(msg, DefaultKeyMap.Back):
 			m.goBack()
 			return m, nil
@@ -89,6 +95,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var cmd tea.Cmd
 		m.doc, cmd = m.doc.Update(msg)
 		return m, cmd
+	case statusMsg:
+		m.msg = msg.s
+		return m, nil
 	case openLinkMsg:
 		m.openNote(msg.id, true)
 		m.msg = fmt.Sprintf("Opening %s", msg.id)
@@ -110,18 +119,45 @@ func (m model) View() string {
 }
 
 func (m *model) goBack() {
-	if len(m.navStack) < 2 {
+	stackLen := len(m.navStack)
+	if stackLen < 1 {
 		fmt.Println("No navstack")
 		return
 	}
 
 	// TODO: Store the doc model on the stack instead of just an index
 	//       this will keep the scroll position as well
-	backIdx := len(m.navStack) - 2
+	backIdx := stackLen - 1
 	id := m.navStack[backIdx]
-	m.navStack = m.navStack[:backIdx+1]
+	m.navStack = m.navStack[:backIdx]
 	m.openNote(id, false)
 	m.msg = fmt.Sprintf("Stack: %#v", m.navStack)
+}
+
+func openEditor(noteBook *mdfiles.MdDirectory, id string) tea.Cmd {
+	note := noteBook.FindNote(id)
+	if note == nil {
+		return func() tea.Msg { return statusMsg{"Failed opening " + id} }
+	}
+
+	editor := ext.GetEditor()
+	c := exec.Command(editor, note.Path)
+	return tea.ExecProcess(c, func(err error) tea.Msg {
+		if err != nil {
+			return statusMsg{fmt.Sprintf("Failed editing: %s", err)}
+		} else {
+			// TODO: Send another message to reread the notebook
+			return statusMsg{"Ok"}
+		}
+	})
+}
+
+func (m *model) edit() {
+	note := m.noteBook.FindNote(m.currentNoteId)
+	if note != nil {
+		ext.EditNote(note)
+	} else {
+	}
 }
 
 func (m *model) openNote(id string, nav bool) {
@@ -130,8 +166,12 @@ func (m *model) openNote(id string, nav bool) {
 	if note != nil {
 		m.doc.renderNote(note)
 		if nav {
-			m.navStack = append(m.navStack, note.ID)
+			if m.currentNoteId != "" {
+				m.navStack = append(m.navStack, m.currentNoteId)
+			}
 		}
+
+		m.currentNoteId = id
 	}
 }
 

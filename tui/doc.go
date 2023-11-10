@@ -69,7 +69,11 @@ func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keymap.NextLink):
-			m.selectedLink = (m.selectedLink + 1) % len(m.src.links)
+			if len(m.src.links) > 0 {
+				m.selectedLink = (m.selectedLink + 1) % len(m.src.links)
+			} else {
+				m.selectedLink = -1
+			}
 			m.rerender()
 			return m, nil
 		case key.Matches(msg, m.keymap.OpenLink):
@@ -135,6 +139,7 @@ func (m *docModel) rerender() {
 
 func (m *docModel) renderNote(note *core.Note) {
 	m.src = processNoteContent(note.Content)
+	m.selectedLink = -1
 
 	m.rerender()
 }

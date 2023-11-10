@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"dnote/core"
+	"dnote/ext"
 	"dnote/mdfiles"
 
 	"github.com/spf13/cobra"
@@ -19,7 +20,7 @@ func Open(id string, finder NoteFinder) error {
 		return fmt.Errorf("Couldn't find note %s", id)
 	}
 
-	if err := Edit(note); err != nil {
+	if err := ext.EditNote(note); err != nil {
 		return err
 	}
 
@@ -34,7 +35,7 @@ var openCmd = &cobra.Command{
 		if len(args) >= 1 {
 			return Open(mdfiles.PadID(args[0]), notes)
 		} else {
-			return OpenEditor()
+			return ext.OpenEditor()
 		}
 	},
 }

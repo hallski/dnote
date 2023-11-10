@@ -1,6 +1,10 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"dnote/ext"
+
+	"github.com/spf13/cobra"
+)
 
 var addCmd = &cobra.Command{
 	Use:   "add",
@@ -17,7 +21,7 @@ var addCmd = &cobra.Command{
 			return err
 		}
 
-		return Edit(note)
+		return ext.EditNote(note)
 	},
 }
 

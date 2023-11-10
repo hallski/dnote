@@ -14,6 +14,7 @@ type appKeyMap struct {
 	Search   key.Binding
 	AddNote  key.Binding
 	EditNode key.Binding
+	Back     key.Binding
 }
 
 var DefaultKeyMap = appKeyMap{
@@ -33,11 +34,17 @@ var DefaultKeyMap = appKeyMap{
 		key.WithKeys("e"),
 		key.WithHelp("e", "edit note"),
 	),
+	Back: key.NewBinding(
+		key.WithKeys("b"),
+		key.WithHelp("b", "back"),
+	),
 }
 
 type model struct {
 	noteBook *mdfiles.MdDirectory
 	msg      string
+
+	navStack []string
 
 	width  int
 	height int
@@ -45,12 +52,14 @@ type model struct {
 	doc docModel
 }
 
-func initialModel(noteBook *mdfiles.MdDirectory, openId string) model {
+func initialModel(noteBook *mdfiles.MdDirectory) model {
 	return model{
 		noteBook,
 		"Hello there",
+		[]string{},
 		0, 0,
-		newDoc(0, 0, noteBook.FindNote(openId))}
+		newDoc(0, 0),
+	}
 }
 
 func (m model) Init() tea.Cmd {
@@ -73,12 +82,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, DefaultKeyMap.EditNode):
 			m.msg = "Edit note"
 			return m, nil
+		case key.Matches(msg, DefaultKeyMap.Back):
+			m.goBack()
+			return m, nil
 		}
 		var cmd tea.Cmd
 		m.doc, cmd = m.doc.Update(msg)
 		return m, cmd
 	case openLinkMsg:
-		m.openNote(msg.id)
+		m.openNote(msg.id, true)
 		m.msg = fmt.Sprintf("Opening %s", msg.id)
 		return m, nil
 	case tea.WindowSizeMsg:
@@ -97,15 +109,36 @@ func (m model) View() string {
 	return lipgloss.JoinVertical(0, m.doc.View(), m.msg)
 }
 
-func (m *model) openNote(id string) {
+func (m *model) goBack() {
+	if len(m.navStack) < 2 {
+		fmt.Println("No navstack")
+		return
+	}
+
+	// TODO: Store the doc model on the stack instead of just an index
+	//       this will keep the scroll position as well
+	backIdx := len(m.navStack) - 2
+	id := m.navStack[backIdx]
+	m.navStack = m.navStack[:backIdx+1]
+	m.openNote(id, false)
+	m.msg = fmt.Sprintf("Stack: %#v", m.navStack)
+}
+
+func (m *model) openNote(id string, nav bool) {
+	m.msg = "Open" + id
 	note := m.noteBook.FindNote(id)
 	if note != nil {
 		m.doc.renderNote(note)
+		if nav {
+			m.navStack = append(m.navStack, note.ID)
+		}
 	}
 }
 
 func Run(noteBook *mdfiles.MdDirectory, openId string) error {
-	p := tea.NewProgram(initialModel(noteBook, openId))
+	m := initialModel(noteBook)
+	m.openNote(openId, true)
+	p := tea.NewProgram(m)
 
 	_, err := p.Run()
 

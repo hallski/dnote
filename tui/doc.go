@@ -144,17 +144,11 @@ func (m *docModel) setSize(width, height int) {
 	m.rerender()
 }
 
-func newDoc(width, height int, note *core.Note) docModel {
+func newDoc(width, height int) docModel {
 	m := docModel{
 		keymap:       DefaultDocKeyMap,
 		viewport:     viewport.New(width, height),
 		selectedLink: -1,
-		src:          processNoteContent(note.Content),
-	}
-
-	if note != nil {
-		fmt.Printf("Rendering note: %s\n", note.Title)
-		m.renderNote(note)
 	}
 
 	return m

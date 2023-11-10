@@ -38,22 +38,21 @@ var DefaultKeyMap = appKeyMap{
 		key.WithHelp("e", "edit note"),
 	),
 	Back: key.NewBinding(
-		key.WithKeys("b", "ctrl+o"),
+		key.WithKeys("b", "["),
 		key.WithHelp("b", "back"),
 	),
 	Forward: key.NewBinding(
-		key.WithKeys("ctrl+i"),
-		key.WithHelp("ctrl+i", "forward"),
+		key.WithKeys("]", "f"),
+		key.WithHelp("ctrl+i or f", "forward"),
 	),
 }
 
 type model struct {
-	noteBook      *mdfiles.MdDirectory
-	currentNoteId string
+	noteBook *mdfiles.MdDirectory
 
 	msg string
 
-	navStack []string
+	history *history[string]
 
 	width  int
 	height int
@@ -64,16 +63,14 @@ type model struct {
 func initialModel(noteBook *mdfiles.MdDirectory) model {
 	return model{
 		noteBook,
-		"",
 		"Hello there",
-		[]string{},
+		NewHistory[string](),
 		0, 0,
 		newDoc(0, 0),
 	}
 }
 
 func (m model) Init() tea.Cmd {
-	// Trigger any initial command
 	return nil
 }
 
@@ -93,9 +90,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.msg = "Add new note"
 			return m, nil
 		case key.Matches(msg, DefaultKeyMap.EditNode):
-			return m, openEditor(m.noteBook, m.currentNoteId)
+			return m, openEditor(m.noteBook, m.history.GetCurrent())
 		case key.Matches(msg, DefaultKeyMap.Back):
-			m.goBack()
+			id := m.history.GoBack()
+			m.openNote(id, false)
+			return m, nil
+		case key.Matches(msg, DefaultKeyMap.Forward):
+			id := m.history.GoForward()
+			m.openNote(id, false)
 			return m, nil
 		}
 		var cmd tea.Cmd
@@ -109,7 +111,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case openLinkMsg:
 		m.openNote(msg.id, true)
-		m.msg = fmt.Sprintf("Opening %s", msg.id)
+		//		m.msg = fmt.Sprintf("Opening %s", msg.id)
 		return m, nil
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
@@ -125,22 +127,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	// Render the entire UI
 	return lipgloss.JoinVertical(0, m.doc.View(), m.msg)
-}
-
-func (m *model) goBack() {
-	stackLen := len(m.navStack)
-	if stackLen < 1 {
-		fmt.Println("No navstack")
-		return
-	}
-
-	// TODO: Store the doc model on the stack instead of just an index
-	//       this will keep the scroll position as well
-	backIdx := stackLen - 1
-	id := m.navStack[backIdx]
-	m.navStack = m.navStack[:backIdx]
-	m.openNote(id, false)
-	m.msg = fmt.Sprintf("Stack: %#v", m.navStack)
 }
 
 func openEditor(noteBook *mdfiles.MdDirectory, id string) tea.Cmd {
@@ -168,25 +154,21 @@ func (m *model) refreshNotebook() {
 
 	m.noteBook = noteBook
 	// Force a rerender of the document
-	if m.currentNoteId != "" {
-		note := noteBook.FindNote(m.currentNoteId)
+	if m.history.GetCurrent() != "" {
+		note := noteBook.FindNote(m.history.GetCurrent())
 		m.doc.renderNote(note)
 	}
 }
 
 func (m *model) openNote(id string, nav bool) {
-	m.msg = "Open" + id
 	note := m.noteBook.FindNote(id)
 	if note != nil {
 		m.doc.renderNote(note)
 		if nav {
-			if m.currentNoteId != "" {
-				m.navStack = append(m.navStack, m.currentNoteId)
-			}
+			m.history.Push(id)
 		}
-
-		m.currentNoteId = id
 	}
+	m.msg = fmt.Sprintf("HISTORY: %v", m.history.stack)
 }
 
 func Run(noteBook *mdfiles.MdDirectory, openId string) error {

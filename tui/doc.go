@@ -15,6 +15,7 @@ import (
 
 type docKeymap struct {
 	NextLink key.Binding
+	PrevLink key.Binding
 	OpenLink key.Binding
 }
 
@@ -22,6 +23,10 @@ var DefaultDocKeyMap = docKeymap{
 	NextLink: key.NewBinding(
 		key.WithKeys("tab"),
 		key.WithHelp("tab", "next link"),
+	),
+	PrevLink: key.NewBinding(
+		key.WithKeys("shift+tab"),
+		key.WithHelp("shift+tab", "prev link"),
 	),
 	OpenLink: key.NewBinding(
 		key.WithKeys("enter"),
@@ -32,6 +37,13 @@ var DefaultDocKeyMap = docKeymap{
 type openLinkMsg struct {
 	id string
 }
+
+type cycleDirection uint
+
+const (
+	forward cycleDirection = iota
+	backward
+)
 
 func openLinkCmd(id string) tea.Cmd {
 	return func() tea.Msg {
@@ -69,13 +81,12 @@ func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keymap.NextLink):
-			if len(m.src.links) > 0 {
-				m.selectedLink = (m.selectedLink + 1) % len(m.src.links)
-			} else {
-				m.selectedLink = -1
-			}
-			m.rerender()
+			m.cycleLink(forward)
 			return m, nil
+		case key.Matches(msg, m.keymap.PrevLink):
+			m.cycleLink(backward)
+			return m, nil
+
 		case key.Matches(msg, m.keymap.OpenLink):
 			return m, openLinkCmd(m.src.links[m.selectedLink])
 		}
@@ -101,7 +112,22 @@ func processNoteContent(content string) preparedSource {
 	)
 
 	return preparedSource{links, processed}
+}
 
+func (m *docModel) cycleLink(dir cycleDirection) {
+	length := len(m.src.links)
+
+	if length <= 0 {
+		return
+	}
+
+	if dir == forward {
+		m.selectedLink = (m.selectedLink + 1) % length
+	} else {
+		m.selectedLink = (m.selectedLink + length - 1) % length
+	}
+
+	m.rerender()
 }
 
 func (m *docModel) rerender() {

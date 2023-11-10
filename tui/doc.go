@@ -29,8 +29,8 @@ var DefaultDocKeyMap = docKeymap{
 		key.WithHelp("ctrl+p", "prev link"),
 	),
 	OpenLink: key.NewBinding(
-		key.WithKeys("enter"),
-		key.WithHelp("enter", "open link"),
+		key.WithKeys("ctrl+o"),
+		key.WithHelp("ctrl+o", "open link"),
 	),
 }
 

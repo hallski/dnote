@@ -43,7 +43,7 @@ var DefaultKeyMap = appKeyMap{
 	),
 	Forward: key.NewBinding(
 		key.WithKeys("]", "f"),
-		key.WithHelp("ctrl+i or f", "forward"),
+		key.WithHelp("] or f", "forward"),
 	),
 }
 

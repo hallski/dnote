@@ -101,3 +101,67 @@ func TestPush(t *testing.T) {
 		t.Errorf("Expected stack %v, got %v", exp, h.stack)
 	}
 }
+
+func TestNavigating(t *testing.T) {
+	h := *NewHistory[string]()
+
+	h.Push("a")
+	h.Push("b")
+	h.Push("c")
+
+	expS := []string{"a", "b", "c"}
+	if !reflect.DeepEqual(h.stack, expS) {
+		t.Errorf("Expected stack %v, got %v", expS, h.stack)
+	}
+
+	exp := "c"
+	if exp != h.GetCurrent() {
+		t.Errorf("Expected %s, got %s", exp, h.GetCurrent())
+	}
+
+	h.GoBack()
+	if !reflect.DeepEqual(h.stack, expS) {
+		t.Errorf("Expected stack %v, got %v", expS, h.stack)
+	}
+	exp = "b"
+	if exp != h.GetCurrent() {
+		t.Errorf("Expected %s, got %s", exp, h.GetCurrent())
+	}
+
+	h.GoBack()
+	if !reflect.DeepEqual(h.stack, expS) {
+		t.Errorf("Expected stack %v, got %v", expS, h.stack)
+	}
+	exp = "a"
+	if exp != h.GetCurrent() {
+		t.Errorf("Expected %s, got %s", exp, h.GetCurrent())
+	}
+
+	h.GoForward()
+	if !reflect.DeepEqual(h.stack, expS) {
+		t.Errorf("Expected stack %v, got %v", expS, h.stack)
+	}
+	exp = "b"
+	if exp != h.GetCurrent() {
+		t.Errorf("Expected %s, got %s", exp, h.GetCurrent())
+	}
+	h.GoBack()
+	if !reflect.DeepEqual(h.stack, expS) {
+		t.Errorf("Expected stack %v, got %v", expS, h.stack)
+	}
+	exp = "a"
+	if exp != h.GetCurrent() {
+		t.Errorf("Expected %s, got %s", exp, h.GetCurrent())
+	}
+
+	h.Push("d")
+	expS = []string{"a", "d"}
+	if !reflect.DeepEqual(h.stack, expS) {
+		t.Errorf("Expected stack %v, got %v", expS, h.stack)
+	}
+	exp = "d"
+	if exp != h.GetCurrent() {
+		t.Errorf("Expected %s, got %s", exp, h.GetCurrent())
+	}
+
+}

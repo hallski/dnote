@@ -54,6 +54,6 @@ func (h *history[T]) Push(t T) {
 		h.stack = append(h.stack[0:h.curPos+1], t)
 	} else {
 		h.stack = append(h.stack, t)
-		h.curPos++
 	}
+	h.curPos++
 }

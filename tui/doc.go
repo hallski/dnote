@@ -21,16 +21,16 @@ type docKeymap struct {
 
 var DefaultDocKeyMap = docKeymap{
 	NextLink: key.NewBinding(
-		key.WithKeys("tab"),
-		key.WithHelp("tab", "next link"),
+		key.WithKeys("ctrl+n"),
+		key.WithHelp("ctrl+n", "next link"),
 	),
 	PrevLink: key.NewBinding(
-		key.WithKeys("shift+tab"),
-		key.WithHelp("shift+tab", "prev link"),
+		key.WithKeys("ctrl+p"),
+		key.WithHelp("ctrl+p", "prev link"),
 	),
 	OpenLink: key.NewBinding(
-		key.WithKeys("enter"),
-		key.WithHelp("enter", "open link"),
+		key.WithKeys("o", "enter"),
+		key.WithHelp("o or enter", "open link"),
 	),
 }
 
@@ -59,6 +59,8 @@ type selectedLink struct {
 	ID    string
 	index int
 }
+
+var shortcuts = []byte("ABCDEFGHIJKLMNOPQRSTUVXYZ")
 
 type docModel struct {
 	keymap docKeymap
@@ -89,6 +91,8 @@ func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 
 		case key.Matches(msg, m.keymap.OpenLink):
 			return m, openLinkCmd(m.src.links[m.selectedLink])
+		case m.getShortCut(msg.String()) >= 0:
+			return m, openLinkCmd(m.src.links[m.getShortCut(msg.String())])
 		}
 		var cmd tea.Cmd
 		m.viewport, cmd = m.viewport.Update(msg)
@@ -141,8 +145,10 @@ func (m *docModel) rerender() {
 		panic(err)
 	}
 
-	inactiveStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#ff00ff"))
-	activeStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00ffff"))
+	bracketStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#555555"))
+	inactiveStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#aa00aa"))
+	activeStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#ffff55")).Bold(true)
+	shortcutStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#55ff55"))
 	re := regexp.MustCompile(fmt.Sprintf("\\|\\|([0-9]{%d})\\|\\|", core.IDLength))
 
 	var idx = 0
@@ -153,13 +159,29 @@ func (m *docModel) rerender() {
 				style = activeStyle
 			}
 
+			sc := string(shortcuts[idx])
 			idx++
 
-			return style.Render("[[" + s[2:5] + "]]")
+			return style.Render(bracketStyle.Render("[") +
+				shortcutStyle.Render(sc) +
+				bracketStyle.Render("|") +
+				style.Render(s[2:5]) +
+				bracketStyle.Render("]"),
+			)
 		},
 	)
 
 	m.viewport.SetContent(md)
+}
+
+func (m *docModel) getShortCut(s string) int {
+	for i, ch := range shortcuts {
+		if s == string(ch) && i < len(m.src.links) {
+			return i
+		}
+	}
+
+	return -1
 }
 
 func (m *docModel) renderNote(note *core.Note) {

@@ -17,6 +17,7 @@ type appKeyMap struct {
 	AddNote  key.Binding
 	EditNode key.Binding
 	Back     key.Binding
+	Forward  key.Binding
 }
 
 var DefaultKeyMap = appKeyMap{
@@ -37,8 +38,12 @@ var DefaultKeyMap = appKeyMap{
 		key.WithHelp("e", "edit note"),
 	),
 	Back: key.NewBinding(
-		key.WithKeys("b"),
+		key.WithKeys("b", "ctrl+o"),
 		key.WithHelp("b", "back"),
+	),
+	Forward: key.NewBinding(
+		key.WithKeys("ctrl+i"),
+		key.WithHelp("ctrl+i", "forward"),
 	),
 }
 

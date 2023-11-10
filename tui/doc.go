@@ -115,7 +115,6 @@ func (m *docModel) rerender() {
 		panic(err)
 	}
 
-	// TODO: Color selected link differently
 	inactiveStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#ff00ff"))
 	activeStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#00ffff"))
 	re := regexp.MustCompile(fmt.Sprintf("\\|\\|([0-9]{%d})\\|\\|", core.IDLength))

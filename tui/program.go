@@ -73,6 +73,7 @@ func (m model) Init() tea.Cmd {
 }
 
 type statusMsg struct{ s string }
+type refreshNotebook struct{}
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
@@ -97,6 +98,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 	case statusMsg:
 		m.msg = msg.s
+		return m, nil
+	case refreshNotebook:
+		m.refreshNotebook()
 		return m, nil
 	case openLinkMsg:
 		m.openNote(msg.id, true)
@@ -146,17 +150,22 @@ func openEditor(noteBook *mdfiles.MdDirectory, id string) tea.Cmd {
 		if err != nil {
 			return statusMsg{fmt.Sprintf("Failed editing: %s", err)}
 		} else {
-			// TODO: Send another message to reread the notebook
-			return statusMsg{"Ok"}
+			return refreshNotebook{}
 		}
 	})
 }
 
-func (m *model) edit() {
-	note := m.noteBook.FindNote(m.currentNoteId)
-	if note != nil {
-		ext.EditNote(note)
-	} else {
+func (m *model) refreshNotebook() {
+	noteBook, err := mdfiles.Load(m.noteBook.Path)
+	if err != nil {
+		panic(err)
+	}
+
+	m.noteBook = noteBook
+	// Force a rerender of the document
+	if m.currentNoteId != "" {
+		note := noteBook.FindNote(m.currentNoteId)
+		m.doc.renderNote(note)
 	}
 }
 

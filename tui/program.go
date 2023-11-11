@@ -38,12 +38,12 @@ var DefaultKeyMap = appKeyMap{
 		key.WithHelp("e", "edit note"),
 	),
 	Back: key.NewBinding(
-		key.WithKeys("b", "["),
-		key.WithHelp("b", "back"),
+		key.WithKeys("[", "ctrl+b", "h"),
+		key.WithHelp("[ or ctrl+b", "back"),
 	),
 	Forward: key.NewBinding(
-		key.WithKeys("]", "f"),
-		key.WithHelp("] or f", "forward"),
+		key.WithKeys("]", "ctrl+f", "l"),
+		key.WithHelp("] or ctrl+f", "forward"),
 	),
 }
 

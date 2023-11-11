@@ -155,5 +155,16 @@ func (sr *Result) ListNotes() []*core.Note {
 func (mdd *MdDirectory) Backlinks(id string) *Result {
 	note := mdd.FindNote(id)
 
-	return &Result{result: note.BackLinks}
+	return &Result{note.BackLinks}
+}
+
+func (mdd *MdDirectory) Orphans() *Result {
+	var orphans []*core.Note
+	for _, note := range mdd.notes {
+		if len(note.BackLinks) == 0 {
+			orphans = append(orphans, note)
+		}
+	}
+
+	return &Result{orphans}
 }

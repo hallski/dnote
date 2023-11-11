@@ -53,12 +53,21 @@ var lsCmd = &cobra.Command{
 	Short: "List all notes",
 	Long:  "List all files together with ID",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		showOrphans, err := cmd.Flags().GetBool("orphans")
+		if err != nil {
+			return err
+		}
 		showTags, err := cmd.Flags().GetBool("tags")
 		if err != nil {
 			return err
 		}
 
-		List(notes, os.Stdout, showTags)
+		var lister core.NoteLister = notes
+		if showOrphans {
+			lister = notes.Orphans()
+		}
+
+		List(lister, os.Stdout, showTags)
 
 		return nil
 	},
@@ -68,4 +77,5 @@ func init() {
 	rootCmd.AddCommand(lsCmd)
 
 	lsCmd.PersistentFlags().BoolP("tags", "t", false, "List tags as well")
+	lsCmd.PersistentFlags().BoolP("orphans", "o", false, "List orphans")
 }

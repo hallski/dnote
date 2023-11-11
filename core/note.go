@@ -8,12 +8,13 @@ import (
 )
 
 type Note struct {
-	ID      string
-	Path    string
-	Title   string
-	Content string
-	Tags    []string
-	Links   []string
+	ID        string
+	Path      string
+	Title     string
+	Content   string
+	Tags      []string
+	Links     []string
+	BackLinks []*Note
 }
 
 type NoteLister interface {

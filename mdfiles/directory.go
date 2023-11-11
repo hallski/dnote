@@ -11,12 +11,11 @@ import (
 	"dnote/core"
 )
 
-type BackLinks map[string][]string
+type BackLinks map[string][]*core.Note
 
 type MdDirectory struct {
-	Path      string
-	notes     []*core.Note
-	backlinks BackLinks
+	Path  string
+	notes []*core.Note
 }
 
 func noteLoader(notes *[]*core.Note) fs.WalkDirFunc {
@@ -51,8 +50,12 @@ func Load(dir string) (*MdDirectory, error) {
 
 	for _, note := range notes {
 		for _, link := range note.Links {
-			backlinks[link] = append(backlinks[link], note.ID)
+			backlinks[link] = append(backlinks[link], note)
 		}
+	}
+
+	for _, note := range notes {
+		note.BackLinks = backlinks[note.ID]
 	}
 
 	sort.Slice(notes, func(i, j int) bool {
@@ -60,9 +63,8 @@ func Load(dir string) (*MdDirectory, error) {
 	})
 
 	mdd := &MdDirectory{
-		Path:      dir,
-		notes:     notes,
-		backlinks: backlinks,
+		Path:  dir,
+		notes: notes,
 	}
 
 	return mdd, nil
@@ -140,16 +142,9 @@ func (sr *Result) ListNotes() []*core.Note {
 	return sr.result
 }
 
-// Should this be in search?
+// Should this be in search, or just a generic TurnListOfIdsIntoListOfNotes?
 func (mdd *MdDirectory) Backlinks(id string) *Result {
-	var result []*core.Note
+	note := mdd.FindNote(id)
 
-	for _, id := range mdd.backlinks[id] {
-		note := mdd.FindNote(id)
-		if note != nil {
-			result = append(result, note)
-		}
-	}
-
-	return &Result{result: result}
+	return &Result{result: note.BackLinks}
 }

@@ -60,6 +60,14 @@ func (l *docLinks) Current() string {
 	return l.links[l.curLink]
 }
 
+func (l *docLinks) GetLinkIdx(idx int) string {
+	if idx < 0 || idx >= len(l.links) || idx >= len(shortcuts) {
+		return ""
+	}
+
+	return l.links[idx]
+}
+
 func (l *docLinks) GetShortcut(idx int) string {
 	if idx < 0 || idx >= len(l.links) || idx >= len(shortcuts) {
 		return ""

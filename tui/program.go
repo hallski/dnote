@@ -50,7 +50,7 @@ var DefaultKeyMap = appKeyMap{
 type model struct {
 	noteBook *mdfiles.MdDirectory
 
-	msg string
+	statusMsg string
 
 	history *history[string]
 
@@ -75,7 +75,9 @@ func (m model) Init() tea.Cmd {
 }
 
 type statusMsg struct{ s string }
-type refreshNotebook struct{}
+type editorFinishedMsg struct{}
+type refreshNotebookMsg struct{}
+type noteBookLoadedMsg struct{ noteBook *mdfiles.MdDirectory }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
@@ -84,10 +86,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, DefaultKeyMap.Quit):
 			return m, tea.Quit
 		case key.Matches(msg, DefaultKeyMap.Search):
-			m.msg = "Searching!"
+			m.statusMsg = "Searching!"
 			return m, nil
 		case key.Matches(msg, DefaultKeyMap.AddNote):
-			m.msg = "Add new note"
+			m.statusMsg = "Add new note"
 			return m, nil
 		case key.Matches(msg, DefaultKeyMap.EditNode):
 			return m, openEditor(m.noteBook, m.history.GetCurrent())
@@ -104,14 +106,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.doc, cmd = m.doc.Update(msg)
 		return m, cmd
 	case statusMsg:
-		m.msg = msg.s
+		m.statusMsg = msg.s
 		return m, nil
-	case refreshNotebook:
-		m.refreshNotebook()
+	case editorFinishedMsg:
+		return m, refreshNotebook(m.noteBook.Path)
+	case refreshNotebookMsg:
+		return m, refreshNotebook(m.noteBook.Path)
+	case noteBookLoadedMsg:
+		m.noteBook = msg.noteBook
+		// Force a rerender of the document
+		if m.history.GetCurrent() != "" {
+			note := m.noteBook.FindNote(m.history.GetCurrent())
+			m.doc.renderNote(note)
+		}
+		m.statusMsg = "Notebook refreshed"
 		return m, nil
 	case openLinkMsg:
 		m.openNote(msg.id, true)
-		//		m.msg = fmt.Sprintf("Opening %s", msg.id)
 		return m, nil
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
@@ -126,7 +137,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	// Render the entire UI
-	return lipgloss.JoinVertical(0, m.doc.View(), m.msg)
+	return lipgloss.JoinVertical(0, m.doc.View(), m.statusMsg)
 }
 
 func openEditor(noteBook *mdfiles.MdDirectory, id string) tea.Cmd {
@@ -137,26 +148,24 @@ func openEditor(noteBook *mdfiles.MdDirectory, id string) tea.Cmd {
 
 	editor := ext.GetEditor()
 	c := exec.Command(editor, note.Path)
+
 	return tea.ExecProcess(c, func(err error) tea.Msg {
 		if err != nil {
 			return statusMsg{fmt.Sprintf("Failed editing: %s", err)}
 		} else {
-			return refreshNotebook{}
+			return editorFinishedMsg{}
 		}
 	})
 }
 
-func (m *model) refreshNotebook() {
-	noteBook, err := mdfiles.Load(m.noteBook.Path)
-	if err != nil {
-		panic(err)
-	}
+func refreshNotebook(path string) tea.Cmd {
+	return func() tea.Msg {
+		noteBook, err := mdfiles.Load(path)
+		if err != nil {
+			panic(err)
+		}
 
-	m.noteBook = noteBook
-	// Force a rerender of the document
-	if m.history.GetCurrent() != "" {
-		note := noteBook.FindNote(m.history.GetCurrent())
-		m.doc.renderNote(note)
+		return noteBookLoadedMsg{noteBook}
 	}
 }
 
@@ -168,7 +177,7 @@ func (m *model) openNote(id string, nav bool) {
 			m.history.Push(id)
 		}
 	}
-	m.msg = fmt.Sprintf("HISTORY: %v", m.history.stack)
+	m.statusMsg = fmt.Sprintf("HISTORY: %v", m.history.stack)
 }
 
 func Run(noteBook *mdfiles.MdDirectory, openId string) error {

@@ -124,6 +124,10 @@ func (mdd *MdDirectory) RandomNote() *core.Note {
 	return mdd.notes[rand.Intn(len(mdd.notes))]
 }
 
+func (mdd *MdDirectory) LastNote() *core.Note {
+	return mdd.notes[len(mdd.notes)-1]
+}
+
 func (mdd *MdDirectory) Rename(oldID, newID string) error {
 	return changeID(mdd, oldID, newID)
 }

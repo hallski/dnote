@@ -115,6 +115,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case openRandomMsg:
 		note := m.noteBook.RandomNote()
 		return m, openLinkCmd(note.ID)
+	case openLastMsg:
+		note := m.noteBook.LastNote()
+		return m, openLinkCmd(note.ID)
 	case noteBookLoadedMsg:
 		m.noteBook = msg.noteBook
 		// Force a rerender of the document

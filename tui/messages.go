@@ -13,3 +13,4 @@ type refreshNotebookMsg struct{}
 type noteBookLoadedMsg struct{ noteBook *mdfiles.MdDirectory }
 
 type openRandomMsg struct{}
+type openLastMsg struct{}

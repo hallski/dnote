@@ -86,6 +86,13 @@ var commands = []command{
 			return emitMsgCmd(openRandomMsg{})
 		},
 	},
+	{
+		"last",
+		false,
+		func(input string) tea.Cmd {
+			return emitMsgCmd(openLastMsg{})
+		},
+	},
 }
 
 func (cb *commandBar) inputCmd() tea.Cmd {

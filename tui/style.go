@@ -64,6 +64,4 @@ var backLinkStyles = linkStyles{
 }
 
 var docNoteIdStyle = lipgloss.NewStyle().
-	Foreground(colorHighGreen).
-	Padding(1, 0).
-	AlignHorizontal(lipgloss.Right)
+	Foreground(colorHighGreen)

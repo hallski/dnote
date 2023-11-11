@@ -43,17 +43,18 @@ func (cb commandBar) Update(msg tea.Msg) (commandBar, tea.Cmd) {
 
 func (cb commandBar) View() string {
 	cmdStyle := lipgloss.NewStyle().
-		Background(lipgloss.Color("#aa00aa")).
-		Foreground(lipgloss.Color("#ffff55"))
+		Background(colorLowMagenta).
+		Foreground(colorYellow)
 
 	style := lipgloss.NewStyle().
-		Background(lipgloss.Color("#0000aa")).
-		Foreground(lipgloss.Color("#ffff55")).
-		Width(cb.width)
+		Background(colorLowBlue).
+		Foreground(colorYellow)
 
 	cmdLen := cmdEnd(cb.input)
-	return cmdStyle.Render(cb.input[:cmdLen]) + style.Render(cb.input[cmdLen:])
+	cmd := cmdStyle.Width(cmdLen).Render(cb.input[:cmdLen])
+	rest := style.Width(cb.width - cmdLen).Render(cb.input[cmdLen:])
 
+	return cmd + rest
 }
 
 func newCommandBar() commandBar {
@@ -103,12 +104,8 @@ func (cb *commandBar) inputCmd() tea.Cmd {
 
 func cmdEnd(input string) int {
 	for _, c := range commands {
-		prefix := c.name
-		if c.hasArgs {
-			prefix += " "
-		}
-		if strings.HasPrefix(input, prefix) {
-			return len(prefix)
+		if strings.HasPrefix(input, c.name) {
+			return len(c.name)
 		}
 	}
 

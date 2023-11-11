@@ -131,7 +131,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.height = msg.Height
 
 		m.doc.setSize(m.width, m.height-1)
-		m.commandBar.setWidth(m.width)
+		m.commandBar.setWidth(m.width - 4)
 		return m, nil
 	}
 
@@ -140,10 +140,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	// Render the entire UI
+
+	var bar string
 	if m.enteringCmd {
-		return lipgloss.JoinVertical(0, m.doc.View(), m.commandBar.View())
+		bar = m.commandBar.View()
+	} else {
+		statusStyle := lipgloss.NewStyle().Width(m.width - 4)
+		bar = statusStyle.Render(m.statusMsg)
 	}
-	return lipgloss.JoinVertical(0, m.doc.View(), m.statusMsg)
+
+	id := docNoteIdStyle.Width(m.width).Render("#" + m.doc.note.ID)
+	bar = lipgloss.JoinHorizontal(0, bar, id)
+
+	return lipgloss.JoinVertical(0, m.doc.View(), bar)
 }
 
 func (m *model) openNote(id string, nav bool) {

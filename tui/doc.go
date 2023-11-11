@@ -144,8 +144,6 @@ func (m *docModel) render() {
 		fmt.Fprintf(builder, box.Render(bls.String()))
 	}
 
-	fmt.Fprint(builder, docNoteIdStyle.Width(m.width).Render("#"+m.note.ID))
-
 	m.viewport.SetContent(md + "\n" + builder.String())
 }
 

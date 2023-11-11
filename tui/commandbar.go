@@ -9,27 +9,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type commandBarKeymap struct {
-	Exit      key.Binding
-	Commit    key.Binding
-	Backspace key.Binding
-}
-
-var defaultCmdKeyMap = commandBarKeymap{
-	Exit: key.NewBinding(
-		key.WithKeys("esc"),
-		key.WithHelp("esc", "exit command"),
-	),
-	Commit: key.NewBinding(
-		key.WithKeys("enter"),
-		key.WithHelp("enter", "commit command"),
-	),
-	Backspace: key.NewBinding(
-		key.WithKeys("backspace"),
-		key.WithHelp("backspace", "backspace"),
-	),
-}
-
 type commandBar struct {
 	input string
 
@@ -100,7 +79,7 @@ var commands = []command{
 		},
 	},
 	{
-		"random",
+		"rand",
 		false,
 		func(input string) tea.Cmd {
 			return emitMsgCmd(openRandomMsg{})
@@ -123,8 +102,14 @@ func (cb *commandBar) inputCmd() tea.Cmd {
 }
 
 func cmdEnd(input string) int {
-	if strings.HasPrefix(input, "open") {
-		return len("open")
+	for _, c := range commands {
+		prefix := c.name
+		if c.hasArgs {
+			prefix += " "
+		}
+		if strings.HasPrefix(input, prefix) {
+			return len(prefix)
+		}
 	}
 
 	return 0

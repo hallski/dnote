@@ -10,7 +10,7 @@ type docKeymap struct {
 
 var DefaultAppKeyMap = appKeyMap{
 	Quit: key.NewBinding(
-		key.WithKeys("ctrl+q", "ctrl+c"),
+		key.WithKeys("ctrl+q", "q"),
 		key.WithHelp("ctrl+q", "quit"),
 	),
 	Search: key.NewBinding(
@@ -55,5 +55,26 @@ var DefaultDocKeyMap = docKeymap{
 	OpenLink: key.NewBinding(
 		key.WithKeys("enter"),
 		key.WithHelp("enter", "open link"),
+	),
+}
+
+type commandBarKeymap struct {
+	Exit      key.Binding
+	Commit    key.Binding
+	Backspace key.Binding
+}
+
+var defaultCmdKeyMap = commandBarKeymap{
+	Exit: key.NewBinding(
+		key.WithKeys("esc"),
+		key.WithHelp("esc", "exit command"),
+	),
+	Commit: key.NewBinding(
+		key.WithKeys("enter"),
+		key.WithHelp("enter", "commit command"),
+	),
+	Backspace: key.NewBinding(
+		key.WithKeys("backspace"),
+		key.WithHelp("backspace", "backspace"),
 	),
 }

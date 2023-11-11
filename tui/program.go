@@ -122,7 +122,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			note := m.noteBook.FindNote(m.history.GetCurrent())
 			m.doc.renderNote(note)
 		}
-		m.statusMsg = "Notebook refreshed"
 		return m, nil
 	case openLinkMsg:
 		m.openNote(msg.id, true)

@@ -7,26 +7,54 @@ import (
 	"dnote/mdfiles"
 
 	"github.com/charmbracelet/glamour"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
 
-func View(note *core.Note) {
+func View(note *core.Note, random bool) {
 	out, err := glamour.Render(note.Content, "dracula")
 	if err != nil {
 		fmt.Printf("Failed to render note: %s\n", note.ID)
 	}
 
-	fmt.Print(out)
+	style := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#55ff55")).
+		Underline(true)
+
+	idStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#55ff55"))
+
+	titleStyle := lipgloss.NewStyle().Margin(1, 2)
+
+	var descr string
+	if random {
+		descr = style.Render("Showing random note:")
+	} else {
+		descr = style.Render("Showing note:")
+	}
+
+	id := idStyle.Render(note.ID)
+	title := titleStyle.Render(lipgloss.JoinHorizontal(0, descr, " ", id))
+
+	fmt.Printf("%s%s", title, out)
 }
 
 var viewCmd = &cobra.Command{
 	Use:   "view",
 	Short: "View note",
 	Long:  "View a note without opening it in editor",
-	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		note := notes.FindNote(mdfiles.PadID(args[0]))
-		View(note)
+		var note *core.Note
+
+		random := false
+		if len(args) > 0 {
+			note = notes.FindNote(mdfiles.PadID(args[0]))
+		} else {
+			random = true
+			note = notes.RandomNote()
+		}
+
+		View(note, random)
 	},
 }
 

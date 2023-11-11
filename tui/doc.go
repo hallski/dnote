@@ -147,44 +147,54 @@ func (m *docModel) render() {
 			active := m.links.IsActive(idx)
 			sc := m.links.GetShortcut(idx)
 			idx++
-			return renderLink(s[2:5], sc, active)
+			return renderLink(s[2:5], sc, active, docLinkStyles)
 		},
 	)
 
 	// Crude backlink support
 	builder := new(strings.Builder)
-	style := lipgloss.NewStyle().Foreground(lipgloss.Color("#00aa00"))
+	if len(m.note.BackLinks) > 0 {
+		bls := new(strings.Builder)
+		style := lipgloss.NewStyle().Foreground(lipgloss.Color("#5555ff")).Background(lipgloss.Color("#222222"))
 
-	fmt.Fprintf(builder, "BackLinks:\n\n")
-	for i, bl := range m.note.BackLinks {
-		linkIdx := i + idx
-		link := m.links.GetLinkIdx(linkIdx)
-		active := m.links.IsActive(linkIdx)
-		sc := m.links.GetShortcut(linkIdx)
-		fmt.Fprintf(builder, "- %s %s\n", style.Render(bl.Title), renderLink(link, sc, active))
+		fmt.Fprintln(bls, backlinksTitleStyle.Render("Backlinks"))
+
+		for i, bl := range m.note.BackLinks {
+			linkIdx := i + idx
+			link := m.links.GetLinkIdx(linkIdx)
+			active := m.links.IsActive(linkIdx)
+			sc := m.links.GetShortcut(linkIdx)
+			fmt.Fprintf(bls, "%s%s\n",
+				renderLink(link, sc, active, backLinkStyles),
+				style.Render(" "+bl.Title))
+		}
+
+		box := backlinksBoxStyle.Copy().
+			Width(m.width - backlinksBoxStyle.GetHorizontalBorderSize())
+
+		fmt.Fprintf(builder, box.Render(bls.String()))
 	}
-
-	m.viewport.SetContent(md + builder.String())
+	m.viewport.SetContent(md + "\n" + builder.String())
 }
 
-func renderLink(link, sc string, active bool) string {
-	var style = linkInactiveStyle
+func renderLink(link, sc string, active bool, styles linkStyles) string {
+	var style = styles.inactive
 	if active {
-		style = linkActiveStyle
+		style = styles.active
 	}
 
 	if sc == "" {
-		return style.Render(linkBracketStyle.Render("[[") +
+		return style.Render(styles.bracket.Render("[[") +
 			style.Render(link) +
-			linkBracketStyle.Render("]]"),
+			styles.bracket.Render("]]"),
 		)
 	}
 
-	return style.Render(linkBracketStyle.Render("[") +
-		linkShortcutStyle.Render(sc) +
-		linkBracketStyle.Render("|") +
+	return style.Render(styles.bracket.Render("[") +
+		styles.shortcut.Render(sc) +
+		styles.bracket.Render("|") +
 		style.Render(link) +
-		linkBracketStyle.Render("]"),
+		styles.bracket.Render("]"),
 	)
 }
 
@@ -196,6 +206,8 @@ func (m *docModel) renderNote(note *core.Note) {
 }
 
 func (m *docModel) setSize(width, height int) {
+	m.width = width
+	m.height = height
 	m.viewport = viewport.New(width, height)
 	m.render()
 }

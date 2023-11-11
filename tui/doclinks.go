@@ -24,7 +24,7 @@ type docLinks struct {
 func newDocLinks(links []string) docLinks {
 	return docLinks{
 		links,
-		0,
+		-1,
 	}
 }
 
@@ -54,7 +54,7 @@ func (l *docLinks) Prev() {
 }
 
 func (l *docLinks) Current() string {
-	if l.curLink >= len(l.links) {
+	if l.curLink < 0 || l.curLink >= len(l.links) {
 		return ""
 	}
 	return l.links[l.curLink]

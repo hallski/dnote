@@ -31,6 +31,7 @@ func List(lister core.NoteLister, out io.Writer, showTags bool) {
 		titleLen = 42
 	}
 
+	nr := 0
 	for _, note := range lister.ListNotes() {
 		fmt.Fprintf(w, "%s%s%s\t%s",
 			bracketStyle.Render("["),
@@ -43,9 +44,16 @@ func List(lister core.NoteLister, out io.Writer, showTags bool) {
 		}
 
 		fmt.Fprint(w, "\n")
+		nr++
 	}
 
 	w.Flush()
+
+	style := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#ffff55")).
+		Margin(1, 0, 0)
+
+	fmt.Println(style.Render(fmt.Sprintf("Totalt: %d", nr)))
 }
 
 var lsCmd = &cobra.Command{

@@ -14,7 +14,10 @@ var browseCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var openId = "1"
 		if len(args) > 0 {
-			openId = args[0]
+			note := notes.FindNote(args[0])
+			if note != nil {
+				openId = note.ID
+			}
 		}
 
 		return tui.Run(notes, mdfiles.PadID(openId))

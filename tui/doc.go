@@ -28,8 +28,8 @@ var DefaultDocKeyMap = docKeymap{
 		key.WithHelp("ctrl+p", "prev link"),
 	),
 	OpenLink: key.NewBinding(
-		key.WithKeys("enter", "ctrl+o"),
-		key.WithHelp("enter or ctrl+o", "open link"),
+		key.WithKeys("enter"),
+		key.WithHelp("enter", "open link"),
 	),
 }
 

@@ -1,11 +1,11 @@
 package tui
 
-type history[T interface{}] struct {
+type history[T comparable] struct {
 	stack  []T
 	curPos int
 }
 
-func NewHistory[T interface{}]() *history[T] {
+func NewHistory[T comparable]() *history[T] {
 	return &history[T]{[]T{}, -1}
 }
 
@@ -47,6 +47,10 @@ func (h *history[T]) Push(t T) {
 	if len(h.stack) == 0 {
 		h.stack = append(h.stack, t)
 		h.curPos = 0
+		return
+	}
+
+	if h.GetCurrent() == t {
 		return
 	}
 

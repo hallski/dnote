@@ -14,37 +14,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type docKeymap struct {
-	NextLink key.Binding
-	PrevLink key.Binding
-	OpenLink key.Binding
-}
-
-var DefaultDocKeyMap = docKeymap{
-	NextLink: key.NewBinding(
-		key.WithKeys("ctrl+n"),
-		key.WithHelp("ctrl+n", "next link"),
-	),
-	PrevLink: key.NewBinding(
-		key.WithKeys("ctrl+p"),
-		key.WithHelp("ctrl+p", "prev link"),
-	),
-	OpenLink: key.NewBinding(
-		key.WithKeys("enter"),
-		key.WithHelp("enter", "open link"),
-	),
-}
-
-type openLinkMsg struct {
-	id string
-}
-
-func openLinkCmd(id string) tea.Cmd {
-	return func() tea.Msg {
-		return openLinkMsg{id}
-	}
-}
-
 type selectedLink struct {
 	ID    string
 	index int

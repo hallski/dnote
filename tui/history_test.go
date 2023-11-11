@@ -87,7 +87,7 @@ func TestPush(t *testing.T) {
 		t.Errorf("Expected stack %v, got %v", exp, h.stack)
 	}
 
-	h = history[string]{[]string{"a", "b"}, 2}
+	h = history[string]{[]string{"a", "b"}, 1}
 	h.Push("d")
 	exp = []string{"a", "b", "d"}
 	if !reflect.DeepEqual(h.stack, exp) {
@@ -163,5 +163,16 @@ func TestNavigating(t *testing.T) {
 	if exp != h.GetCurrent() {
 		t.Errorf("Expected %s, got %s", exp, h.GetCurrent())
 	}
+}
 
+func TestDontPushSameTwiceInRow(t *testing.T) {
+	h := *NewHistory[string]()
+
+	h.Push("a")
+	h.Push("b")
+	h.Push("b")
+	expS := []string{"a", "b"}
+	if !reflect.DeepEqual(h.stack, expS) {
+		t.Errorf("expected %v, got %v", expS, h.stack)
+	}
 }

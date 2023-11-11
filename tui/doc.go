@@ -10,7 +10,6 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/glamour"
-	"github.com/charmbracelet/lipgloss"
 )
 
 type docKeymap struct {
@@ -83,6 +82,7 @@ func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 				return m, openLinkCmd(l)
 			}
 		case m.links.GetLink(msg.String()) != "":
+			// Match any key that is a link shortcut
 			return m, openLinkCmd(m.links.GetLink(msg.String()))
 		}
 		var cmd tea.Cmd
@@ -95,6 +95,19 @@ func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 func (m docModel) View() string {
 	return m.viewport.View()
 }
+
+func (m *docModel) nextLink() {
+	m.links.Next()
+	m.render()
+}
+
+func (m *docModel) prevLink() {
+	m.links.Prev()
+	m.render()
+}
+
+var linkReplacementRE = regexp.MustCompile(fmt.Sprintf("\\|\\|([0-9]{%d})\\|\\|",
+	core.IDLength))
 
 func (m *docModel) processNoteContent(content string) {
 	var links []string
@@ -110,17 +123,7 @@ func (m *docModel) processNoteContent(content string) {
 	m.preprocessed = processed
 }
 
-func (m *docModel) nextLink() {
-	m.links.Next()
-	m.rerender()
-}
-
-func (m *docModel) prevLink() {
-	m.links.Prev()
-	m.rerender()
-}
-
-func (m *docModel) rerender() {
+func (m *docModel) render() {
 	r, err := glamour.NewTermRenderer(
 		glamour.WithStandardStyle("dark"),
 		glamour.WithWordWrap(m.width),
@@ -131,43 +134,48 @@ func (m *docModel) rerender() {
 		panic(err)
 	}
 
-	bracketStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#555555"))
-	inactiveStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#aa00aa"))
-	activeStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#ffff55")).Bold(true)
-	shortcutStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#55ff55"))
-	re := regexp.MustCompile(fmt.Sprintf("\\|\\|([0-9]{%d})\\|\\|", core.IDLength))
-
 	var idx = 0
-	md = re.ReplaceAllStringFunc(md,
+	md = linkReplacementRE.ReplaceAllStringFunc(md,
 		func(s string) string {
-			var style = inactiveStyle
-			if m.links.IsActive(idx) {
-				style = activeStyle
-			}
-
-			sc := string(shortcuts[idx])
+			active := m.links.IsActive(idx)
+			sc := m.links.GetShortcut(idx)
 			idx++
-
-			return style.Render(bracketStyle.Render("[") +
-				shortcutStyle.Render(sc) +
-				bracketStyle.Render("|") +
-				style.Render(s[2:5]) +
-				bracketStyle.Render("]"),
-			)
+			return renderLink(s[2:5], sc, active)
 		},
 	)
 
 	m.viewport.SetContent(md)
 }
 
+func renderLink(link, sc string, active bool) string {
+	var style = linkInactiveStyle
+	if active {
+		style = linkActiveStyle
+	}
+
+	if sc == "" {
+		return style.Render(linkBracketStyle.Render("[[") +
+			style.Render(link) +
+			linkBracketStyle.Render("]]"),
+		)
+	}
+
+	return style.Render(linkBracketStyle.Render("[") +
+		linkShortcutStyle.Render(sc) +
+		linkBracketStyle.Render("|") +
+		style.Render(link) +
+		linkBracketStyle.Render("]"),
+	)
+}
+
 func (m *docModel) renderNote(note *core.Note) {
 	m.processNoteContent(note.Content)
-	m.rerender()
+	m.render()
 }
 
 func (m *docModel) setSize(width, height int) {
 	m.viewport = viewport.New(width, height)
-	m.rerender()
+	m.render()
 }
 
 func newDoc(width, height int) docModel {

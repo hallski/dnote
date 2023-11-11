@@ -11,3 +11,5 @@ type statusMsg struct{ s string }
 type editorFinishedMsg struct{}
 type refreshNotebookMsg struct{}
 type noteBookLoadedMsg struct{ noteBook *mdfiles.MdDirectory }
+
+type openRandomMsg struct{}

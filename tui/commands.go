@@ -13,17 +13,17 @@ func exitCommandBar() tea.Msg {
 	return exitCmdMsg{}
 }
 
-func unknownCommand(cmd string) tea.Cmd {
-	return func() tea.Msg {
-		return statusMsg{"Unknown command: " + cmd}
-	}
-}
-
 // Command to send a message
 // Used by sub views to pass messages back to the program
 func emitMsgCmd(msg tea.Msg) tea.Cmd {
 	return func() tea.Msg {
 		return msg
+	}
+}
+
+func emitStatusMsgCmd(msg string) tea.Cmd {
+	return func() tea.Msg {
+		return statusMsg{msg}
 	}
 }
 

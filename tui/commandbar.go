@@ -85,9 +85,38 @@ func newCommandBar() commandBar {
 	}
 }
 
+type command struct {
+	name    string
+	hasArgs bool
+	cmd     func(input string) tea.Cmd
+}
+
+var commands = []command{
+	{
+		"open",
+		true,
+		func(input string) tea.Cmd {
+			return openLinkCmd(mdfiles.PadID(input[5:]))
+		},
+	},
+	{
+		"random",
+		false,
+		func(input string) tea.Cmd {
+			return emitMsgCmd(openRandomMsg{})
+		},
+	},
+}
+
 func (cb *commandBar) inputCmd() tea.Cmd {
-	if strings.HasPrefix(cb.input, "open ") {
-		return openLinkCmd(mdfiles.PadID(cb.input[5:]))
+	for _, c := range commands {
+		prefix := c.name
+		if c.hasArgs {
+			prefix += " "
+		}
+		if strings.HasPrefix(cb.input, prefix) {
+			return c.cmd(cb.input)
+		}
 	}
 
 	return emitMsgCmd(statusMsg{"Unknown command: " + cb.input})

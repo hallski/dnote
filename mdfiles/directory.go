@@ -3,6 +3,7 @@ package mdfiles
 import (
 	"fmt"
 	"io/fs"
+	"math/rand"
 	"path"
 	"path/filepath"
 	"sort"
@@ -117,6 +118,10 @@ func (mdd *MdDirectory) ListNotes() []*core.Note {
 func (mdd *MdDirectory) DeleteNote(id int) error {
 	// TODO: Implement
 	return nil
+}
+
+func (mdd *MdDirectory) RandomNote() *core.Note {
+	return mdd.notes[rand.Intn(len(mdd.notes))]
 }
 
 func (mdd *MdDirectory) Rename(oldID, newID string) error {

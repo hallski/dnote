@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"dnote/core"
 	"dnote/mdfiles"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -134,7 +135,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.height = msg.Height
 
 		m.doc.setSize(m.width, m.height-1)
-		m.commandBar.setWidth(m.width - 4)
+		m.commandBar.setWidth(m.width - (core.IDLength + 1))
 		return m, nil
 	}
 

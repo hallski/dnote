@@ -2,11 +2,30 @@ package tui
 
 import "github.com/charmbracelet/lipgloss"
 
+var (
+	colorBlack       = lipgloss.Color("#000000")
+	colorLowRed      = lipgloss.Color("#aa0000")
+	colorLowGreen    = lipgloss.Color("#00aa00")
+	colorBrown       = lipgloss.Color("#aa5500")
+	colorLowBlue     = lipgloss.Color("#0000aa")
+	colorLowMagenta  = lipgloss.Color("#aa00aa")
+	colorLowCyan     = lipgloss.Color("#00aaaa")
+	colorLightGray   = lipgloss.Color("#aaaaaa")
+	colorDarkGray    = lipgloss.Color("#555555")
+	colorHighRed     = lipgloss.Color("#ff5555")
+	colorHighGreen   = lipgloss.Color("#55ff55")
+	colorYellow      = lipgloss.Color("#ffff55")
+	colorHighBlue    = lipgloss.Color("#5555ff")
+	colorHighCyan    = lipgloss.Color("#55ffff")
+	colorHighMagenta = lipgloss.Color("#ff55ff")
+	colorWhite       = lipgloss.Color("#ffffff")
+)
+
 var backlinksBackgroundStyle = lipgloss.NewStyle().
 	Background(lipgloss.Color("#222222"))
 
 var backlinksTitleStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color("#aaaaaa")).
+	Foreground(colorLightGray).
 	MarginBottom(1).
 	Underline(true).
 	Inherit(backlinksBackgroundStyle)
@@ -14,7 +33,7 @@ var backlinksTitleStyle = lipgloss.NewStyle().
 var backlinksBoxStyle = lipgloss.NewStyle().
 	Border(lipgloss.RoundedBorder(), true, false).
 	BorderBackground(lipgloss.Color("#222222")).
-	BorderForeground(lipgloss.Color("#555555")).
+	BorderForeground(lipgloss.Color(colorDarkGray)).
 	Padding(0, 2, 0, 2).
 	Inherit(backlinksBackgroundStyle)
 
@@ -27,14 +46,14 @@ type linkStyles struct {
 
 var docLinkStyles = linkStyles{
 	inactive: lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#aa00aa")),
+		Foreground(lipgloss.Color(colorLowMagenta)),
 	active: lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#ffff55")).
+		Foreground(lipgloss.Color(colorYellow)).
 		Bold(true),
 	shortcut: lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#55ff55")),
+		Foreground(lipgloss.Color(colorHighGreen)),
 	bracket: lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#555555")),
+		Foreground(lipgloss.Color(colorDarkGray)),
 }
 
 var backLinkStyles = linkStyles{
@@ -43,3 +62,8 @@ var backLinkStyles = linkStyles{
 	shortcut: docLinkStyles.shortcut.Inherit(backlinksBackgroundStyle),
 	bracket:  docLinkStyles.bracket.Inherit(backlinksBackgroundStyle),
 }
+
+var docNoteIdStyle = lipgloss.NewStyle().
+	Foreground(colorHighGreen).
+	Padding(1, 0).
+	AlignHorizontal(lipgloss.Right)

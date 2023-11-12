@@ -155,6 +155,8 @@ func (mdd *MdDirectory) collectionFilename() string {
 }
 
 func (mdd *MdDirectory) SaveToCollection(id string) error {
+	filename := mdd.collectionFilename()
+
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return err
@@ -169,10 +171,14 @@ func (mdd *MdDirectory) SaveToCollection(id string) error {
 }
 
 func (mdd *MdDirectory) ResetCollection() error {
+	filename := mdd.collectionFilename()
+
 	return os.WriteFile(filename, []byte(""), 0644)
 }
 
 func (mdd *MdDirectory) GetCollection() (*Result, error) {
+	filename := mdd.collectionFilename()
+
 	content, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err

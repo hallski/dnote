@@ -76,9 +76,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keymap.Search):
 			m.statusMsg = "Searching!"
 			return m, nil
-		// case key.Matches(msg, m.keymap.AddNote):
-		// 	m.statusMsg = "Add new note"
-		// 	return m, nil
 		case key.Matches(msg, m.keymap.EditNode):
 			return m, openEditor(m.noteBook, m.history.GetCurrent())
 		case key.Matches(msg, m.keymap.Back):

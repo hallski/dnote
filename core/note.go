@@ -47,14 +47,14 @@ func EllipticalTruncate(text string, maxLen int) string {
 
 func ListNoteLinks(lister NoteLister, out io.Writer) {
 	const linkLen = 4 + IDLength
-	const maxLen = 74
+	const maxLen = 80
 
 	for _, note := range lister.ListNotes() {
 		// To support "- Title......[[ID]]" style link
-		// truncated := EllipticalTruncate(note.Title, maxLen-linkLen)
+		truncated := EllipticalTruncate(note.Title, maxLen-linkLen)
 		// padLen := maxLen - linkLen - len([]rune(truncated))
 		// dots := strings.Repeat(".", padLen)
 
-		fmt.Fprintf(out, "- [[%s]] %s\n", note.ID, note.Title)
+		fmt.Fprintf(out, "- [[%s]] %s\n", note.ID, truncated)
 	}
 }

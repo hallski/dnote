@@ -26,6 +26,7 @@ func (cb commandBar) Update(msg tea.Msg) (commandBar, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, cb.keymap.Exit):
+			cb.input = ""
 			return cb, exitCommandBar
 		case key.Matches(msg, cb.keymap.Commit):
 			cmd := cb.inputCmd()
@@ -42,19 +43,19 @@ func (cb commandBar) Update(msg tea.Msg) (commandBar, tea.Cmd) {
 }
 
 func (cb commandBar) View() string {
-	cmdStyle := lipgloss.NewStyle().
-		Background(colorLowMagenta).
-		Foreground(colorYellow)
+	promptStyle := lipgloss.NewStyle().Foreground(colorHighBlue).Bold(true).MarginRight(1)
 
-	style := lipgloss.NewStyle().
-		Background(colorLowBlue).
-		Foreground(colorYellow)
+	cmdStyle := lipgloss.NewStyle().Foreground(colorHighCyan).Bold(true)
+
+	style := lipgloss.NewStyle().Foreground(colorWhite)
 
 	cmdLen := cmdEnd(cb.input)
 	cmd := cmdStyle.Width(cmdLen).Render(cb.input[:cmdLen])
 	rest := style.Width(cb.width - cmdLen).Render(cb.input[cmdLen:])
 
-	return cmd + rest
+	prompt := promptStyle.Render("❯")
+
+	return prompt + cmd + rest
 }
 
 func newCommandBar() commandBar {

@@ -3,6 +3,7 @@ package tui
 import (
 	"dnote/core"
 	"dnote/mdfiles"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
@@ -135,7 +136,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.height = msg.Height
 
 		m.doc.setSize(m.width, m.height-1)
-		m.commandBar.setWidth(m.width - (core.IDLength + 1))
+		m.commandBar.setWidth(m.width)
 		return m, nil
 	}
 
@@ -149,14 +150,20 @@ func (m model) View() string {
 	if m.enteringCmd {
 		bar = m.commandBar.View()
 	} else {
-		statusStyle := lipgloss.NewStyle().Width(m.width - 4)
+		statusStyle := lipgloss.NewStyle().Width(m.width)
 		bar = statusStyle.Render(m.statusMsg)
 	}
 
-	id := docNoteIdStyle.Width(m.width).Render("#" + m.doc.note.ID)
-	bar = lipgloss.JoinHorizontal(0, bar, id)
+	style := lipgloss.NewStyle().Foreground(colorDarkGray)
 
-	return lipgloss.JoinVertical(0, m.doc.View(), bar)
+	ohStyle := lipgloss.NewStyle().Foreground(colorHighRed)
+	idLen := core.IDLength + 5
+	id := ohStyle.Render(m.doc.note.ID)
+	vLine := style.Render(strings.Repeat("─", max(0, m.width-idLen))+
+		"[ ") + id + style.Render(" ]"+
+		"─")
+
+	return lipgloss.JoinVertical(0, m.doc.View(), vLine, bar)
 }
 
 func (m *model) openNote(id string, nav bool) {
@@ -172,7 +179,7 @@ func (m *model) openNote(id string, nav bool) {
 func Run(noteBook *mdfiles.MdDirectory, openId string) error {
 	m := initialModel(noteBook)
 	m.openNote(openId, true)
-	p := tea.NewProgram(m)
+	p := tea.NewProgram(m, tea.WithAltScreen())
 
 	_, err := p.Run()
 

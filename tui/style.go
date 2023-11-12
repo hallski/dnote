@@ -3,7 +3,7 @@ package tui
 import "github.com/charmbracelet/lipgloss"
 
 var (
-	colorBlack       = lipgloss.Color("#000000")
+	colorBlack       = lipgloss.Color("000000")
 	colorLowRed      = lipgloss.Color("#aa0000")
 	colorLowGreen    = lipgloss.Color("#00aa00")
 	colorBrown       = lipgloss.Color("#aa5500")
@@ -21,8 +21,10 @@ var (
 	colorWhite       = lipgloss.Color("#ffffff")
 )
 
+var colorPanelBackground = lipgloss.Color("#222222")
+
 var backlinksBackgroundStyle = lipgloss.NewStyle().
-	Background(lipgloss.Color("#222222"))
+	Background(colorPanelBackground)
 
 var backlinksTitleStyle = lipgloss.NewStyle().
 	Foreground(colorLightGray).
@@ -32,7 +34,7 @@ var backlinksTitleStyle = lipgloss.NewStyle().
 
 var backlinksBoxStyle = lipgloss.NewStyle().
 	Border(lipgloss.RoundedBorder(), true, false).
-	BorderBackground(lipgloss.Color("#222222")).
+	BorderBackground(colorPanelBackground).
 	BorderForeground(lipgloss.Color(colorDarkGray)).
 	Padding(0, 2, 0, 2).
 	Inherit(backlinksBackgroundStyle)
@@ -46,14 +48,14 @@ type linkStyles struct {
 
 var docLinkStyles = linkStyles{
 	inactive: lipgloss.NewStyle().
-		Foreground(lipgloss.Color(colorLowMagenta)),
+		Foreground(colorLowMagenta),
 	active: lipgloss.NewStyle().
-		Foreground(lipgloss.Color(colorYellow)).
+		Foreground(colorYellow).
 		Bold(true),
 	shortcut: lipgloss.NewStyle().
-		Foreground(lipgloss.Color(colorHighGreen)),
+		Foreground(colorHighGreen),
 	bracket: lipgloss.NewStyle().
-		Foreground(lipgloss.Color(colorDarkGray)),
+		Foreground(colorDarkGray),
 }
 
 var backLinkStyles = linkStyles{

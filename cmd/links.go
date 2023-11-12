@@ -17,6 +17,10 @@ var linksCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var ids []string
 		for _, id := range os.Args[2:] {
+			if id == "last" {
+				last := notes.LastNote()
+				id = last.ID
+			}
 			ids = append(ids, mdfiles.PadID(id))
 		}
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"dnote/core"
-	"dnote/mdfiles"
 
 	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/lipgloss"
@@ -43,18 +42,22 @@ var viewCmd = &cobra.Command{
 	Use:   "view",
 	Short: "View note",
 	Long:  "View a note without opening it in editor",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		var note *core.Note
 
 		random := false
 		if len(args) > 0 {
-			note = notes.FindNote(mdfiles.PadID(args[0]))
+			note = notes.FindNote(args[0])
+			if note == nil {
+				return fmt.Errorf("Couldn't find note %s", args[0])
+			}
 		} else {
 			random = true
 			note = notes.RandomNote()
 		}
 
 		View(note, random)
+		return nil
 	},
 }
 

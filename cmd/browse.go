@@ -12,7 +12,7 @@ var browseCmd = &cobra.Command{
 	Short: "Open TUI",
 	Long:  "Open terminal UI for interactiving with notes",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var openId = "1"
+		var openId = mdfiles.PadID("1")
 		if len(args) > 0 {
 			note := notes.FindNote(args[0])
 			if note != nil {
@@ -20,7 +20,7 @@ var browseCmd = &cobra.Command{
 			}
 		}
 
-		return tui.Run(notes, mdfiles.PadID(openId))
+		return tui.Run(notes, openId)
 	},
 }
 

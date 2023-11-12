@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"dnote/mdfiles"
 	"fmt"
 	"strings"
 
@@ -13,7 +12,7 @@ var outCmd = &cobra.Command{
 	Short: "View outgoing links from note",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		note := notes.FindNote(mdfiles.PadID(args[0]))
+		note := notes.FindNote(args[0])
 		if note != nil {
 			return fmt.Errorf(strings.Join(note.Links, " "))
 		}

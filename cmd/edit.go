@@ -5,7 +5,6 @@ import (
 
 	"dnote/core"
 	"dnote/ext"
-	"dnote/mdfiles"
 
 	"github.com/spf13/cobra"
 )
@@ -14,12 +13,7 @@ type NoteFinder interface {
 	FindNote(id string) *core.Note
 }
 
-func Edit(id string, finder NoteFinder) error {
-	note := finder.FindNote(id)
-	if note == nil {
-		return fmt.Errorf("Couldn't find note %s", id)
-	}
-
+func Edit(note *core.Note) error {
 	if err := ext.EditNote(note); err != nil {
 		return err
 	}
@@ -34,7 +28,11 @@ var editCmd = &cobra.Command{
 	Long:    "Opens note with ID in $EDITOR",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) >= 1 {
-			return Edit(mdfiles.PadID(args[0]), notes)
+			note := notes.FindNote(args[0])
+			if note == nil {
+				return fmt.Errorf("Couldn't find note %s", args[0])
+			}
+			return Edit(note)
 		} else {
 			return ext.OpenEditor()
 		}

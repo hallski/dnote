@@ -102,6 +102,10 @@ func (mdd *MdDirectory) CreateNote(title string) (*core.Note, error) {
 }
 
 func (mdd *MdDirectory) FindNote(id string) *core.Note {
+	if id == "last" {
+		return mdd.LastNote()
+	}
+	id = PadID(id)
 	for _, note := range mdd.notes {
 		if note.ID == id {
 			return note

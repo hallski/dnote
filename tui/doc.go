@@ -184,7 +184,7 @@ func (m *docModel) setSize(width, height int) {
 
 func newDoc(width, height int) docModel {
 	m := docModel{
-		keymap:   DefaultDocKeyMap,
+		keymap:   defaultDocKeyMap,
 		viewport: viewport.New(width, height),
 		links:    newDocLinks([]string{}),
 	}

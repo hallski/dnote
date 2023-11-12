@@ -14,19 +14,6 @@ const (
 	statusBarHeight = 2
 )
 
-type appKeyMap struct {
-	Quit      key.Binding
-	Search    key.Binding
-	AddNote   key.Binding
-	EditNode  key.Binding
-	Back      key.Binding
-	Forward   key.Binding
-	StartCmd  key.Binding
-	QuickOpen key.Binding
-}
-
-var quickOpen = []byte("0123456789")
-
 func getStrings(bytes []byte) []string {
 	var ss []string
 
@@ -57,7 +44,7 @@ type model struct {
 func initialModel(noteBook *mdfiles.MdDirectory) model {
 	return model{
 		noteBook,
-		DefaultAppKeyMap,
+		defaultAppKeyMap,
 		"",
 		NewHistory[string](),
 		0, 0,
@@ -108,6 +95,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var cmd tea.Cmd
 		m.doc, cmd = m.doc.Update(msg)
 		return m, cmd
+
 	case statusMsg:
 		m.statusMsg = msg.s
 		return m, nil
@@ -134,6 +122,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case openLinkMsg:
 		m.openNote(msg.id, true)
+		return m, nil
+	case saveToCollectionMsg:
+		m.noteBook.SaveToCollection(m.history.GetCurrent())
+		return m, nil
+	case resetCollectionMsg:
+		m.noteBook.ResetCollection()
 		return m, nil
 	case tea.WindowSizeMsg:
 		m.width = msg.Width

@@ -2,13 +2,32 @@ package tui
 
 import "github.com/charmbracelet/bubbles/key"
 
+type appKeyMap struct {
+	Quit      key.Binding
+	Search    key.Binding
+	AddNote   key.Binding
+	EditNode  key.Binding
+	Back      key.Binding
+	Forward   key.Binding
+	StartCmd  key.Binding
+	QuickOpen key.Binding
+}
+
 type docKeymap struct {
 	NextLink key.Binding
 	PrevLink key.Binding
 	OpenLink key.Binding
 }
 
-var DefaultAppKeyMap = appKeyMap{
+type commandBarKeymap struct {
+	Exit      key.Binding
+	Commit    key.Binding
+	Backspace key.Binding
+}
+
+var quickOpen = []byte("0123456789")
+
+var defaultAppKeyMap = appKeyMap{
 	Quit: key.NewBinding(
 		key.WithKeys("ctrl+q", "q"),
 		key.WithHelp("ctrl+q", "quit"),
@@ -43,7 +62,7 @@ var DefaultAppKeyMap = appKeyMap{
 	),
 }
 
-var DefaultDocKeyMap = docKeymap{
+var defaultDocKeyMap = docKeymap{
 	NextLink: key.NewBinding(
 		key.WithKeys("ctrl+n"),
 		key.WithHelp("ctrl+n", "next link"),
@@ -56,12 +75,6 @@ var DefaultDocKeyMap = docKeymap{
 		key.WithKeys("enter"),
 		key.WithHelp("enter", "open link"),
 	),
-}
-
-type commandBarKeymap struct {
-	Exit      key.Binding
-	Commit    key.Binding
-	Backspace key.Binding
 }
 
 var defaultCmdKeyMap = commandBarKeymap{

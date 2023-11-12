@@ -14,3 +14,6 @@ type noteBookLoadedMsg struct{ noteBook *mdfiles.MdDirectory }
 
 type openRandomMsg struct{}
 type openLastMsg struct{}
+
+type resetCollectionMsg struct{}
+type saveToCollectionMsg struct{}

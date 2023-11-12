@@ -94,6 +94,22 @@ var commands = []command{
 			return emitMsgCmd(openLastMsg{})
 		},
 	},
+	{
+		// Reset collection
+		"rc",
+		false,
+		func(input string) tea.Cmd {
+			return emitMsgCmd(resetCollectionMsg{})
+		},
+	},
+	{
+		// Save to collection
+		"sc",
+		false,
+		func(input string) tea.Cmd {
+			return emitMsgCmd(saveToCollectionMsg{})
+		},
+	},
 }
 
 func (cb *commandBar) inputCmd() tea.Cmd {

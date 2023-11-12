@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"io/fs"
 	"math/rand"
+	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strconv"
+	"strings"
 
 	"dnote/core"
 )
@@ -147,6 +150,38 @@ func (mdd *MdDirectory) Migrate() error {
 	return nil
 }
 
+func (mdd *MdDirectory) collectionFilename() string {
+	return path.Join(mdd.Path, ".collection")
+}
+
+func (mdd *MdDirectory) SaveToCollection(id string) error {
+	f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	if _, err = f.WriteString(" " + id); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (mdd *MdDirectory) ResetCollection() error {
+	return os.WriteFile(filename, []byte(""), 0644)
+}
+
+func (mdd *MdDirectory) GetCollection() (*Result, error) {
+	content, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	ids := strings.Split(string(content), " ")
+	return mdd.GetIds(ids...), nil
+}
+
 type Result struct {
 	result []*core.Note
 }
@@ -171,4 +206,16 @@ func (mdd *MdDirectory) Orphans() *Result {
 	}
 
 	return &Result{orphans}
+}
+
+func (mdd *MdDirectory) GetIds(ids ...string) *Result {
+	var notes []*core.Note
+
+	for _, note := range mdd.notes {
+		if slices.Contains(ids, note.ID) {
+			notes = append(notes, note)
+		}
+	}
+
+	return &Result{notes}
 }

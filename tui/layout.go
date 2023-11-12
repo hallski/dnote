@@ -20,7 +20,7 @@ const (
 	docMinWidth   = 80
 	docMinHeight  = 25
 	listMaxWidth  = 70
-	listMaxHeight = 20
+	listMaxHeight = 10
 )
 
 func newLayout(width, height int) layout {

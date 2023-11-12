@@ -21,13 +21,16 @@ func (m *listThing) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *listThing) View() string {
 	style := lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
-		BorderForeground(colorHighCyan).
-		Foreground(colorYellow)
+		BorderForeground(colorLowBlue).
+		Foreground(colorHighBlue).
+		Padding(0, 1, 1)
+
+	active := lipgloss.NewStyle().Foreground(colorHighRed)
 
 	return style.
 		Width(m.size.width - style.GetBorderLeftSize() - style.GetBorderRightSize()).
 		Height(m.size.height - style.GetBorderTopSize() - style.GetBorderBottomSize()).
-		Render("List\n[1] A nice title\n[2] Another note\n[3] This is a third")
+		Render("List\n" + active.Render("[1] A nice title") + "\n[2] Another note\n[3] This is a third")
 }
 
 func (m *listThing) setSize(size rect) {

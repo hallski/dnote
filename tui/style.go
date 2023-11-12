@@ -59,10 +59,10 @@ var docLinkStyles = linkStyles{
 }
 
 var backLinkStyles = linkStyles{
-	inactive: docLinkStyles.inactive.Inherit(backlinksBackgroundStyle),
-	active:   docLinkStyles.active.Inherit(backlinksBackgroundStyle),
-	shortcut: docLinkStyles.shortcut.Inherit(backlinksBackgroundStyle),
-	bracket:  docLinkStyles.bracket.Inherit(backlinksBackgroundStyle),
+	inactive: docLinkStyles.inactive.Copy().Inherit(backlinksBackgroundStyle),
+	active:   docLinkStyles.active.Copy().Inherit(backlinksBackgroundStyle),
+	shortcut: docLinkStyles.shortcut.Copy().Inherit(backlinksBackgroundStyle),
+	bracket:  docLinkStyles.bracket.Copy().Inherit(backlinksBackgroundStyle),
 }
 
 var docNoteIdStyle = lipgloss.NewStyle().

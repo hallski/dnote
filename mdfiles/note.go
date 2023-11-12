@@ -33,7 +33,7 @@ func loadNote(path string) (*core.Note, error) {
 		Content: sContent,
 		Title:   getTitle(sContent),
 		Tags:    getTags(sContent),
-		Links:   getLinks(sContent),
+		Links:   core.ExtractLinks(sContent),
 	}
 
 	return note, nil
@@ -86,19 +86,6 @@ func getTags(content string) []string {
 	}
 
 	return tags
-}
-
-var LinkRegexp = regexp.MustCompile(fmt.Sprintf("\\[\\[([0-9]{%d})\\]\\]",
-	core.IDLength))
-
-func getLinks(content string) []string {
-	var links []string
-	matches := LinkRegexp.FindAllStringSubmatch(content, -1)
-	for _, match := range matches {
-		links = append(links, match[1])
-	}
-
-	return links
 }
 
 func getFileID(path string) (string, error) {

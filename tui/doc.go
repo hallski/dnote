@@ -2,7 +2,6 @@ package tui
 
 import (
 	"dnote/core"
-	"dnote/mdfiles"
 	"fmt"
 	"regexp"
 	"strings"
@@ -83,7 +82,7 @@ var linkReplacementRE = regexp.MustCompile(fmt.Sprintf("\\|\\|([0-9]{%d})\\|\\|"
 
 func (m *docModel) processNoteContent() {
 	var links []string
-	processed := mdfiles.LinkRegexp.ReplaceAllStringFunc(m.note.Content,
+	processed := core.LinkRegexp.ReplaceAllStringFunc(m.note.Content,
 		func(s string) string {
 			id := s[2:5]
 			links = append(links, id)

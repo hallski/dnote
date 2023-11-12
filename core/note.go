@@ -3,7 +3,6 @@ package core
 import (
 	"fmt"
 	"io"
-	"strings"
 	"unicode"
 )
 
@@ -47,11 +46,11 @@ func ListNoteLinks(lister NoteLister, out io.Writer) {
 	const maxLen = 74
 
 	for _, note := range lister.ListNotes() {
-		truncated := EllipticalTruncate(note.Title, maxLen-linkLen)
+		// truncated := EllipticalTruncate(note.Title, maxLen-linkLen)
 
-		padLen := maxLen - linkLen - len([]rune(truncated))
-		dots := strings.Repeat(".", padLen)
+		//		padLen := maxLen - linkLen - len([]rune(truncated))
+		//		dots := strings.Repeat(".", padLen)
 
-		fmt.Fprintf(out, "- %s%s[[%s]]\n", truncated, dots, note.ID)
+		fmt.Fprintf(out, "- [[%s]] %s\n", note.ID, note.Title)
 	}
 }

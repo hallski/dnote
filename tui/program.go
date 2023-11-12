@@ -35,8 +35,11 @@ type model struct {
 	width  int
 	height int
 
+	layout layout
+
 	doc docModel
 
+	listThing   listThing
 	enteringCmd bool
 	commandBar  commandBar
 }
@@ -48,7 +51,9 @@ func initialModel(noteBook *mdfiles.MdDirectory) model {
 		"",
 		NewHistory[string](),
 		0, 0,
+		newLayout(0, 0),
 		newDoc(0, 0),
+		newListThing(noteBook),
 		false,
 		newCommandBar(),
 	}
@@ -90,6 +95,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keymap.QuickOpen):
 			m.commandBar.startOpen(msg.String())
 			m.enteringCmd = true
+			return m, nil
+		case key.Matches(msg, m.keymap.ToggleList):
+			m.setLayout(m.layout.WithList(!m.layout.showList))
 			return m, nil
 		}
 		var cmd tea.Cmd
@@ -133,8 +141,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.width = msg.Width
 		m.height = msg.Height
 
-		m.doc.setSize(m.width, m.height-statusBarHeight)
-		m.commandBar.setWidth(m.width)
+		m.setLayout(newLayout(m.width, m.height).WithList(false))
 		return m, nil
 	}
 
@@ -160,7 +167,27 @@ func (m model) View() string {
 	vLine := style.Render(strings.Repeat("─", max(0, m.width-idLen))+
 		"[ ") + id + style.Render(" ]"+"─")
 
-	return lipgloss.JoinVertical(0, m.doc.View(), vLine, bar)
+	var views = []string{}
+	if m.layout.showList {
+		views = append(views, m.listThing.View())
+	}
+	views = append(views, m.doc.View())
+
+	if m.layout.horizontal {
+		return lipgloss.JoinVertical(0,
+			lipgloss.JoinHorizontal(0, views...),
+			vLine, bar)
+	}
+
+	views = append(views, vLine, bar)
+	return lipgloss.JoinVertical(0, views...)
+}
+
+func (m *model) setLayout(layout layout) {
+	m.layout = layout
+	m.doc.setSize(m.layout.doc)
+	m.listThing.setSize(m.layout.listThing)
+	m.commandBar.setSize(m.layout.statusBar)
 }
 
 func (m *model) openNote(id string, nav bool) {

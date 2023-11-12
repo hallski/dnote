@@ -24,8 +24,7 @@ type docModel struct {
 
 	links docLinks
 
-	width  int
-	height int
+	size rect
 
 	note         *core.Note
 	preprocessed string
@@ -118,7 +117,7 @@ func (m *docModel) processNoteContent() {
 func (m *docModel) render() {
 	r, err := glamour.NewTermRenderer(
 		glamour.WithStandardStyle("dark"),
-		glamour.WithWordWrap(m.width),
+		glamour.WithWordWrap(m.size.width),
 	)
 
 	md, err := r.Render(m.preprocessed)
@@ -159,7 +158,7 @@ func (m *docModel) render() {
 		}
 
 		box := backlinksBoxStyle.Copy().
-			Width(m.width - backlinksBoxStyle.GetHorizontalBorderSize())
+			Width(m.size.width - backlinksBoxStyle.GetHorizontalBorderSize())
 
 		fmt.Fprintf(builder, box.Render(bls.String()))
 	}
@@ -193,10 +192,9 @@ func (m *docModel) renderNote(note *core.Note) {
 	m.viewport.SetYOffset(0)
 }
 
-func (m *docModel) setSize(width, height int) {
-	m.width = width
-	m.height = height
-	m.viewport = viewport.New(width, height)
+func (m *docModel) setSize(size rect) {
+	m.size = size
+	m.viewport = viewport.New(size.width, size.height)
 	m.render()
 }
 

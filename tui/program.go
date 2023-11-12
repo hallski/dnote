@@ -10,6 +10,10 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+const (
+	statusBarHeight = 2
+)
+
 type appKeyMap struct {
 	Quit      key.Binding
 	Search    key.Binding
@@ -135,7 +139,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.width = msg.Width
 		m.height = msg.Height
 
-		m.doc.setSize(m.width, m.height-1)
+		m.doc.setSize(m.width, m.height-statusBarHeight)
 		m.commandBar.setWidth(m.width)
 		return m, nil
 	}
@@ -160,8 +164,7 @@ func (m model) View() string {
 	idLen := core.IDLength + 5
 	id := ohStyle.Render(m.doc.note.ID)
 	vLine := style.Render(strings.Repeat("─", max(0, m.width-idLen))+
-		"[ ") + id + style.Render(" ]"+
-		"─")
+		"[ ") + id + style.Render(" ]"+"─")
 
 	return lipgloss.JoinVertical(0, m.doc.View(), vLine, bar)
 }
@@ -179,7 +182,7 @@ func (m *model) openNote(id string, nav bool) {
 func Run(noteBook *mdfiles.MdDirectory, openId string) error {
 	m := initialModel(noteBook)
 	m.openNote(openId, true)
-	p := tea.NewProgram(m, tea.WithAltScreen())
+	p := tea.NewProgram(m)
 
 	_, err := p.Run()
 

@@ -20,6 +20,10 @@ type NoteLister interface {
 	ListNotes() []*Note
 }
 
+type NoteCreator interface {
+	CreateNote(title string) (*Note, error)
+}
+
 const IDLength = 3
 
 // https://stackoverflow.com/a/73939904

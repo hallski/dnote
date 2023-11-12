@@ -79,7 +79,7 @@ var commands = []command{
 		"open",
 		true,
 		func(input string) tea.Cmd {
-			return openLinkCmd(mdfiles.PadID(input[5:]))
+			return openLinkCmd(mdfiles.PadID(input))
 		},
 	},
 	{
@@ -112,6 +112,13 @@ var commands = []command{
 			return emitMsgCmd(saveToCollectionMsg{})
 		},
 	},
+	{
+		"add",
+		true,
+		func(input string) tea.Cmd {
+			return addNoteCmd(input)
+		},
+	},
 }
 
 func (cb *commandBar) inputCmd() tea.Cmd {
@@ -121,7 +128,7 @@ func (cb *commandBar) inputCmd() tea.Cmd {
 			prefix += " "
 		}
 		if strings.HasPrefix(cb.input, prefix) {
-			return c.cmd(cb.input)
+			return c.cmd(cb.input[len(prefix):])
 		}
 	}
 

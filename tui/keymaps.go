@@ -3,9 +3,9 @@ package tui
 import "github.com/charmbracelet/bubbles/key"
 
 type appKeyMap struct {
-	Quit      key.Binding
-	Search    key.Binding
-	AddNote   key.Binding
+	Quit   key.Binding
+	Search key.Binding
+	//	AddNote   key.Binding
 	EditNode  key.Binding
 	Back      key.Binding
 	Forward   key.Binding
@@ -38,10 +38,10 @@ var defaultAppKeyMap = appKeyMap{
 		key.WithKeys("s"),
 		key.WithHelp("s", "search"),
 	),
-	AddNote: key.NewBinding(
-		key.WithKeys("a"),
-		key.WithHelp("a", "add note"),
-	),
+	// AddNote: key.NewBinding(
+	// 	key.WithKeys("a"),
+	// 	key.WithHelp("a", "add note"),
+	// ),
 	EditNode: key.NewBinding(
 		key.WithKeys("e"),
 		key.WithHelp("e", "edit note"),

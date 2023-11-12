@@ -76,9 +76,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keymap.Search):
 			m.statusMsg = "Searching!"
 			return m, nil
-		case key.Matches(msg, m.keymap.AddNote):
-			m.statusMsg = "Add new note"
-			return m, nil
+		// case key.Matches(msg, m.keymap.AddNote):
+		// 	m.statusMsg = "Add new note"
+		// 	return m, nil
 		case key.Matches(msg, m.keymap.EditNode):
 			return m, openEditor(m.noteBook, m.history.GetCurrent())
 		case key.Matches(msg, m.keymap.Back):
@@ -117,6 +117,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case openRandomMsg:
 		note := m.noteBook.RandomNote()
 		return m, openLinkCmd(note.ID)
+	case addNoteMessage:
+		note, err := m.noteBook.CreateNote(msg.title)
+		if err != nil {
+			m.statusMsg = "Error creating note"
+			return m, nil
+		}
+		return m, openEditor(m.noteBook, note.ID)
 	case openLastMsg:
 		note := m.noteBook.LastNote()
 		return m, openLinkCmd(note.ID)

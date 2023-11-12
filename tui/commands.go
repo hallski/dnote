@@ -33,14 +33,9 @@ func openLinkCmd(id string) tea.Cmd {
 	}
 }
 
-func openEditor(noteBook *mdfiles.MdDirectory, id string) tea.Cmd {
-	note := noteBook.FindNote(id)
-	if note == nil {
-		return func() tea.Msg { return statusMsg{"Failed opening " + id} }
-	}
-
+func startEditor(path string) tea.Cmd {
 	editor := ext.GetEditor()
-	c := exec.Command(editor, note.Path)
+	c := exec.Command(editor, path)
 
 	return tea.ExecProcess(c, func(err error) tea.Msg {
 		if err != nil {
@@ -51,6 +46,15 @@ func openEditor(noteBook *mdfiles.MdDirectory, id string) tea.Cmd {
 	})
 }
 
+func openEditor(noteBook *mdfiles.MdDirectory, id string) tea.Cmd {
+	note := noteBook.FindNote(id)
+	if note == nil {
+		return func() tea.Msg { return statusMsg{"Failed opening " + id} }
+	}
+
+	return startEditor(note.Path)
+}
+
 func refreshNotebook(path string) tea.Cmd {
 	return func() tea.Msg {
 		noteBook, err := mdfiles.Load(path)
@@ -59,5 +63,11 @@ func refreshNotebook(path string) tea.Cmd {
 		}
 
 		return noteBookLoadedMsg{noteBook}
+	}
+}
+
+func addNoteCmd(title string) tea.Cmd {
+	return func() tea.Msg {
+		return addNoteMessage{title}
 	}
 }

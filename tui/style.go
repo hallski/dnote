@@ -26,6 +26,10 @@ var colorPanelBackground = lipgloss.Color("#222222")
 var backlinksBackgroundStyle = lipgloss.NewStyle().
 	Background(colorPanelBackground)
 
+var backlinksLinkTitlestyle = lipgloss.NewStyle().
+	Foreground(colorWhite).
+	Background(lipgloss.Color("#222222"))
+
 var backlinksTitleStyle = lipgloss.NewStyle().
 	Foreground(colorLightGray).
 	MarginBottom(1).
@@ -48,10 +52,9 @@ type linkStyles struct {
 
 var docLinkStyles = linkStyles{
 	inactive: lipgloss.NewStyle().
-		Foreground(colorLowMagenta),
+		Foreground(colorLowGreen),
 	active: lipgloss.NewStyle().
-		Foreground(colorYellow).
-		Bold(true),
+		Foreground(colorYellow),
 	shortcut: lipgloss.NewStyle().
 		Foreground(colorHighGreen),
 	bracket: lipgloss.NewStyle().
@@ -67,3 +70,5 @@ var backLinkStyles = linkStyles{
 
 var docNoteIdStyle = lipgloss.NewStyle().
 	Foreground(colorHighGreen)
+
+var currentIdStyle = lipgloss.NewStyle().Foreground(colorYellow)

@@ -165,9 +165,8 @@ func (m model) View() string {
 
 	style := lipgloss.NewStyle().Foreground(colorDarkGray)
 
-	ohStyle := lipgloss.NewStyle().Foreground(colorHighRed)
 	idLen := core.IDLength + 5
-	id := ohStyle.Render(m.doc.note.ID)
+	id := currentIdStyle.Render(m.doc.note.ID)
 	vLine := style.Render(strings.Repeat("─", max(0, m.width-idLen))+
 		"[ ") + id + style.Render(" ]"+"─")
 

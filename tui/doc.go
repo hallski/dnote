@@ -11,7 +11,6 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/glamour"
-	"github.com/charmbracelet/lipgloss"
 )
 
 type selectedLink struct {
@@ -143,7 +142,6 @@ func (m *docModel) render() {
 	builder := new(strings.Builder)
 	if len(m.note.BackLinks) > 0 {
 		bls := new(strings.Builder)
-		style := lipgloss.NewStyle().Foreground(lipgloss.Color("#5555ff")).Background(lipgloss.Color("#222222"))
 
 		fmt.Fprintln(bls, backlinksTitleStyle.Render("Backlinks"))
 
@@ -154,7 +152,7 @@ func (m *docModel) render() {
 			sc := m.links.GetShortcut(linkIdx)
 			fmt.Fprintf(bls, "%s%s\n",
 				renderLink(link, sc, active, backLinkStyles),
-				style.Render(" "+bl.Title))
+				backlinksLinkTitlestyle.Render(" "+bl.Title))
 		}
 
 		box := backlinksBoxStyle.Copy().

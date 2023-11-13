@@ -12,8 +12,7 @@ import (
 type commandBar struct {
 	input string
 
-	size  rect
-	width int
+	width, height int
 
 	keymap commandBarKeymap
 }
@@ -52,7 +51,7 @@ func (cb commandBar) View() string {
 
 	cmdLen := cmdEnd(cb.input)
 	cmd := cmdStyle.Width(cmdLen).Render(cb.input[:cmdLen])
-	rest := style.Width(cb.size.width - cmdLen).Render(cb.input[cmdLen:])
+	rest := style.Width(cb.width - cmdLen).Render(cb.input[cmdLen:])
 
 	prompt := promptStyle.Render("❯")
 
@@ -61,10 +60,7 @@ func (cb commandBar) View() string {
 
 func newCommandBar() commandBar {
 	return commandBar{
-		"",
-		rect{0, 0},
-		0,
-		defaultCmdKeyMap,
+		keymap: defaultCmdKeyMap,
 	}
 }
 
@@ -154,8 +150,8 @@ func (cb *commandBar) backspace() {
 	cb.input = cb.input[:length-1]
 }
 
-func (cb *commandBar) setSize(size rect) {
-	cb.size = size
+func (cb *commandBar) setSize(width, height int) {
+	cb.width, cb.height = width, height
 }
 
 func (cb *commandBar) startOpen(v string) {

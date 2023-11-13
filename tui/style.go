@@ -3,7 +3,7 @@ package tui
 import "github.com/charmbracelet/lipgloss"
 
 var (
-	colorBlack       = lipgloss.Color("000000")
+	colorBlack       = lipgloss.Color("#000000")
 	colorLowRed      = lipgloss.Color("#aa0000")
 	colorLowGreen    = lipgloss.Color("#00aa00")
 	colorBrown       = lipgloss.Color("#aa5500")
@@ -36,7 +36,7 @@ var backlinksTitleStyle = lipgloss.NewStyle().
 	Inherit(backlinksBackgroundStyle)
 
 var backlinksBoxStyle = lipgloss.NewStyle().
-	Border(lipgloss.RoundedBorder(), false).
+	Border(lipgloss.NormalBorder(), false).
 	BorderBottom(true).
 	BorderBackground(colorPanelBackground).
 	BorderForeground(colorDarkGray).

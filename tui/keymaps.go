@@ -10,8 +10,6 @@ type appKeyMap struct {
 	Forward   key.Binding
 	StartCmd  key.Binding
 	QuickOpen key.Binding
-
-	ToggleList key.Binding
 }
 
 type docKeymap struct {
@@ -56,10 +54,6 @@ var defaultAppKeyMap = appKeyMap{
 	QuickOpen: key.NewBinding(
 		key.WithKeys(getStrings(quickOpen)...),
 		key.WithHelp("number", "start open"),
-	),
-	ToggleList: key.NewBinding(
-		key.WithKeys("t"),
-		key.WithHelp("t", "toggle list view"),
 	),
 }
 

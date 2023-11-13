@@ -23,7 +23,7 @@ type docModel struct {
 
 	links docLinks
 
-	size rect
+	width, height int
 
 	note         *core.Note
 	preprocessed string
@@ -116,7 +116,7 @@ func (m *docModel) processNoteContent() {
 func (m *docModel) render() {
 	r, err := glamour.NewTermRenderer(
 		glamour.WithStandardStyle("dark"),
-		glamour.WithWordWrap(m.size.width),
+		glamour.WithWordWrap(m.width),
 	)
 
 	md, err := r.Render(m.preprocessed)
@@ -144,7 +144,7 @@ func (m *docModel) render() {
 		bls := new(strings.Builder)
 
 		beforeText := "─ Backlinks "
-		border := strings.Repeat("─", m.size.width-len([]rune(beforeText)))
+		border := strings.Repeat("─", m.width-len([]rune(beforeText)))
 		fmt.Fprintln(bls, backlinksTitleStyle.Render(beforeText+border+"\n"))
 
 		for i, bl := range m.note.BackLinks {
@@ -158,12 +158,12 @@ func (m *docModel) render() {
 		}
 
 		box := backlinksBoxStyle.Copy().
-			Width(m.size.width - backlinksBoxStyle.GetHorizontalBorderSize())
+			Width(m.width - backlinksBoxStyle.GetHorizontalBorderSize())
 
 		fmt.Fprintf(builder, box.Render(bls.String()))
 	}
 
-	m.viewport.SetContent(md + "\n" + builder.String())
+	m.viewport.SetContent(md + "\n" + builder.String() + "\n")
 }
 
 func renderLink(link, sc string, active bool, styles linkStyles) string {
@@ -192,9 +192,9 @@ func (m *docModel) renderNote(note *core.Note) {
 	m.viewport.SetYOffset(0)
 }
 
-func (m *docModel) setSize(size rect) {
-	m.size = size
-	m.viewport = viewport.New(size.width, size.height)
+func (m *docModel) setSize(width, height int) {
+	m.width, m.height = width, height
+	m.viewport = viewport.New(width, height)
 	m.render()
 }
 

@@ -41,8 +41,8 @@ var defaultAppKeyMap = appKeyMap{
 		key.WithHelp("ctrl+q", "quit"),
 	),
 	Search: key.NewBinding(
-		key.WithKeys("s"),
-		key.WithHelp("s", "search"),
+		key.WithKeys("/"),
+		key.WithHelp("/", "search"),
 	),
 	EditNode: key.NewBinding(
 		key.WithKeys("e"),
@@ -57,8 +57,8 @@ var defaultAppKeyMap = appKeyMap{
 		key.WithHelp("tab or l", "forward"),
 	),
 	StartCmd: key.NewBinding(
-		key.WithKeys("/"),
-		key.WithHelp("/", "start command"),
+		key.WithKeys("."),
+		key.WithHelp(".", "start command"),
 	),
 	QuickOpen: key.NewBinding(
 		key.WithKeys(getStrings(quickOpen)...),

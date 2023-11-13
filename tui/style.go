@@ -24,23 +24,22 @@ var (
 var colorPanelBackground = lipgloss.Color("#222222")
 
 var backlinksBackgroundStyle = lipgloss.NewStyle().
-	Background(colorPanelBackground)
+	Background(colorPanelBackground).
+	Foreground(colorDarkGray)
 
 var backlinksLinkTitlestyle = lipgloss.NewStyle().
 	Foreground(colorWhite).
 	Background(lipgloss.Color("#222222"))
 
 var backlinksTitleStyle = lipgloss.NewStyle().
-	Foreground(colorLightGray).
-	MarginBottom(1).
-	Underline(true).
+	Foreground(colorDarkGray).
 	Inherit(backlinksBackgroundStyle)
 
 var backlinksBoxStyle = lipgloss.NewStyle().
-	Border(lipgloss.RoundedBorder(), true, false).
+	Border(lipgloss.RoundedBorder(), false).
+	BorderBottom(true).
 	BorderBackground(colorPanelBackground).
-	BorderForeground(lipgloss.Color(colorDarkGray)).
-	Padding(0, 2, 0, 2).
+	BorderForeground(colorDarkGray).
 	Inherit(backlinksBackgroundStyle)
 
 type linkStyles struct {

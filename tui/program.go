@@ -10,17 +10,16 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+type historyKind uint
+
 const (
-	statusBarHeight = 2
+	kindNote historyKind = iota
+	kindSearch
 )
 
-func getStrings(bytes []byte) []string {
-	var ss []string
-
-	for _, b := range bytes {
-		ss = append(ss, string(b))
-	}
-	return ss
+type historyItem struct {
+	kind  historyKind
+	value string
 }
 
 type model struct {
@@ -30,12 +29,14 @@ type model struct {
 
 	statusMsg string
 
-	history *history[string]
+	history *history[historyItem]
 
 	width  int
 	height int
 
-	doc docModel
+	showDoc bool
+	search  searchModel
+	doc     docModel
 
 	enteringCmd bool
 	commandBar  commandBar
@@ -46,8 +47,10 @@ func initialModel(noteBook *mdfiles.MdDirectory) model {
 		noteBook,
 		defaultAppKeyMap,
 		"",
-		NewHistory[string](),
+		NewHistory[historyItem](),
 		0, 0,
+		true,
+		newSearchModel(),
 		newDoc(0, 0),
 		false,
 		newCommandBar(),
@@ -62,24 +65,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, m.keymap.Quit):
-			return m, tea.Quit
 		case m.enteringCmd:
 			var cmd tea.Cmd
 			m.commandBar, cmd = m.commandBar.Update(msg)
 			return m, cmd
+		case key.Matches(msg, m.keymap.Quit):
+			return m, tea.Quit
 		case key.Matches(msg, m.keymap.Search):
-			m.statusMsg = "Searching!"
+			m.commandBar.startSearch("")
+			m.enteringCmd = true
 			return m, nil
 		case key.Matches(msg, m.keymap.EditNode):
-			return m, openEditor(m.noteBook, m.history.GetCurrent())
+			return m, m.edit()
 		case key.Matches(msg, m.keymap.Back):
-			id := m.history.GoBack()
-			m.openNote(id, false)
+			m.setHistoryItem(m.history.GoBack())
 			return m, nil
 		case key.Matches(msg, m.keymap.Forward):
-			id := m.history.GoForward()
-			m.openNote(id, false)
+			m.setHistoryItem(m.history.GoForward())
 			return m, nil
 		case key.Matches(msg, m.keymap.StartCmd):
 			m.enteringCmd = true
@@ -92,7 +94,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var cmd tea.Cmd
 		m.doc, cmd = m.doc.Update(msg)
 		return m, cmd
-
+	case searchMsg:
+		m.search.setQuery(msg.search)
+		m.history.Push(historyItem{kindSearch, msg.search})
+		m.showDoc = false
+		return m, nil
 	case statusMsg:
 		m.statusMsg = msg.s
 		return m, nil
@@ -119,16 +125,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case noteBookLoadedMsg:
 		m.noteBook = msg.noteBook
 		// Force a rerender of the document
-		if m.history.GetCurrent() != "" {
-			note := m.noteBook.FindNote(m.history.GetCurrent())
-			m.doc.renderNote(note)
+		if m.history.curPos >= 0 {
+			m.setHistoryItem(m.history.GetCurrent())
 		}
 		return m, nil
 	case openLinkMsg:
 		m.openNote(msg.id, true)
 		return m, nil
 	case saveToCollectionMsg:
-		m.noteBook.SaveToCollection(m.history.GetCurrent())
+		item := m.history.GetCurrent()
+
+		if item != (historyItem{}) && item.kind == kindNote {
+			m.noteBook.SaveToCollection(item.value)
+		}
 		return m, nil
 	case resetCollectionMsg:
 		m.noteBook.ResetCollection()
@@ -159,7 +168,11 @@ func (m model) View() string {
 	vLine := style.Render(strings.Repeat("─", max(0, m.width-idLen))+
 		"[ ") + id + style.Render(" ]"+"─")
 
-	return lipgloss.JoinVertical(0, m.doc.View(), vLine, bar)
+	if m.showDoc {
+		return lipgloss.JoinVertical(0, m.doc.View(), vLine, bar)
+	}
+
+	return lipgloss.JoinVertical(0, m.search.View(), vLine, bar)
 }
 
 func (m *model) setSize(width, height int) {
@@ -167,6 +180,16 @@ func (m *model) setSize(width, height int) {
 
 	m.doc.setSize(m.width, m.height-2)
 	m.commandBar.setSize(m.width, 1)
+	m.search.setSize(m.width, m.height-2)
+}
+
+func (m *model) edit() tea.Cmd {
+	item := m.history.GetCurrent()
+	if item.kind != kindNote {
+		return nil
+	}
+
+	return openEditor(m.noteBook, item.value)
 }
 
 func (m *model) openNote(id string, nav bool) {
@@ -174,8 +197,20 @@ func (m *model) openNote(id string, nav bool) {
 	if note != nil {
 		m.doc.renderNote(note)
 		if nav {
-			m.history.Push(id)
+			m.history.Push(historyItem{kindNote, note.ID})
 		}
+	}
+
+	m.showDoc = true
+}
+
+func (m *model) setHistoryItem(item historyItem) {
+	switch item.kind {
+	case kindNote:
+		m.openNote(item.value, false)
+	case kindSearch:
+		m.showDoc = false
+		m.search.setQuery(item.value)
 	}
 }
 

@@ -71,3 +71,9 @@ func addNoteCmd(title string) tea.Cmd {
 		return addNoteMessage{title}
 	}
 }
+
+func searchCmd(query string) tea.Cmd {
+	return func() tea.Msg {
+		return searchMsg{query}
+	}
+}

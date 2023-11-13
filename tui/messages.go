@@ -19,3 +19,5 @@ type addNoteMessage struct{ title string }
 
 type resetCollectionMsg struct{}
 type saveToCollectionMsg struct{}
+
+type searchMsg struct{ search string }

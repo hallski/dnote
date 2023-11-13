@@ -26,6 +26,15 @@ type commandBarKeymap struct {
 
 var quickOpen = []byte("0123456789")
 
+func getStrings(bytes []byte) []string {
+	var ss []string
+
+	for _, b := range bytes {
+		ss = append(ss, string(b))
+	}
+	return ss
+}
+
 var defaultAppKeyMap = appKeyMap{
 	Quit: key.NewBinding(
 		key.WithKeys("ctrl+q", "q"),

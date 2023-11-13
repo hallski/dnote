@@ -79,6 +79,13 @@ var commands = []command{
 		},
 	},
 	{
+		"search",
+		true,
+		func(input string) tea.Cmd {
+			return searchCmd(input)
+		},
+	},
+	{
 		"rand",
 		false,
 		func(input string) tea.Cmd {
@@ -156,4 +163,8 @@ func (cb *commandBar) setSize(width, height int) {
 
 func (cb *commandBar) startOpen(v string) {
 	cb.input = "open " + v
+}
+
+func (cb *commandBar) startSearch(query string) {
+	cb.input = "search " + query
 }

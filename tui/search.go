@@ -1,6 +1,11 @@
 package tui
 
 import (
+	"dnote/core"
+	"dnote/search"
+	"fmt"
+	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -8,7 +13,8 @@ import (
 type searchModel struct {
 	width, height int
 
-	query string
+	query  string
+	result *search.Result
 }
 
 func newSearchModel() searchModel {
@@ -24,8 +30,13 @@ func (m searchModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m searchModel) View() string {
-	style := lipgloss.NewStyle().Width(m.width).Height(m.height).Align(lipgloss.Center)
-	return style.Render("Search: " + m.query)
+	builder := new(strings.Builder)
+
+	style := lipgloss.NewStyle().Width(m.width).Height(m.height - len(m.result.Result)).Align(lipgloss.Center)
+	fmt.Fprint(builder, style.Render("Search: "+m.query))
+	core.ListNoteLinks(m.result, builder)
+
+	return builder.String()
 }
 
 func (m *searchModel) setSize(width, height int) {
@@ -34,4 +45,8 @@ func (m *searchModel) setSize(width, height int) {
 
 func (m *searchModel) setQuery(query string) {
 	m.query = query
+}
+
+func (m *searchModel) setResult(result *search.Result) {
+	m.result = result
 }

@@ -16,6 +16,6 @@ func NewIdsSearch(ids []string, lister core.NoteLister) *Result {
 	}
 
 	return &Result{
-		result: result,
+		Result: result,
 	}
 }

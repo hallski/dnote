@@ -3,6 +3,7 @@ package tui
 import (
 	"dnote/core"
 	"dnote/mdfiles"
+	"dnote/search"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -96,6 +97,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 	case searchMsg:
 		m.search.setQuery(msg.search)
+		m.search.setResult(search.NewTitleSearch(msg.search, m.noteBook))
 		m.history.Push(historyItem{kindSearch, msg.search})
 		m.showDoc = false
 		return m, nil
@@ -211,6 +213,7 @@ func (m *model) setHistoryItem(item historyItem) {
 	case kindSearch:
 		m.showDoc = false
 		m.search.setQuery(item.value)
+		m.search.setResult(search.NewTitleSearch(item.value, m.noteBook))
 	}
 }
 

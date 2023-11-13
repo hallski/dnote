@@ -3,9 +3,9 @@ package search
 import "dnote/core"
 
 type Result struct {
-	result []*core.Note
+	Result []*core.Note
 }
 
 func (sr *Result) ListNotes() []*core.Note {
-	return sr.result
+	return sr.Result
 }

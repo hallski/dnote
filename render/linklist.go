@@ -7,7 +7,7 @@ import (
 )
 
 // Render a list of links
-func RenderLinkList(out io.Writer, lister core.NoteLister, links *core.DocLinks, linkOffset int, styles LinkListStyles) {
+func LinkList(out io.Writer, lister core.NoteLister, links *core.DocLinks, linkOffset int, styles LinkListStyles) {
 	for i, note := range lister.ListNotes() {
 		link := links.GetLink(note.ID)
 		active := links.IsActive(linkOffset + i)

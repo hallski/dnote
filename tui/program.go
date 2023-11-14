@@ -1,15 +1,16 @@
 package tui
 
 import (
-	"dnote/core"
 	"dnote/mdfiles"
 	"dnote/render"
 	"dnote/search"
+	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/muesli/ansi"
 )
 
 type historyKind uint
@@ -37,8 +38,10 @@ type model struct {
 	height int
 
 	showDoc bool
-	search  searchModel
 	doc     docModel
+
+	searchResult *search.Result
+	search       searchModel
 
 	enteringCmd bool
 	commandBar  commandBar
@@ -52,8 +55,9 @@ func initialModel(noteBook *mdfiles.MdDirectory) model {
 		NewHistory[historyItem](),
 		0, 0,
 		true,
-		newSearchModel(),
 		newDoc(0, 0),
+		nil,
+		newSearchModel(),
 		false,
 		newCommandBar(),
 	}
@@ -102,7 +106,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 	case searchMsg:
 		m.search.setQuery(msg.search)
-		m.search.setResult(search.NewTitleSearch(msg.search, m.noteBook))
+		m.searchResult = search.NewTitleSearch(msg.search, m.noteBook)
+		m.search.setResult(m.searchResult)
 		m.history.Push(historyItem{kindSearch, msg.search})
 		m.showDoc = false
 		return m, nil
@@ -170,24 +175,38 @@ func (m model) View() string {
 
 	style := lipgloss.NewStyle().Foreground(render.ColorDarkGray)
 
-	idLen := core.IDLength + 5
-	id := render.CurrentIdStyle.Render(m.doc.note.ID)
-	vLine := style.Render(strings.Repeat("─", max(0, m.width-idLen))+
-		"[ ") + id + style.Render(" ]"+"─")
-
+	var info string
 	if m.showDoc {
-		return lipgloss.JoinVertical(0, m.doc.View(), vLine, bar)
+		info = style.Render("id ") +
+			render.CurrentIdStyle.Render(m.doc.note.ID)
+	} else {
+		hits := strconv.Itoa(len(m.searchResult.ListNotes()))
+		info =
+			style.Render("hits ") +
+				render.NrHitsStyle.Render(hits)
 	}
 
-	return lipgloss.JoinVertical(0, m.search.View(), vLine, bar)
+	end := render.StyleDivider.Render("[ ") +
+		render.CurrentIdStyle.Render(info) +
+		render.StyleDivider.Render(" ]─")
+
+	endLen := ansi.PrintableRuneWidth(end)
+	padLen := max(0, m.width-endLen)
+	vLine := "\n" + style.Render(strings.Repeat("─", padLen)) + end
+	title := render.Titlebar(m.width, m.noteBook.LastNote().ID)
+	if m.showDoc {
+		return lipgloss.JoinVertical(0, title, m.doc.View(), vLine, bar)
+	}
+
+	return lipgloss.JoinVertical(0, title, m.search.View(), vLine, bar)
 }
 
 func (m *model) setSize(width, height int) {
 	m.width, m.height = width, height
 
-	m.doc.setSize(m.width, m.height-2)
+	m.doc.setSize(m.width, m.height-5)
+	m.search.setSize(m.width, m.height-5)
 	m.commandBar.setSize(m.width, 1)
-	m.search.setSize(m.width, m.height-2)
 }
 
 func (m *model) edit() tea.Cmd {

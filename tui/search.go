@@ -65,17 +65,30 @@ func (m searchModel) View() string {
 	return m.viewport.View()
 }
 
+var style = lipgloss.NewStyle().
+	Foreground(render.ColorWhite).
+	Background(render.ColorLowBlue).
+	Padding(0, 1).
+	MarginRight(1).
+	Bold(true)
+
+var queryStyle = lipgloss.NewStyle().
+	Foreground(render.ColorYellow).
+	Bold(true).
+	PaddingRight(1)
+
 func (m *searchModel) render() {
 	builder := new(strings.Builder)
 
-	boxStyle := lipgloss.NewStyle().Margin(2, 1, 1).Width(m.width)
-	style := lipgloss.NewStyle().Foreground(render.ColorHighCyan).Background(render.ColorLowBlue).PaddingLeft(1)
-	queryStyle := lipgloss.NewStyle().Foreground(render.ColorWhite).Bold(true).Background(render.ColorLowBlue).PaddingRight(1)
-	box := boxStyle.Render(fmt.Sprintf("%s%s",
-		style.Render("Search results for: "),
+	boxStyle := lipgloss.NewStyle().Margin(1, 2, 1).Width(m.width)
+	var box = boxStyle.Render(fmt.Sprintf("%s%s",
+		style.Render("Search results for:"),
 		queryStyle.Render(m.query)))
-	fmt.Fprint(builder, box)
-	render.RenderLinkList(builder, m.result, &m.links, 0, render.DocLinkListStyles)
+
+	fmt.Fprintln(builder, box)
+	render.LinkList(builder,
+		m.result, &m.links, 0, render.DocLinkListStyles)
+
 	m.viewport.SetContent(builder.String() + "\n")
 }
 

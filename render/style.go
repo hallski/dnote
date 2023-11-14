@@ -21,6 +21,25 @@ var (
 	ColorWhite       = lipgloss.Color("#ffffff")
 )
 
+var StyleBlack = lipgloss.NewStyle().Foreground(ColorBlack)
+var StyleLowRed = lipgloss.NewStyle().Foreground(ColorLowRed)
+var StyleLowGreen = lipgloss.NewStyle().Foreground(ColorLowGreen)
+var StyleBrown = lipgloss.NewStyle().Foreground(ColorBrown)
+var StyleLowBlue = lipgloss.NewStyle().Foreground(ColorLowBlue)
+var StyleLowMagenta = lipgloss.NewStyle().Foreground(ColorLowMagenta)
+var StyleLowCyan = lipgloss.NewStyle().Foreground(ColorLowCyan)
+var StyleLightGray = lipgloss.NewStyle().Foreground(ColorLightGray)
+var StyleDarkGray = lipgloss.NewStyle().Foreground(ColorDarkGray)
+var StyleHighRed = lipgloss.NewStyle().Foreground(ColorHighRed)
+var StyleHighGreen = lipgloss.NewStyle().Foreground(ColorHighGreen)
+var StyleYellow = lipgloss.NewStyle().Foreground(ColorYellow)
+var StyleHighBlue = lipgloss.NewStyle().Foreground(ColorHighBlue)
+var StyleHighCyan = lipgloss.NewStyle().Foreground(ColorHighCyan)
+var StyleHighMagenta = lipgloss.NewStyle().Foreground(ColorHighMagenta)
+var StyleWhite = lipgloss.NewStyle().Foreground(ColorWhite)
+
+var DividerColor = ColorDarkGray
+var StyleDivider = lipgloss.NewStyle().Foreground(ColorDarkGray)
 var ColorPanelBackground = lipgloss.Color("#222222")
 
 var BacklinksBackgroundStyle = lipgloss.NewStyle().
@@ -86,3 +105,4 @@ var DocNoteIdStyle = lipgloss.NewStyle().
 	Foreground(ColorHighGreen)
 
 var CurrentIdStyle = lipgloss.NewStyle().Foreground(ColorYellow)
+var NrHitsStyle = lipgloss.NewStyle().Foreground(ColorYellow)

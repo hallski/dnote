@@ -106,7 +106,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 	case searchMsg:
 		m.search.setQuery(msg.search)
-		m.searchResult = search.NewTitleSearch(msg.search, m.noteBook)
+		m.searchResult = search.NewFullText(msg.search, m.noteBook)
 		m.search.setResult(m.searchResult)
 		m.history.Push(historyItem{kindSearch, msg.search})
 		m.showDoc = false
@@ -237,7 +237,7 @@ func (m *model) setHistoryItem(item historyItem) {
 	case kindSearch:
 		m.showDoc = false
 		m.search.setQuery(item.value)
-		m.search.setResult(search.NewTitleSearch(item.value, m.noteBook))
+		m.search.setResult(search.NewFullText(item.value, m.noteBook))
 	}
 }
 

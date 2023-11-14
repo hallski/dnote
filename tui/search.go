@@ -10,6 +10,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type searchModel struct {
@@ -67,8 +68,13 @@ func (m searchModel) View() string {
 func (m *searchModel) render() {
 	builder := new(strings.Builder)
 
-	fmt.Fprintf(builder, "  Search: %s\n\n", m.query)
-
+	boxStyle := lipgloss.NewStyle().Margin(2, 1, 1).Width(m.width)
+	style := lipgloss.NewStyle().Foreground(render.ColorHighCyan).Background(render.ColorLowBlue).PaddingLeft(1)
+	queryStyle := lipgloss.NewStyle().Foreground(render.ColorWhite).Bold(true).Background(render.ColorLowBlue).PaddingRight(1)
+	box := boxStyle.Render(fmt.Sprintf("%s%s",
+		style.Render("Search results for: "),
+		queryStyle.Render(m.query)))
+	fmt.Fprint(builder, box)
 	render.RenderLinkList(builder, m.result, &m.links, 0, render.DocLinkListStyles)
 	m.viewport.SetContent(builder.String() + "\n")
 }

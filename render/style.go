@@ -49,6 +49,11 @@ type LinkStyles struct {
 	Bracket  lipgloss.Style
 }
 
+type LinkListStyles struct {
+	linkStyles LinkStyles
+	titleStyle lipgloss.Style
+}
+
 var DocLinkStyles = LinkStyles{
 	Inactive: lipgloss.NewStyle().
 		Foreground(ColorLowGreen),
@@ -65,6 +70,16 @@ var BackLinkStyles = LinkStyles{
 	Active:   DocLinkStyles.Active.Copy().Inherit(BacklinksBackgroundStyle),
 	Shortcut: DocLinkStyles.Shortcut.Copy().Inherit(BacklinksBackgroundStyle),
 	Bracket:  DocLinkStyles.Bracket.Copy().Inherit(BacklinksBackgroundStyle),
+}
+
+var DocLinkListStyles = LinkListStyles{
+	DocLinkStyles,
+	lipgloss.NewStyle().Foreground(ColorWhite),
+}
+
+var BackLinkListStyles = LinkListStyles{
+	BackLinkStyles,
+	BacklinksLinkTitlestyle,
 }
 
 var DocNoteIdStyle = lipgloss.NewStyle().

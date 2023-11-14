@@ -7,13 +7,13 @@ import (
 )
 
 // Render a list of links
-func RenderLinkList(out io.Writer, lister core.NoteLister, links *core.DocLinks, linkOffset int) {
+func RenderLinkList(out io.Writer, lister core.NoteLister, links *core.DocLinks, linkOffset int, styles LinkListStyles) {
 	for i, note := range lister.ListNotes() {
 		link := links.GetLink(note.ID)
 		active := links.IsActive(linkOffset + i)
 		fmt.Fprintf(out, "  • %s%s\n",
-			RenderLink(link, active, BackLinkStyles),
-			BacklinksLinkTitlestyle.Render(" "+note.Title))
+			RenderLink(link, active, styles.linkStyles),
+			styles.titleStyle.Render(" "+note.Title))
 	}
 
 }

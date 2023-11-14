@@ -150,7 +150,7 @@ func (m *docModel) render() {
 			fmt.Fprintln(bls, render.BacklinksTitleStyle.Render(beforeText+border+"\n"))
 		}
 
-		render.RenderLinkList(bls, m.note.BackLinks, &m.links, idx)
+		render.RenderLinkList(bls, m.note.BackLinks, &m.links, idx, render.BackLinkListStyles)
 
 		box := render.BacklinksBoxStyle.Copy().
 			Width(m.width - render.BacklinksBoxStyle.GetHorizontalBorderSize())

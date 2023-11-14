@@ -69,7 +69,7 @@ func (m *searchModel) render() {
 
 	fmt.Fprintf(builder, "  Search: %s\n\n", m.query)
 
-	render.RenderLinkList(builder, m.result, &m.links, 0)
+	render.RenderLinkList(builder, m.result, &m.links, 0, render.DocLinkListStyles)
 	m.viewport.SetContent(builder.String() + "\n")
 }
 

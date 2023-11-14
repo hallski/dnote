@@ -144,8 +144,11 @@ func (m *docModel) render() {
 		bls := new(strings.Builder)
 
 		beforeText := "─ Backlinks "
-		border := strings.Repeat("─", m.width-len([]rune(beforeText)))
-		fmt.Fprintln(bls, backlinksTitleStyle.Render(beforeText+border+"\n"))
+		beforeLen := m.width - len([]rune(beforeText))
+		if beforeLen > 0 {
+			border := strings.Repeat("─", beforeLen)
+			fmt.Fprintln(bls, backlinksTitleStyle.Render(beforeText+border+"\n"))
+		}
 
 		for i, bl := range m.note.BackLinks {
 			linkIdx := i + idx

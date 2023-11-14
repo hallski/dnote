@@ -2,6 +2,7 @@ package tui
 
 import (
 	"dnote/core"
+	"dnote/render"
 	"fmt"
 	"regexp"
 	"strings"
@@ -50,9 +51,9 @@ func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 			if l != "" {
 				return m, openLinkCmd(l)
 			}
-		case m.links.GetLink(msg.String()) != "":
+		case m.links.GetLinkFromShortcut(msg.String()) != core.ShortcutLink{}:
 			// Match any key that is a link shortcut
-			return m, openLinkCmd(m.links.GetLink(msg.String()))
+			return m, openLinkCmd(m.links.GetLinkFromShortcut(msg.String()).ID)
 		}
 		var cmd tea.Cmd
 		m.viewport, cmd = m.viewport.Update(msg)
@@ -104,7 +105,7 @@ func (m *docModel) processNoteContent() {
 		},
 	)
 
-	for _, bl := range m.note.BackLinks {
+	for _, bl := range m.note.BackLinks.ListNotes() {
 		links = append(links, bl.ID)
 	}
 
@@ -133,33 +134,26 @@ func (m *docModel) render() {
 			sc := m.links.GetShortcut(linkID)
 			idx++
 
-			return renderLink(linkID, sc, active, docLinkStyles)
+			return renderLink(linkID, sc, active, render.DocLinkStyles)
 		},
 	)
 
 	// Crude backlink support
 	builder := new(strings.Builder)
-	if len(m.note.BackLinks) > 0 {
+	if len(m.note.BackLinks.ListNotes()) > 0 {
 		bls := new(strings.Builder)
 
 		beforeText := "─ Backlinks "
 		beforeLen := m.width - len([]rune(beforeText))
 		if beforeLen > 0 {
 			border := strings.Repeat("─", beforeLen)
-			fmt.Fprintln(bls, backlinksTitleStyle.Render(beforeText+border+"\n"))
+			fmt.Fprintln(bls, render.BacklinksTitleStyle.Render(beforeText+border+"\n"))
 		}
 
-		for i, bl := range m.note.BackLinks {
-			linkIdx := i + idx
-			link := m.links.GetLinkIdx(linkIdx)
-			active := m.links.IsActive(linkIdx)
-			fmt.Fprintf(bls, "  %s%s\n",
-				renderLink(link.ID, link.Shortcut, active, backLinkStyles),
-				backlinksLinkTitlestyle.Render(" "+bl.Title))
-		}
+		render.RenderLinkList(bls, m.note.BackLinks, &m.links, idx)
 
-		box := backlinksBoxStyle.Copy().
-			Width(m.width - backlinksBoxStyle.GetHorizontalBorderSize())
+		box := render.BacklinksBoxStyle.Copy().
+			Width(m.width - render.BacklinksBoxStyle.GetHorizontalBorderSize())
 
 		fmt.Fprintf(builder, box.Render(bls.String()))
 	}
@@ -167,23 +161,23 @@ func (m *docModel) render() {
 	m.viewport.SetContent(md + "\n" + builder.String() + "\n")
 }
 
-func renderLink(link, sc string, active bool, styles linkStyles) string {
-	var style = styles.inactive
+func renderLink(link, sc string, active bool, styles render.LinkStyles) string {
+	var style = styles.Inactive
 	if active {
-		style = styles.active
+		style = styles.Active
 	}
 
 	if sc == "" {
-		return styles.bracket.Render("[[") +
+		return styles.Bracket.Render("[[") +
 			style.Render(link) +
-			styles.bracket.Render("]]")
+			styles.Bracket.Render("]]")
 	}
 
-	return styles.bracket.Render("[") +
-		styles.shortcut.Render(sc) +
-		styles.bracket.Render("|") +
+	return styles.Bracket.Render("[") +
+		styles.Shortcut.Render(sc) +
+		styles.Bracket.Render("|") +
 		style.Render(link) +
-		styles.bracket.Render("]")
+		styles.Bracket.Render("]")
 }
 
 func (m *docModel) renderNote(note *core.Note) {

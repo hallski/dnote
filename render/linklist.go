@@ -1,5 +1,38 @@
 package render
 
-import "dnote/core"
+import (
+	"dnote/core"
+	"fmt"
+	"io"
+)
 
-func Render(lister core.NoteLister, 
+// Render a list of links
+func RenderLinkList(out io.Writer, lister core.NoteLister, links *core.DocLinks, linkOffset int) {
+	for i, note := range lister.ListNotes() {
+		link := links.GetLink(note.ID)
+		active := links.IsActive(linkOffset + i)
+		fmt.Fprintf(out, "  • %s%s\n",
+			RenderLink(link, active, BackLinkStyles),
+			BacklinksLinkTitlestyle.Render(" "+note.Title))
+	}
+
+}
+
+func RenderLink(link core.ShortcutLink, active bool, styles LinkStyles) string {
+	var style = styles.Inactive
+	if active {
+		style = styles.Active
+	}
+
+	if link.Shortcut == "" {
+		return styles.Bracket.Render("[[") +
+			style.Render(link.ID) +
+			styles.Bracket.Render("]]")
+	}
+
+	return styles.Bracket.Render("[") +
+		styles.Shortcut.Render(link.Shortcut) +
+		styles.Bracket.Render("|") +
+		style.Render(link.ID) +
+		styles.Bracket.Render("]")
+}

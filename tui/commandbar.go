@@ -2,6 +2,7 @@ package tui
 
 import (
 	"dnote/mdfiles"
+	"dnote/render"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -43,11 +44,11 @@ func (cb commandBar) Update(msg tea.Msg) (commandBar, tea.Cmd) {
 }
 
 func (cb commandBar) View() string {
-	promptStyle := lipgloss.NewStyle().Foreground(colorHighBlue).Bold(true).MarginRight(1)
+	promptStyle := lipgloss.NewStyle().Foreground(render.ColorHighBlue).Bold(true).MarginRight(1)
 
-	cmdStyle := lipgloss.NewStyle().Foreground(colorHighCyan).Bold(true)
+	cmdStyle := lipgloss.NewStyle().Foreground(render.ColorHighCyan).Bold(true)
 
-	style := lipgloss.NewStyle().Foreground(colorWhite)
+	style := lipgloss.NewStyle().Foreground(render.ColorWhite)
 
 	cmdLen := cmdEnd(cb.input)
 	cmd := cmdStyle.Width(cmdLen).Render(cb.input[:cmdLen])

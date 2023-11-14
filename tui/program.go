@@ -3,6 +3,7 @@ package tui
 import (
 	"dnote/core"
 	"dnote/mdfiles"
+	"dnote/render"
 	"dnote/search"
 	"strings"
 
@@ -93,7 +94,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 		var cmd tea.Cmd
-		m.doc, cmd = m.doc.Update(msg)
+		if m.showDoc {
+			m.doc, cmd = m.doc.Update(msg)
+		} else {
+			m.search, cmd = m.search.Update(msg)
+		}
 		return m, cmd
 	case searchMsg:
 		m.search.setQuery(msg.search)
@@ -163,10 +168,10 @@ func (m model) View() string {
 		bar = statusStyle.Render(m.statusMsg)
 	}
 
-	style := lipgloss.NewStyle().Foreground(colorDarkGray)
+	style := lipgloss.NewStyle().Foreground(render.ColorDarkGray)
 
 	idLen := core.IDLength + 5
-	id := currentIdStyle.Render(m.doc.note.ID)
+	id := render.CurrentIdStyle.Render(m.doc.note.ID)
 	vLine := style.Render(strings.Repeat("─", max(0, m.width-idLen))+
 		"[ ") + id + style.Render(" ]"+"─")
 

@@ -59,7 +59,7 @@ func Load(dir string) (*MdDirectory, error) {
 	}
 
 	for _, note := range notes {
-		note.BackLinks = backlinks[note.ID]
+		note.BackLinks = &Result{backlinks[note.ID]}
 	}
 
 	sort.Slice(notes, func(i, j int) bool {
@@ -200,13 +200,13 @@ func (sr *Result) ListNotes() []*core.Note {
 func (mdd *MdDirectory) Backlinks(id string) *Result {
 	note := mdd.FindNote(id)
 
-	return &Result{note.BackLinks}
+	return &Result{note.BackLinks.ListNotes()}
 }
 
 func (mdd *MdDirectory) Orphans() *Result {
 	var orphans []*core.Note
 	for _, note := range mdd.notes {
-		if len(note.BackLinks) == 0 {
+		if len(note.BackLinks.ListNotes()) == 0 {
 			orphans = append(orphans, note)
 		}
 	}

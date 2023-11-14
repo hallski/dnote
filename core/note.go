@@ -13,7 +13,7 @@ type Note struct {
 	Content   string
 	Tags      []string
 	Links     []string
-	BackLinks []*Note
+	BackLinks NoteLister
 }
 
 type NoteLister interface {

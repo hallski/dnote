@@ -28,11 +28,17 @@ type DocLinks struct {
 
 func NewDocLinks(links []string) DocLinks {
 	var ll []ShortcutLink
+	m := make(map[string]string)
 
-	for i, linkID := range links {
+	i := 0
+	for _, linkID := range links {
 		sc := ""
-		if i < len(shortcuts) {
+		if m[linkID] != "" {
+			sc = m[linkID]
+		} else if i < len(shortcuts) {
 			sc = string(shortcuts[i])
+			m[linkID] = sc
+			i++
 		}
 		ll = append(ll, ShortcutLink{linkID, sc})
 	}
@@ -100,14 +106,24 @@ func (l *DocLinks) GetShortcutIdx(idx int) string {
 	return l.links[idx].Shortcut
 }
 
-func (l *DocLinks) GetLink(shortcut string) string {
+func (l *DocLinks) GetLink(id string) ShortcutLink {
 	for _, link := range l.links {
-		if link.Shortcut == shortcut {
-			return link.ID
+		if link.ID == id {
+			return link
 		}
 	}
 
-	return ""
+	return ShortcutLink{}
+}
+
+func (l *DocLinks) GetLinkFromShortcut(shortcut string) ShortcutLink {
+	for _, link := range l.links {
+		if link.Shortcut == shortcut {
+			return link
+		}
+	}
+
+	return ShortcutLink{}
 }
 
 func (l *DocLinks) IsActive(idx int) bool {

@@ -67,8 +67,8 @@ func (m searchModel) View() string {
 
 var style = lipgloss.NewStyle().
 	Foreground(render.ColorWhite).
-	Background(render.ColorLowBlue).
 	Padding(0, 1).
+	Underline(true).
 	MarginRight(1).
 	Bold(true)
 

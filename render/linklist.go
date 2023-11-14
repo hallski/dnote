@@ -15,7 +15,6 @@ func LinkList(out io.Writer, lister core.NoteLister, links *core.DocLinks, linkO
 			RenderLink(link, active, styles.linkStyles),
 			styles.titleStyle.Render(" "+note.Title))
 	}
-
 }
 
 func RenderLink(link core.ShortcutLink, active bool, styles LinkStyles) string {

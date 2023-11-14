@@ -93,7 +93,7 @@ var BackLinkStyles = LinkStyles{
 
 var DocLinkListStyles = LinkListStyles{
 	DocLinkStyles,
-	lipgloss.NewStyle().Foreground(ColorWhite),
+	lipgloss.NewStyle().Foreground(ColorLightGray),
 }
 
 var BackLinkListStyles = LinkListStyles{

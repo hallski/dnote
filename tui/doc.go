@@ -13,6 +13,8 @@ import (
 	"github.com/charmbracelet/glamour"
 )
 
+const docMaxWidth = 84
+
 type selectedLink struct {
 	ID    string
 	index int
@@ -108,15 +110,14 @@ func (m *docModel) processNoteContent() {
 	for _, bl := range m.note.BackLinks.ListNotes() {
 		links = append(links, bl.ID)
 	}
-
 	m.links = core.NewDocLinks(links)
 	m.preprocessed = processed
 }
 
 func (m *docModel) render() {
 	r, err := glamour.NewTermRenderer(
-		glamour.WithStandardStyle("dark"),
-		glamour.WithWordWrap(m.width),
+		glamour.WithStyles(render.GetGlamming()),
+		glamour.WithWordWrap(min(m.width, docMaxWidth)),
 	)
 
 	md, err := r.Render(m.preprocessed)

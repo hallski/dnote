@@ -3,7 +3,6 @@ package tui
 import (
 	"dnote/core"
 	"fmt"
-	"os"
 	"regexp"
 	"strings"
 
@@ -21,7 +20,7 @@ type selectedLink struct {
 type docModel struct {
 	keymap docKeymap
 
-	links docLinks
+	links core.DocLinks
 
 	width, height int
 
@@ -109,7 +108,7 @@ func (m *docModel) processNoteContent() {
 		links = append(links, bl.ID)
 	}
 
-	m.links = newDocLinks(links)
+	m.links = core.NewDocLinks(links)
 	m.preprocessed = processed
 }
 
@@ -129,14 +128,14 @@ func (m *docModel) render() {
 	var idx = 0
 	md = linkReplacementRE.ReplaceAllStringFunc(md,
 		func(s string) string {
+			linkID := s[2:5]
 			active := m.links.IsActive(idx)
-			sc := m.links.GetShortcut(idx)
+			sc := m.links.GetShortcut(linkID)
 			idx++
 
-			return renderLink(s[2:5], sc, active, docLinkStyles)
+			return renderLink(linkID, sc, active, docLinkStyles)
 		},
 	)
-	os.WriteFile("/Users/hallski/foo.txt", []byte(md), 0644)
 
 	// Crude backlink support
 	builder := new(strings.Builder)
@@ -154,9 +153,8 @@ func (m *docModel) render() {
 			linkIdx := i + idx
 			link := m.links.GetLinkIdx(linkIdx)
 			active := m.links.IsActive(linkIdx)
-			sc := m.links.GetShortcut(linkIdx)
 			fmt.Fprintf(bls, "  %s%s\n",
-				renderLink(link, sc, active, backLinkStyles),
+				renderLink(link.ID, link.Shortcut, active, backLinkStyles),
 				backlinksLinkTitlestyle.Render(" "+bl.Title))
 		}
 
@@ -205,7 +203,7 @@ func newDoc(width, height int) docModel {
 	m := docModel{
 		keymap:   defaultDocKeyMap,
 		viewport: viewport.New(width, height),
-		links:    newDocLinks([]string{}),
+		links:    core.NewDocLinks([]string{}),
 	}
 
 	return m

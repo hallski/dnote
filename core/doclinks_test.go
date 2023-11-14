@@ -1,9 +1,9 @@
-package tui
+package core
 
 import "testing"
 
 func TestStartValue(t *testing.T) {
-	l := newDocLinks([]string{"l1", "l2"})
+	l := NewDocLinks([]string{"l1", "l2"})
 
 	if l.Current() != "" {
 		t.Errorf("expected empty string, got %s", l.Current())
@@ -11,7 +11,7 @@ func TestStartValue(t *testing.T) {
 }
 
 func TestEmpty(t *testing.T) {
-	l := newDocLinks([]string{})
+	l := NewDocLinks([]string{})
 
 	if l.Current() != "" {
 		t.Errorf("expected empty string, got %s", l.Current())
@@ -19,7 +19,7 @@ func TestEmpty(t *testing.T) {
 }
 
 func TestNextPrev(t *testing.T) {
-	l := newDocLinks([]string{"l1", "l2", "l3"})
+	l := NewDocLinks([]string{"l1", "l2", "l3"})
 
 	l.Next()
 	if l.Current() != "l1" {
@@ -36,7 +36,7 @@ func TestNextPrev(t *testing.T) {
 }
 
 func TestWrapping(t *testing.T) {
-	l := newDocLinks([]string{"l1", "l2", "l3"})
+	l := NewDocLinks([]string{"l1", "l2", "l3"})
 
 	l.Prev()
 	if l.Current() != "l3" {
@@ -50,33 +50,23 @@ func TestWrapping(t *testing.T) {
 }
 
 func TestAssignShortcuts(t *testing.T) {
-	l := newDocLinks([]string{"l1", "l2", "l3"})
+	l := NewDocLinks([]string{"l1", "l2", "l3"})
 
-	sc := l.GetShortcut(0)
+	sc := l.GetShortcut("l1")
 	if sc != "A" {
-		t.Errorf("expected A, got %s", l.GetShortcut(0))
+		t.Errorf("expected A, got %s", sc)
 	}
 
-	sc = l.GetShortcut(3)
-	if sc != "" {
-		t.Errorf("expected empty string, got %s", sc)
-	}
-
-	sc = l.GetShortcut(300)
-	if sc != "" {
-		t.Errorf("expected empty string, got %s", sc)
-	}
-
-	sc = l.GetShortcut(300)
+	sc = l.GetShortcut("l4")
 	if sc != "" {
 		t.Errorf("expected empty string, got %s", sc)
 	}
 }
 
 func TestLookupShortcuts(t *testing.T) {
-	l := newDocLinks([]string{"l1", "l2", "l3"})
+	l := NewDocLinks([]string{"l1", "l2", "l3"})
 
-	sc := l.GetShortcut(1)
+	sc := l.GetShortcut("l2")
 	if l.GetLink(sc) != "l2" {
 		t.Errorf("expected l2, got %s", l.GetLink(sc))
 	}
@@ -87,7 +77,7 @@ func TestLookupShortcuts(t *testing.T) {
 }
 
 func TestIsActive(t *testing.T) {
-	l := newDocLinks([]string{"l1", "l2", "l3"})
+	l := NewDocLinks([]string{"l1", "l2", "l3"})
 
 	l.Next()
 	l.Next()

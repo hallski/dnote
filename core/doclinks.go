@@ -30,6 +30,7 @@ func NewDocLinks(links []string) DocLinks {
 	var ll []ShortcutLink
 	m := make(map[string]string)
 
+	first := -1
 	i := 0
 	for _, linkID := range links {
 		sc := ""
@@ -39,13 +40,17 @@ func NewDocLinks(links []string) DocLinks {
 			sc = string(shortcuts[i])
 			m[linkID] = sc
 			i++
+		} else {
+			// Position current link on first link without shortcut.
+			// This makes it easy to navigate as I can use next to move
+			// on from there.
+			if first < 0 {
+				first = i
+			}
 		}
 		ll = append(ll, ShortcutLink{linkID, sc})
 	}
-	return DocLinks{
-		ll,
-		-1,
-	}
+	return DocLinks{ll, first}
 }
 
 func (l *DocLinks) cycle(dir cycleDirection) {

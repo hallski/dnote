@@ -8,7 +8,15 @@ import (
 )
 
 func NewFullText(query string, lister core.NoteLister) *Result {
-	cmd := exec.Command("rg", "-l", query)
+	args := []string{
+		"-l",
+		"-i",
+		"--bool",
+		"--format=%a%~",
+		query,
+		"/Users/hallski/dNotes",
+	}
+	cmd := exec.Command("ugrep", args...)
 	output, _ := cmd.CombinedOutput()
 
 	files := strings.Split(string(output), "\n")

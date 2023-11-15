@@ -2,21 +2,34 @@ package search
 
 import (
 	"dnote/core"
+	"dnote/mdfiles"
 	"os/exec"
 	"slices"
 	"strings"
 )
 
-func NewFullText(query string, lister core.NoteLister) *Result {
+func getUgrepCommand(path, query string) *exec.Cmd {
 	args := []string{
 		"-l",
 		"-i",
 		"--bool",
 		"--format=%a%~",
 		query,
-		"/Users/hallski/dNotes",
+		path,
 	}
-	cmd := exec.Command("ugrep", args...)
+
+	ugrepPath, err := exec.LookPath("ugrep")
+	if err != nil {
+		panic(err)
+	}
+
+	cmd := exec.Command(ugrepPath, args...)
+
+	return cmd
+}
+
+func NewFullText(query string, notebook *mdfiles.MdDirectory) *Result {
+	cmd := getUgrepCommand(notebook.Path, query)
 	output, _ := cmd.CombinedOutput()
 
 	files := strings.Split(string(output), "\n")
@@ -30,7 +43,7 @@ func NewFullText(query string, lister core.NoteLister) *Result {
 	}
 
 	var notes []*core.Note
-	for _, note := range lister.ListNotes() {
+	for _, note := range notebook.ListNotes() {
 		if slices.Contains(ids, note.ID) {
 			notes = append(notes, note)
 		}

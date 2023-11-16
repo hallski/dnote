@@ -25,18 +25,11 @@ func renderBar(content string, width int) string {
 }
 
 func BottomBarNote(note *core.Note, width int) string {
-	info := CurrentIdStyle.Render(note.ID)
+	info := CurrentDateStyle.Render(note.Date.Format("2006-01-02")) +
+		StyleDivider.Render(" | ") +
+		CurrentIdStyle.Render(note.ID)
 
-	end := StyleDivider.Render("─|") +
-		CurrentDateStyle.Render(note.Date.Format("2006-01-02")) +
-		StyleDivider.Render("|") +
-		StyleDivider.Render("─[") +
-		info +
-		StyleDivider.Render("]─")
-
-	endLen := ansi.PrintableRuneWidth(end)
-	padLen := max(0, width-endLen)
-	return "\n" + style.Render(strings.Repeat("─", padLen)) + end
+	return renderBar(info, width)
 }
 
 func BottomBarSearch(result *search.Result, width int) string {
@@ -45,11 +38,5 @@ func BottomBarSearch(result *search.Result, width int) string {
 		style.Render("hits ") +
 			NrHitsStyle.Render(hits)
 
-	end := StyleDivider.Render("[ ") +
-		info +
-		StyleDivider.Render(" ]─")
-
-	endLen := ansi.PrintableRuneWidth(end)
-	padLen := max(0, width-endLen)
-	return "\n" + style.Render(strings.Repeat("─", padLen)) + end
+	return renderBar(info, width)
 }

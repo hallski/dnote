@@ -26,7 +26,7 @@ func renderBar(content string, width int) string {
 
 func BottomBarNote(note *core.Note, width int) string {
 	info := CurrentDateStyle.Render(note.Date.Format("2006-01-02")) +
-		StyleDivider.Render(" | ") +
+		StyleDivider.Render("::") +
 		CurrentIdStyle.Render(note.ID)
 
 	return renderBar(info, width)

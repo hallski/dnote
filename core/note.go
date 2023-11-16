@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"io"
+	"time"
 	"unicode"
 )
 
@@ -10,6 +11,7 @@ type Note struct {
 	ID        string
 	Path      string
 	Title     string
+	Date      time.Time
 	Content   string
 	Tags      []string
 	Links     []string

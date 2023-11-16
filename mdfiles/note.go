@@ -31,6 +31,7 @@ func loadNote(path string) (*core.Note, error) {
 		ID:      id,
 		Path:    path,
 		Content: sContent,
+		Date:    getDate(sContent),
 		Title:   getTitle(sContent),
 		Tags:    getTags(sContent),
 		Links:   core.ExtractLinks(sContent),
@@ -74,6 +75,22 @@ func getTitle(content string) string {
 	}
 
 	return ""
+}
+
+func getDate(content string) time.Time {
+	re := regexp.MustCompile("\\[:created\\]: _ \"([0-9]{4}-[0-9]{2}-[0-9]{2}).*\"")
+
+	result := re.FindStringSubmatch(content)
+	if result == nil {
+		panic("Failed to find date")
+	}
+
+	date, err := time.Parse("2006-01-02", result[1])
+	if err != nil {
+		panic("Failed to parse date:" + result[1])
+	}
+
+	return date
 }
 
 func getTags(content string) []string {

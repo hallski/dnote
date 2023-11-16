@@ -104,5 +104,6 @@ var BackLinkListStyles = LinkListStyles{
 var DocNoteIdStyle = lipgloss.NewStyle().
 	Foreground(ColorHighGreen)
 
+var CurrentDateStyle = lipgloss.NewStyle().Foreground(ColorLowCyan)
 var CurrentIdStyle = lipgloss.NewStyle().Foreground(ColorYellow)
 var NrHitsStyle = lipgloss.NewStyle().Foreground(ColorYellow)

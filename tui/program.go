@@ -142,9 +142,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
+// Render the entire UI
 func (m model) View() string {
-	// Render the entire UI
-
 	title := render.Titlebar(m.width, m.noteBook.LastNote().ID)
 
 	bottomBar := ""
@@ -169,10 +168,14 @@ func (m model) View() string {
 }
 
 func (m *model) setSize(width, height int) {
+	const totalBarSize = 5
+
 	m.width, m.height = width, height
 
-	m.doc.setSize(m.width, m.height-5)
-	m.search.setSize(m.width, m.height-5)
+	mainViewSize := m.height - totalBarSize
+
+	m.doc.setSize(m.width, mainViewSize)
+	m.search.setSize(m.width, mainViewSize)
 	m.commandBar.setSize(m.width, 1)
 }
 

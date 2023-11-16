@@ -161,27 +161,27 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	// Render the entire UI
 
-	var bar string
-	if m.enteringCmd {
-		bar = m.commandBar.View()
-	} else {
-		statusStyle := lipgloss.NewStyle().Width(m.width)
-		bar = statusStyle.Render(m.statusMsg)
-	}
+	title := render.Titlebar(m.width, m.noteBook.LastNote().ID)
 
 	bottomBar := ""
+	view := ""
 	if m.showDoc {
+		view = m.doc.View()
 		bottomBar = render.BottomBarNote(m.doc.note, m.width)
 	} else {
+		view = m.search.View()
 		bottomBar = render.BottomBarSearch(m.searchResult, m.width)
 	}
 
-	title := render.Titlebar(m.width, m.noteBook.LastNote().ID)
-	if m.showDoc {
-		return lipgloss.JoinVertical(0, title, m.doc.View(), bottomBar, bar)
+	var statusBar string
+	if m.enteringCmd {
+		statusBar = m.commandBar.View()
+	} else {
+		statusStyle := lipgloss.NewStyle().Width(m.width)
+		statusBar = statusStyle.Render(m.statusMsg)
 	}
 
-	return lipgloss.JoinVertical(0, title, m.search.View(), bottomBar, bar)
+	return lipgloss.JoinVertical(0, title, view, bottomBar, statusBar)
 }
 
 func (m *model) setSize(width, height int) {

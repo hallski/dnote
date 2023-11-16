@@ -3,13 +3,15 @@ package tui
 import "github.com/charmbracelet/bubbles/key"
 
 type appKeyMap struct {
-	Quit      key.Binding
-	Search    key.Binding
-	EditNode  key.Binding
-	Back      key.Binding
-	Forward   key.Binding
-	StartCmd  key.Binding
-	QuickOpen key.Binding
+	Quit           key.Binding
+	Search         key.Binding
+	EditNode       key.Binding
+	Back           key.Binding
+	Forward        key.Binding
+	StartCmd       key.Binding
+	QuickOpen      key.Binding
+	OpenRandomNote key.Binding
+	OpenLastNote   key.Binding
 }
 
 type docKeymap struct {
@@ -49,12 +51,12 @@ var defaultAppKeyMap = appKeyMap{
 		key.WithHelp("e", "edit note"),
 	),
 	Back: key.NewBinding(
-		key.WithKeys("ctrl+o", "h"),
-		key.WithHelp("ctrl+o or h", "back"),
+		key.WithKeys("ctrl+o"),
+		key.WithHelp("ctrl+o", "back"),
 	),
 	Forward: key.NewBinding(
-		key.WithKeys("tab", "l"),
-		key.WithHelp("tab or l", "forward"),
+		key.WithKeys("tab"),
+		key.WithHelp("tab", "forward"),
 	),
 	StartCmd: key.NewBinding(
 		key.WithKeys("."),
@@ -63,6 +65,14 @@ var defaultAppKeyMap = appKeyMap{
 	QuickOpen: key.NewBinding(
 		key.WithKeys(getStrings(quickOpen)...),
 		key.WithHelp("number", "start open"),
+	),
+	OpenRandomNote: key.NewBinding(
+		key.WithKeys("m"),
+		key.WithHelp("m", "randoM note"),
+	),
+	OpenLastNote: key.NewBinding(
+		key.WithKeys("l"),
+		key.WithHelp("l", "last note"),
 	),
 }
 

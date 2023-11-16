@@ -26,8 +26,6 @@ type model struct {
 
 	keymap appKeyMap
 
-	statusMsg string
-
 	history *history[historyItem]
 
 	width  int
@@ -35,18 +33,17 @@ type model struct {
 
 	showDoc bool
 	doc     docModel
-
-	search searchModel
+	search  searchModel
 
 	enteringCmd bool
 	commandBar  commandBar
+	statusMsg   string
 }
 
 func initialModel(noteBook *mdfiles.MdDirectory) model {
 	return model{
 		noteBook,
 		defaultAppKeyMap,
-		"",
 		NewHistory[historyItem](),
 		0, 0,
 		true,
@@ -54,6 +51,7 @@ func initialModel(noteBook *mdfiles.MdDirectory) model {
 		newSearchModel(noteBook),
 		false,
 		newCommandBar(),
+		"",
 	}
 }
 
@@ -90,6 +88,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.commandBar.startOpen(msg.String())
 			m.enteringCmd = true
 			return m, nil
+		case key.Matches(msg, m.keymap.OpenRandomNote):
+			return m, emitMsgCmd(openRandomMsg{})
+		case key.Matches(msg, m.keymap.OpenLastNote):
+			return m, emitMsgCmd(openLastMsg{})
 		}
 		var cmd tea.Cmd
 		if m.showDoc {

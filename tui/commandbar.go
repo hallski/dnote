@@ -11,11 +11,11 @@ import (
 )
 
 type commandBar struct {
-	input string
-
 	width, height int
 
 	keymap commandBarKeymap
+
+	input string
 }
 
 func (cb commandBar) Init() tea.Cmd {

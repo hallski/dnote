@@ -88,6 +88,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.commandBar.startOpen(msg.String())
 			m.enteringCmd = true
 			return m, nil
+		case key.Matches(msg, m.keymap.AddNote):
+			m.commandBar.startAdd()
+			m.enteringCmd = true
+			return m, nil
 		case key.Matches(msg, m.keymap.OpenRandomNote):
 			return m, emitMsgCmd(openRandomMsg{})
 		case key.Matches(msg, m.keymap.OpenLastNote):

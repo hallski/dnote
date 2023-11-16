@@ -168,6 +168,10 @@ func (cb *commandBar) startOpen(v string) {
 	cb.input = "open " + v
 }
 
+func (cb *commandBar) startAdd() {
+	cb.input = "add "
+}
+
 func (cb *commandBar) startSearch(query string) {
 	cb.input = "search " + query
 }

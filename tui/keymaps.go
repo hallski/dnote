@@ -10,6 +10,7 @@ type appKeyMap struct {
 	Forward        key.Binding
 	StartCmd       key.Binding
 	QuickOpen      key.Binding
+	AddNote        key.Binding
 	OpenRandomNote key.Binding
 	OpenLastNote   key.Binding
 }
@@ -65,6 +66,10 @@ var defaultAppKeyMap = appKeyMap{
 	QuickOpen: key.NewBinding(
 		key.WithKeys(getStrings(quickOpen)...),
 		key.WithHelp("number", "start open"),
+	),
+	AddNote: key.NewBinding(
+		key.WithKeys("a"),
+		key.WithHelp("a", "add note"),
 	),
 	OpenRandomNote: key.NewBinding(
 		key.WithKeys("m"),

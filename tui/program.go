@@ -4,13 +4,10 @@ import (
 	"dnote/mdfiles"
 	"dnote/render"
 	"dnote/search"
-	"strconv"
-	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/muesli/ansi"
 )
 
 type historyKind uint
@@ -173,32 +170,19 @@ func (m model) View() string {
 		bar = statusStyle.Render(m.statusMsg)
 	}
 
-	style := lipgloss.NewStyle().Foreground(render.ColorDarkGray)
-
-	var info string
+	bottomBar := ""
 	if m.showDoc {
-		info = style.Render("id ") +
-			render.CurrentIdStyle.Render(m.doc.note.ID)
+		bottomBar = render.BottomBarNote(m.doc.note, m.width)
 	} else {
-		hits := strconv.Itoa(len(m.searchResult.ListNotes()))
-		info =
-			style.Render("hits ") +
-				render.NrHitsStyle.Render(hits)
+		bottomBar = render.BottomBarSearch(m.searchResult, m.width)
 	}
 
-	end := render.StyleDivider.Render("[ ") +
-		render.CurrentIdStyle.Render(info) +
-		render.StyleDivider.Render(" ]─")
-
-	endLen := ansi.PrintableRuneWidth(end)
-	padLen := max(0, m.width-endLen)
-	vLine := "\n" + style.Render(strings.Repeat("─", padLen)) + end
 	title := render.Titlebar(m.width, m.noteBook.LastNote().ID)
 	if m.showDoc {
-		return lipgloss.JoinVertical(0, title, m.doc.View(), vLine, bar)
+		return lipgloss.JoinVertical(0, title, m.doc.View(), bottomBar, bar)
 	}
 
-	return lipgloss.JoinVertical(0, title, m.search.View(), vLine, bar)
+	return lipgloss.JoinVertical(0, title, m.search.View(), bottomBar, bar)
 }
 
 func (m *model) setSize(width, height int) {

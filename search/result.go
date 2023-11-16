@@ -3,6 +3,7 @@ package search
 import "dnote/core"
 
 type Result struct {
+	Query  string
 	Result []*core.Note
 }
 

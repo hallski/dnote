@@ -49,5 +49,5 @@ func NewFullText(query string, notebook *mdfiles.MdDirectory) *Result {
 		}
 	}
 
-	return &Result{notes}
+	return &Result{query, notes}
 }

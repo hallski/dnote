@@ -19,13 +19,18 @@ type searchModel struct {
 	keymap   docKeymap
 	viewport viewport.Model
 
-	query  string
 	result *search.Result
 	links  core.DocLinks
 }
 
 func newSearchModel() searchModel {
-	return searchModel{0, 0, defaultDocKeyMap, viewport.New(0, 0), "", &search.Result{}, core.DocLinks{}}
+	return searchModel{
+		0, 0,
+		defaultDocKeyMap,
+		viewport.New(0, 0),
+		&search.Result{},
+		core.DocLinks{},
+	}
 }
 
 func (m searchModel) Init() tea.Cmd {
@@ -83,7 +88,7 @@ func (m *searchModel) render() {
 	boxStyle := lipgloss.NewStyle().Margin(1, 2, 1).Width(m.width)
 	var box = boxStyle.Render(fmt.Sprintf("%s%s",
 		style.Render("Search results for:"),
-		queryStyle.Render(m.query)))
+		queryStyle.Render(m.result.Query)))
 
 	fmt.Fprintln(builder, box)
 	render.LinkList(builder,
@@ -95,11 +100,6 @@ func (m *searchModel) render() {
 func (m *searchModel) setSize(width, height int) {
 	m.width, m.height = width, height
 	m.viewport = viewport.New(width, height)
-	m.render()
-}
-
-func (m *searchModel) setQuery(query string) {
-	m.query = query
 	m.render()
 }
 

@@ -2,6 +2,7 @@ package search
 
 import (
 	"slices"
+	"strings"
 
 	"dnote/core"
 )
@@ -15,7 +16,5 @@ func NewIdsSearch(ids []string, lister core.NoteLister) *Result {
 		}
 	}
 
-	return &Result{
-		Result: result,
-	}
+	return &Result{strings.Join(ids, ","), result}
 }

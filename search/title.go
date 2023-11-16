@@ -12,7 +12,5 @@ func NewTitleSearch(query string, lister core.NoteLister) *Result {
 			result = append(result, note)
 		}
 	}
-	return &Result{
-		result,
-	}
+	return &Result{query, result}
 }

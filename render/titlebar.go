@@ -7,6 +7,8 @@ import (
 	"github.com/muesli/ansi"
 )
 
+const TitleBarHeight = 2
+
 func Titlebar(width int, lastId string) string {
 
 	style := lipgloss.NewStyle().Foreground(DividerColor)

@@ -11,6 +11,7 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/glamour"
+	"github.com/charmbracelet/lipgloss"
 )
 
 const docMaxWidth = 84
@@ -65,7 +66,9 @@ func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 }
 
 func (m docModel) View() string {
-	return m.viewport.View()
+	bottomBar := render.BottomBarNote(m.note, m.width)
+
+	return lipgloss.JoinVertical(0, m.viewport.View(), bottomBar)
 }
 
 func (m *docModel) nextLink() {
@@ -190,7 +193,7 @@ func (m *docModel) renderNote(note *core.Note) {
 
 func (m *docModel) setSize(width, height int) {
 	m.width, m.height = width, height
-	m.viewport = viewport.New(width, height)
+	m.viewport = viewport.New(width, height-render.BottomBarHeight)
 	m.render()
 }
 

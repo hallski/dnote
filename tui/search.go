@@ -26,7 +26,7 @@ type searchModel struct {
 }
 
 func newSearchModel(collection search.FullTextCollection) searchModel {
-	return searchModel{collection: collection}
+	return searchModel{collection: collection, keymap: defaultDocKeyMap}
 }
 
 func (m searchModel) Init() tea.Cmd {
@@ -63,7 +63,8 @@ func (m searchModel) Update(msg tea.Msg) (searchModel, tea.Cmd) {
 }
 
 func (m searchModel) View() string {
-	return m.viewport.View()
+	bottomBar := render.BottomBarSearch(m.result, m.width)
+	return lipgloss.JoinVertical(0, m.viewport.View(), bottomBar)
 }
 
 var style = lipgloss.NewStyle().
@@ -98,7 +99,7 @@ func (m *searchModel) render() {
 
 func (m *searchModel) setSize(width, height int) {
 	m.width, m.height = width, height
-	m.viewport = viewport.New(width, height)
+	m.viewport = viewport.New(width, height-render.BottomBarHeight)
 	m.render()
 }
 

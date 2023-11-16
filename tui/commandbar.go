@@ -10,6 +10,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+const CommandBarHeight = 1
+
 type commandBar struct {
 	width, height int
 

@@ -148,14 +148,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	title := render.Titlebar(m.width, m.noteBook.LastNote().ID)
 
-	bottomBar := ""
 	view := ""
 	if m.showDoc {
 		view = m.doc.View()
-		bottomBar = render.BottomBarNote(m.doc.note, m.width)
 	} else {
 		view = m.search.View()
-		bottomBar = render.BottomBarSearch(m.search.result, m.width)
 	}
 
 	var statusBar string
@@ -166,11 +163,11 @@ func (m model) View() string {
 		statusBar = statusStyle.Render(m.statusMsg)
 	}
 
-	return lipgloss.JoinVertical(0, title, view, bottomBar, statusBar)
+	return lipgloss.JoinVertical(0, title, view, statusBar)
 }
 
 func (m *model) setSize(width, height int) {
-	const totalBarSize = 5
+	const totalBarSize = render.TitleBarHeight + CommandBarHeight
 
 	m.width, m.height = width, height
 
@@ -178,7 +175,7 @@ func (m *model) setSize(width, height int) {
 
 	m.doc.setSize(m.width, mainViewSize)
 	m.search.setSize(m.width, mainViewSize)
-	m.commandBar.setSize(m.width, 1)
+	m.commandBar.setSize(m.width, CommandBarHeight)
 }
 
 func (m *model) setNotebook(notebook *mdfiles.MdDirectory) {

@@ -84,6 +84,9 @@ func (m *docModel) prevLink() {
 var linkReplacementRE = regexp.MustCompile(fmt.Sprintf("\\|\\|([0-9]{%d})\\|\\|",
 	core.IDLength))
 
+var tagsRE = regexp.MustCompile("\\s#+\\w+\\b")
+var tagsReplacementRE = regexp.MustCompile("#qzq##+\\w+#qzq#")
+
 // Adds a hack to support wiki links even though Glamour do not support them
 // Since [[ is part of ANSI escape codes, replace them with || before parsing
 // with Glamour.
@@ -92,6 +95,10 @@ var linkReplacementRE = regexp.MustCompile(fmt.Sprintf("\\|\\|([0-9]{%d})\\|\\|"
 // link will get a new style applied.
 func addLinkHack(id string) string {
 	return "||" + id + "||*qwq*"
+}
+
+func addTagsHack(id string) string {
+	return " #qzq#" + id + "#qzq#"
 }
 
 // Remove the insert qwq (only leaving the escape code and reset in the document
@@ -109,6 +116,11 @@ func (m *docModel) processNoteContent() {
 			return addLinkHack(id)
 		},
 	)
+
+	processed = tagsRE.ReplaceAllStringFunc(processed,
+		func(s string) string {
+			return addTagsHack(s[1:])
+		})
 
 	for _, bl := range m.note.BackLinks.ListNotes() {
 		links = append(links, bl.ID)
@@ -141,6 +153,11 @@ func (m *docModel) render() {
 			return renderLink(linkID, sc, active, render.DocLinkStyles)
 		},
 	)
+
+	md = tagsReplacementRE.ReplaceAllStringFunc(md,
+		func(s string) string {
+			return render.TagsStyle.Render(s[5 : len(s)-5])
+		})
 
 	// Crude backlink support
 	builder := new(strings.Builder)

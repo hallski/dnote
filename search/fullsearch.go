@@ -2,7 +2,6 @@ package search
 
 import (
 	"dnote/core"
-	"dnote/mdfiles"
 	"os/exec"
 	"slices"
 	"strings"
@@ -28,8 +27,13 @@ func getUgrepCommand(path, query string) *exec.Cmd {
 	return cmd
 }
 
-func NewFullText(query string, notebook *mdfiles.MdDirectory) *Result {
-	cmd := getUgrepCommand(notebook.Path, query)
+type FullTextCollection interface {
+	Path() string
+	ListNotes() []*core.Note
+}
+
+func NewFullText(query string, collection FullTextCollection) *Result {
+	cmd := getUgrepCommand(collection.Path(), query)
 	output, _ := cmd.CombinedOutput()
 
 	files := strings.Split(string(output), "\n")
@@ -43,7 +47,7 @@ func NewFullText(query string, notebook *mdfiles.MdDirectory) *Result {
 	}
 
 	var notes []*core.Note
-	for _, note := range notebook.ListNotes() {
+	for _, note := range collection.ListNotes() {
 		if slices.Contains(ids, note.ID) {
 			notes = append(notes, note)
 		}

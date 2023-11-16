@@ -16,6 +16,8 @@ import (
 type searchModel struct {
 	width, height int
 
+	collection search.FullTextCollection
+
 	keymap   docKeymap
 	viewport viewport.Model
 
@@ -23,14 +25,8 @@ type searchModel struct {
 	links  core.DocLinks
 }
 
-func newSearchModel() searchModel {
-	return searchModel{
-		0, 0,
-		defaultDocKeyMap,
-		viewport.New(0, 0),
-		&search.Result{},
-		core.DocLinks{},
-	}
+func newSearchModel(collection search.FullTextCollection) searchModel {
+	return searchModel{collection: collection}
 }
 
 func (m searchModel) Init() tea.Cmd {
@@ -83,6 +79,9 @@ var queryStyle = lipgloss.NewStyle().
 	PaddingRight(1)
 
 func (m *searchModel) render() {
+	if m.result == nil {
+		return
+	}
 	builder := new(strings.Builder)
 
 	boxStyle := lipgloss.NewStyle().Margin(1, 2, 1).Width(m.width)
@@ -101,6 +100,14 @@ func (m *searchModel) setSize(width, height int) {
 	m.width, m.height = width, height
 	m.viewport = viewport.New(width, height)
 	m.render()
+}
+
+func (m *searchModel) setCollection(collection search.FullTextCollection) {
+	m.collection = collection
+}
+
+func (m *searchModel) setQuery(query string) {
+	m.setResult(search.NewFullText(query, m.collection))
 }
 
 func (m *searchModel) setResult(result *search.Result) {

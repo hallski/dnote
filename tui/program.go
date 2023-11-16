@@ -3,7 +3,6 @@ package tui
 import (
 	"dnote/mdfiles"
 	"dnote/render"
-	"dnote/search"
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
@@ -37,8 +36,7 @@ type model struct {
 	showDoc bool
 	doc     docModel
 
-	searchResult *search.Result
-	search       searchModel
+	search searchModel
 
 	enteringCmd bool
 	commandBar  commandBar
@@ -53,8 +51,7 @@ func initialModel(noteBook *mdfiles.MdDirectory) model {
 		0, 0,
 		true,
 		newDoc(0, 0),
-		nil,
-		newSearchModel(),
+		newSearchModel(noteBook),
 		false,
 		newCommandBar(),
 	}
@@ -102,21 +99,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, cmd
 	case searchMsg:
-		m.searchResult = search.NewFullText(msg.search, m.noteBook)
-		m.search.setResult(m.searchResult)
+		m.search.setQuery(msg.search)
 		m.history.Push(historyItem{kindSearch, msg.search})
 		m.showDoc = false
-		return m, nil
 	case statusMsg:
 		m.statusMsg = msg.s
-		return m, nil
 	case exitCmdMsg:
 		m.enteringCmd = false
-		return m, nil
 	case editorFinishedMsg:
-		return m, refreshNotebook(m.noteBook.Path)
+		return m, refreshNotebook(m.noteBook.Path())
 	case refreshNotebookMsg:
-		return m, refreshNotebook(m.noteBook.Path)
+		return m, refreshNotebook(m.noteBook.Path())
 	case openRandomMsg:
 		note := m.noteBook.RandomNote()
 		return m, openLinkCmd(note.ID)
@@ -131,28 +124,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		note := m.noteBook.LastNote()
 		return m, openLinkCmd(note.ID)
 	case noteBookLoadedMsg:
-		m.noteBook = msg.noteBook
-		// Force a rerender of the document
-		if m.history.curPos >= 0 {
-			m.setHistoryItem(m.history.GetCurrent())
-		}
-		return m, nil
+		m.setNotebook(msg.noteBook)
 	case openLinkMsg:
 		m.openNote(msg.id, true)
-		return m, nil
 	case saveToCollectionMsg:
 		item := m.history.GetCurrent()
 
 		if item != (historyItem{}) && item.kind == kindNote {
 			m.noteBook.SaveToCollection(item.value)
 		}
-		return m, nil
 	case resetCollectionMsg:
 		m.noteBook.ResetCollection()
-		return m, nil
 	case tea.WindowSizeMsg:
 		m.setSize(msg.Width, msg.Height)
-		return m, nil
 	}
 
 	return m, nil
@@ -170,7 +154,7 @@ func (m model) View() string {
 		bottomBar = render.BottomBarNote(m.doc.note, m.width)
 	} else {
 		view = m.search.View()
-		bottomBar = render.BottomBarSearch(m.searchResult, m.width)
+		bottomBar = render.BottomBarSearch(m.search.result, m.width)
 	}
 
 	var statusBar string
@@ -190,6 +174,16 @@ func (m *model) setSize(width, height int) {
 	m.doc.setSize(m.width, m.height-5)
 	m.search.setSize(m.width, m.height-5)
 	m.commandBar.setSize(m.width, 1)
+}
+
+func (m *model) setNotebook(notebook *mdfiles.MdDirectory) {
+	m.noteBook = notebook
+	m.search.setCollection(notebook)
+
+	// Force a rerender of the current document
+	if m.history.curPos >= 0 {
+		m.setHistoryItem(m.history.GetCurrent())
+	}
 }
 
 func (m *model) edit() tea.Cmd {
@@ -219,7 +213,7 @@ func (m *model) setHistoryItem(item historyItem) {
 		m.openNote(item.value, false)
 	case kindSearch:
 		m.showDoc = false
-		m.search.setResult(search.NewFullText(item.value, m.noteBook))
+		m.search.setQuery(item.value)
 	}
 }
 

@@ -24,7 +24,7 @@ func changeID(mdd *MdDirectory, oldID, newID string) error {
 }
 
 func updateLinks(mdd *MdDirectory, oldId, newId string) error {
-	return filepath.WalkDir(mdd.Path, func(path string, _ fs.DirEntry, e error) error {
+	return filepath.WalkDir(mdd.path, func(path string, _ fs.DirEntry, e error) error {
 		if filepath.Ext(path) != ".md" {
 			return nil
 		}

@@ -18,7 +18,7 @@ import (
 type BackLinks map[string][]*core.Note
 
 type MdDirectory struct {
-	Path  string
+	path  string
 	notes []*core.Note
 }
 
@@ -67,7 +67,7 @@ func Load(dir string) (*MdDirectory, error) {
 	})
 
 	mdd := &MdDirectory{
-		Path:  dir,
+		path:  dir,
 		notes: notes,
 	}
 
@@ -85,14 +85,14 @@ func (mdd *MdDirectory) nextID() string {
 
 func (mdd *MdDirectory) notePath(id string) string {
 	filename := fmt.Sprintf("%s.md", id)
-	return path.Join(mdd.Path, filename)
+	return path.Join(mdd.path, filename)
 }
 
 func (mdd *MdDirectory) CreateNote(title string) (*core.Note, error) {
 	id := mdd.nextID()
 
 	filename := fmt.Sprintf("%s.md", id)
-	path := path.Join(mdd.Path, filename)
+	path := path.Join(mdd.path, filename)
 
 	note, err := createNote(path, id, title)
 	if err != nil {
@@ -120,6 +120,10 @@ func (mdd *MdDirectory) FindNote(id string) *core.Note {
 
 func (mdd *MdDirectory) ListNotes() []*core.Note {
 	return mdd.notes
+}
+
+func (mdd *MdDirectory) Path() string {
+	return mdd.path
 }
 
 func (mdd *MdDirectory) DeleteNote(id int) error {
@@ -151,7 +155,7 @@ func (mdd *MdDirectory) Migrate() error {
 }
 
 func (mdd *MdDirectory) collectionFilename() string {
-	return path.Join(mdd.Path, ".collection")
+	return path.Join(mdd.path, ".collection")
 }
 
 func (mdd *MdDirectory) SaveToCollection(id string) error {

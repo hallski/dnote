@@ -16,11 +16,6 @@ import (
 
 const docMaxWidth = 84
 
-type selectedLink struct {
-	ID    string
-	index int
-}
-
 type docModel struct {
 	keymap docKeymap
 

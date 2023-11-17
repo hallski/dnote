@@ -7,6 +7,7 @@ type openLinkMsg struct {
 }
 
 type statusMsg struct{ s string }
+type statusMsgTimeoutMsg struct{ id int }
 type editorFinishedMsg struct{}
 type refreshNotebookMsg struct{}
 type noteBookLoadedMsg struct{ noteBook *mdfiles.MdDirectory }

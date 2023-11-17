@@ -6,6 +6,7 @@ import (
 	"dnote/mdfiles"
 	"fmt"
 	"os/exec"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -95,4 +96,11 @@ func openInDirectionCmd(notebook *mdfiles.MdDirectory, note *core.Note, dir mdfi
 	}
 
 	return openLinkCmd(newNote.ID)
+}
+
+func timeoutStatusCmd(statusId int) tea.Cmd {
+	return func() tea.Msg {
+		time.Sleep(1 * time.Second)
+		return statusMsgTimeoutMsg{statusId}
+	}
 }

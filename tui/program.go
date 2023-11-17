@@ -40,6 +40,8 @@ type model struct {
 	enteringCmd bool
 	commandBar  commandBar
 	statusMsg   string
+
+	statusId int
 }
 
 func initialModel(noteBook *mdfiles.MdDirectory) model {
@@ -54,6 +56,7 @@ func initialModel(noteBook *mdfiles.MdDirectory) model {
 		false,
 		newCommandBar(),
 		"",
+		1,
 	}
 }
 
@@ -116,6 +119,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.showDoc = false
 	case statusMsg:
 		m.statusMsg = msg.s
+		m.statusId++
+		return m, timeoutStatusCmd(m.statusId)
+	case statusMsgTimeoutMsg:
+		if m.statusId == msg.id {
+			m.statusMsg = ""
+		}
+		return m, nil
 	case startSearchMsg:
 		m.commandBar.startSearch(msg.query)
 	case editorFinishedMsg:

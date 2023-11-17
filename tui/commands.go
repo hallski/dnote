@@ -4,7 +4,6 @@ import (
 	"dnote/ext"
 	"dnote/mdfiles"
 	"fmt"
-	"os/exec"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -30,16 +29,26 @@ func openLinkCmd(id string) tea.Cmd {
 }
 
 func startEditor(path string) tea.Cmd {
-	editor := ext.GetEditor()
-	c := exec.Command(editor, path)
+	return func() tea.Msg {
+		c := ext.GetEditorNewPane(path)
 
-	return tea.ExecProcess(c, func(err error) tea.Msg {
-		if err != nil {
+		if err := c.Run(); err != nil {
 			return statusMsg{fmt.Sprintf("Failed editing: %s", err)}
-		} else {
-			return editorFinishedMsg{}
 		}
-	})
+
+		return editorFinishedMsg{}
+	}
+	//
+	// exec.Command(editorPath, arg...)
+	//
+	// return tea.ExecProcess(c, func(err error) tea.Msg {
+	// 	if err != nil {
+	// 		panic(err)
+	// 		return statusMsg{fmt.Sprintf("Failed editing: %s", err)}
+	// 	} else {
+	// 		return editorFinishedMsg{}
+	// 	}
+	// })
 }
 
 func openEditor(noteBook *mdfiles.MdDirectory, id string) tea.Cmd {

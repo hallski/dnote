@@ -205,9 +205,15 @@ func (m *docModel) renderNote(note *core.Note) {
 }
 
 func (m *docModel) setSize(width, height int) {
+	oldWidth := m.width
 	m.width, m.height = width, height
-	m.viewport = viewport.New(width, height-render.BottomBarHeight)
-	m.render()
+
+	if oldWidth != width {
+		m.render()
+	}
+
+	m.viewport.Width = width
+	m.viewport.Height = height - render.BottomBarHeight
 }
 
 func newDoc(width, height int) docModel {

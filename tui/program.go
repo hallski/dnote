@@ -3,6 +3,7 @@ package tui
 import (
 	"dnote/mdfiles"
 	"dnote/render"
+	"fmt"
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
@@ -136,6 +137,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case resetCollectionMsg:
 		m.noteBook.ResetCollection()
 	case tea.WindowSizeMsg:
+		m.statusMsg = fmt.Sprintf("Changed size to %dx%d", msg.Width, msg.Height)
 		m.setSize(msg.Width, msg.Height)
 	}
 

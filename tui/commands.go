@@ -99,8 +99,7 @@ func openInDirectionCmd(notebook *mdfiles.MdDirectory, note *core.Note, dir mdfi
 }
 
 func timeoutStatusCmd(statusId int) tea.Cmd {
-	return func() tea.Msg {
-		time.Sleep(1 * time.Second)
+	return tea.Tick(1*time.Second, func(t time.Time) tea.Msg {
 		return statusMsgTimeoutMsg{statusId}
-	}
+	})
 }

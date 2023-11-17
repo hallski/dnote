@@ -174,4 +174,7 @@ func (cb *commandBar) startAdd() {
 
 func (cb *commandBar) startSearch(query string) {
 	cb.input = "search " + query
+	if query != "" {
+		cb.input += " "
+	}
 }

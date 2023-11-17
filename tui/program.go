@@ -70,9 +70,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keymap.Quit):
 			return m, tea.Quit
 		case key.Matches(msg, m.keymap.Search):
-			m.commandBar.startSearch("")
-			m.enteringCmd = true
-			return m, nil
+			return m, emitMsgCmd(startSearchMsg{""})
 		case key.Matches(msg, m.keymap.EditNode):
 			return m, m.edit()
 		case key.Matches(msg, m.keymap.Back):
@@ -105,13 +103,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, cmd
 	case searchMsg:
-		m.search.setQuery(msg.search)
-		m.history.Push(historyItem{kindSearch, msg.search})
+		m.search.setQuery(msg.query)
+		m.history.Push(historyItem{kindSearch, msg.query})
 		m.showDoc = false
 	case statusMsg:
 		m.statusMsg = msg.s
 	case exitCmdMsg:
 		m.enteringCmd = false
+	case startSearchMsg:
+		m.commandBar.startSearch(msg.query)
+		m.enteringCmd = true
 	case editorFinishedMsg:
 		return m, refreshNotebook(m.noteBook.Path())
 	case refreshNotebookMsg:

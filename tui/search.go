@@ -18,7 +18,7 @@ type searchModel struct {
 
 	collection search.FullTextCollection
 
-	keymap   docKeymap
+	keymap   searchKeymap
 	viewport viewport.Model
 
 	result *search.Result
@@ -26,7 +26,7 @@ type searchModel struct {
 }
 
 func newSearchModel(collection search.FullTextCollection) searchModel {
-	return searchModel{collection: collection, keymap: defaultDocKeyMap}
+	return searchModel{collection: collection, keymap: defaultSearchKeyMap}
 }
 
 func (m searchModel) Init() tea.Cmd {
@@ -51,10 +51,13 @@ func (m searchModel) Update(msg tea.Msg) (searchModel, tea.Cmd) {
 			if l != "" {
 				return m, openLinkCmd(l)
 			}
+		case key.Matches(msg, m.keymap.ExtendSearch):
+			return m, emitMsgCmd(startSearchMsg{m.result.Query})
 		case m.links.GetLinkFromShortcut(msg.String()) != core.ShortcutLink{}:
 			// Match any key that is a link shortcut
 			return m, openLinkCmd(m.links.GetLinkFromShortcut(msg.String()).ID)
 		}
+
 		var cmd tea.Cmd
 		m.viewport, cmd = m.viewport.Update(msg)
 		return m, cmd
@@ -108,6 +111,7 @@ func (m *searchModel) setCollection(collection search.FullTextCollection) {
 }
 
 func (m *searchModel) setQuery(query string) {
+	fmt.Printf("SEARCH %s", query)
 	m.setResult(search.NewFullText(query, m.collection))
 }
 

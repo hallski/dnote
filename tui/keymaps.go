@@ -15,6 +15,13 @@ type appKeyMap struct {
 	OpenLastNote   key.Binding
 }
 
+type searchKeymap struct {
+	NextLink     key.Binding
+	PrevLink     key.Binding
+	OpenLink     key.Binding
+	ExtendSearch key.Binding
+}
+
 type docKeymap struct {
 	NextLink key.Binding
 	PrevLink key.Binding
@@ -93,6 +100,25 @@ var defaultDocKeyMap = docKeymap{
 	OpenLink: key.NewBinding(
 		key.WithKeys("enter"),
 		key.WithHelp("enter", "open link"),
+	),
+}
+
+var defaultSearchKeyMap = searchKeymap{
+	NextLink: key.NewBinding(
+		key.WithKeys("ctrl+n"),
+		key.WithHelp("ctrl+n", "next link"),
+	),
+	PrevLink: key.NewBinding(
+		key.WithKeys("ctrl+p"),
+		key.WithHelp("ctrl+p", "prev link"),
+	),
+	OpenLink: key.NewBinding(
+		key.WithKeys("enter"),
+		key.WithHelp("enter", "open link"),
+	),
+	ExtendSearch: key.NewBinding(
+		key.WithKeys("s"),
+		key.WithHelp("s", "edit search"),
 	),
 }
 

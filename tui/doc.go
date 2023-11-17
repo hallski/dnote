@@ -79,8 +79,8 @@ func (m *docModel) prevLink() {
 var linkReplacementRE = regexp.MustCompile(fmt.Sprintf("\\|\\|([0-9]{%d})\\|\\|",
 	core.IDLength))
 
-var tagsRE = regexp.MustCompile("\\s#+\\w+\\b")
-var tagsReplacementRE = regexp.MustCompile("#qzq##+\\w+#qzq#")
+var tagsRE = regexp.MustCompile("\\s#+[-\\w]+\\b")
+var tagsReplacementRE = regexp.MustCompile("#qzq##+[-\\w]+#qzq#")
 
 // Adds a hack to support wiki links even though Glamour do not support them
 // Since [[ is part of ANSI escape codes, replace them with || before parsing

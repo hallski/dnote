@@ -9,10 +9,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-func exitCommandBar() tea.Msg {
-	return exitCmdMsg{}
-}
-
 // Command to send a message
 // Used by sub views to pass messages back to the program
 func emitMsgCmd(msg tea.Msg) tea.Cmd {

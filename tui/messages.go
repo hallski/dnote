@@ -2,7 +2,6 @@ package tui
 
 import "dnote/mdfiles"
 
-type exitCmdMsg struct{}
 type openLinkMsg struct {
 	id string
 }

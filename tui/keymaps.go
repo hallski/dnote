@@ -29,9 +29,8 @@ type docKeymap struct {
 }
 
 type commandBarKeymap struct {
-	Exit      key.Binding
-	Commit    key.Binding
-	Backspace key.Binding
+	Exit   key.Binding
+	Commit key.Binding
 }
 
 var quickOpen = []byte("0123456789")
@@ -130,9 +129,5 @@ var defaultCmdKeyMap = commandBarKeymap{
 	Commit: key.NewBinding(
 		key.WithKeys("enter"),
 		key.WithHelp("enter", "commit command"),
-	),
-	Backspace: key.NewBinding(
-		key.WithKeys("backspace"),
-		key.WithHelp("backspace", "backspace"),
 	),
 }

@@ -63,7 +63,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case m.enteringCmd:
+		case m.commandBar.focused():
 			var cmd tea.Cmd
 			m.commandBar, cmd = m.commandBar.Update(msg)
 			return m, cmd
@@ -80,16 +80,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.setHistoryItem(m.history.GoForward())
 			return m, nil
 		case key.Matches(msg, m.keymap.StartCmd):
-			m.enteringCmd = true
-			return m, nil
+			return m, m.commandBar.focus()
 		case key.Matches(msg, m.keymap.QuickOpen):
 			m.commandBar.startOpen(msg.String())
-			m.enteringCmd = true
 			return m, nil
 		case key.Matches(msg, m.keymap.AddNote):
-			m.commandBar.startAdd()
-			m.enteringCmd = true
-			return m, nil
+			return m, m.commandBar.startAdd()
 		case key.Matches(msg, m.keymap.OpenRandomNote):
 			return m, emitMsgCmd(openRandomMsg{})
 		case key.Matches(msg, m.keymap.OpenLastNote):
@@ -108,11 +104,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.showDoc = false
 	case statusMsg:
 		m.statusMsg = msg.s
-	case exitCmdMsg:
-		m.enteringCmd = false
 	case startSearchMsg:
 		m.commandBar.startSearch(msg.query)
-		m.enteringCmd = true
 	case editorFinishedMsg:
 		return m, refreshNotebook(m.noteBook.Path())
 	case refreshNotebookMsg:
@@ -146,7 +139,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.setSize(msg.Width, msg.Height)
 	}
 
-	return m, nil
+	var cbCmd, viewCmd tea.Cmd
+	m.commandBar, cbCmd = m.commandBar.Update(msg)
+	if m.showDoc {
+		m.doc, viewCmd = m.doc.Update(msg)
+	} else {
+		m.search, viewCmd = m.search.Update(msg)
+	}
+	return m, tea.Batch(cbCmd, viewCmd)
 }
 
 // Render the entire UI
@@ -161,7 +161,7 @@ func (m model) View() string {
 	}
 
 	var statusBar string
-	if m.enteringCmd {
+	if m.commandBar.focused() {
 		statusBar = m.commandBar.View()
 	} else {
 		statusStyle := lipgloss.NewStyle().Width(m.width)

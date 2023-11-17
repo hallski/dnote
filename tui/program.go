@@ -96,6 +96,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, emitMsgCmd(openRandomMsg{})
 		case key.Matches(msg, m.keymap.OpenLastNote):
 			return m, emitMsgCmd(openLastMsg{})
+		case key.Matches(msg, m.keymap.PrevNote):
+			return m, emitMsgCmd(openPrevNoteMsg{})
+		case key.Matches(msg, m.keymap.NextNote):
+			return m, emitMsgCmd(openNextNoteMsg{})
 		}
 		var cmd tea.Cmd
 		if m.showDoc {
@@ -118,6 +122,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case openRandomMsg:
 		note := m.noteBook.RandomNote()
 		return m, openLinkCmd(note.ID)
+	case openPrevNoteMsg:
+		if m.showDoc {
+			return m, openInDirectionCmd(m.noteBook, m.doc.note, mdfiles.Backward)
+		}
+	case openNextNoteMsg:
+		if m.showDoc {
+			return m, openInDirectionCmd(m.noteBook, m.doc.note, mdfiles.Forward)
+		}
 	case addNoteMessage:
 		note, err := m.noteBook.CreateNote(msg.title)
 		if err != nil {

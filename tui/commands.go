@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"dnote/core"
 	"dnote/ext"
 	"dnote/mdfiles"
 	"fmt"
@@ -86,4 +87,13 @@ func searchCmd(query string) tea.Cmd {
 	return func() tea.Msg {
 		return searchMsg{query}
 	}
+}
+
+func openInDirectionCmd(notebook *mdfiles.MdDirectory, note *core.Note, dir mdfiles.CycleDirection) tea.Cmd {
+	newNote := notebook.NoteInDirection(note, dir)
+	if newNote == nil {
+		return nil
+	}
+
+	return openLinkCmd(newNote.ID)
 }

@@ -16,6 +16,8 @@ type appKeyMap struct {
 	AddNoteAlt     key.Binding
 	OpenRandomNote key.Binding
 	OpenLastNote   key.Binding
+	NextNote       key.Binding
+	PrevNote       key.Binding
 }
 
 type searchKeymap struct {
@@ -99,6 +101,14 @@ var defaultAppKeyMap = appKeyMap{
 	OpenLastNote: key.NewBinding(
 		key.WithKeys("l"),
 		key.WithHelp("l", "last note"),
+	),
+	NextNote: key.NewBinding(
+		key.WithKeys("]"),
+		key.WithHelp("]", "next note"),
+	),
+	PrevNote: key.NewBinding(
+		key.WithKeys("["),
+		key.WithHelp("[", "previous note"),
 	),
 }
 

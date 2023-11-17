@@ -13,6 +13,8 @@ type noteBookLoadedMsg struct{ noteBook *mdfiles.MdDirectory }
 
 type openRandomMsg struct{}
 type openLastMsg struct{}
+type openNextNoteMsg struct{}
+type openPrevNoteMsg struct{}
 
 type addNoteMessage struct {
 	title   string

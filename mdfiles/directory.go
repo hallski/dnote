@@ -135,6 +135,31 @@ func (mdd *MdDirectory) RandomNote() *core.Note {
 	return mdd.notes[rand.Intn(len(mdd.notes))]
 }
 
+type CycleDirection int
+
+const (
+	Forward CycleDirection = iota
+	Backward
+)
+
+func (mdd *MdDirectory) NoteInDirection(note *core.Note, dir CycleDirection) *core.Note {
+	offset := 1
+	if dir == Backward {
+		offset = -1
+	}
+
+	for i, n := range mdd.notes {
+		if n.ID == note.ID {
+			newIdx := i + offset
+			if newIdx >= 0 && newIdx < len(mdd.notes) {
+				return mdd.notes[newIdx]
+			}
+		}
+	}
+
+	return nil
+}
+
 func (mdd *MdDirectory) LastNote() *core.Note {
 	return mdd.notes[len(mdd.notes)-1]
 }

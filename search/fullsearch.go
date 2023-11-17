@@ -2,18 +2,21 @@ package search
 
 import (
 	"dnote/core"
+	"fmt"
 	"os/exec"
 	"slices"
 	"strings"
 )
 
 func getUgrepCommand(path, query string) *exec.Cmd {
+	searchString := fmt.Sprintf("%s -##nosearch", query)
 	args := []string{
-		"-l",
-		"-i",
-		"--bool",
+		"-l",      // Show matching files
+		"-i",      // Ignore case
+		"--bool",  // Boolean search
+		"--files", // Match in entire file
 		"--format=%a%~",
-		query,
+		searchString,
 		path,
 	}
 

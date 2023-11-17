@@ -124,7 +124,14 @@ var commands = []command{
 		"add",
 		true,
 		func(input string) tea.Cmd {
-			return addNoteCmd(input)
+			return addNoteCmd(input, true)
+		},
+	},
+	{
+		"Add",
+		true,
+		func(input string) tea.Cmd {
+			return addNoteCmd(input, false)
 		},
 	},
 }
@@ -176,8 +183,12 @@ func (cb *commandBar) startOpen(v string) tea.Cmd {
 	return cb.textField.Focus()
 }
 
-func (cb *commandBar) startAdd() tea.Cmd {
-	cb.textField.SetValue("add ")
+func (cb *commandBar) startAdd(newPane bool) tea.Cmd {
+	cmd := "add"
+	if !newPane {
+		cmd = "Add"
+	}
+	cb.textField.SetValue(cmd + " ")
 	return cb.textField.Focus()
 }
 

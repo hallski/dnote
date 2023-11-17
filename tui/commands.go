@@ -4,6 +4,7 @@ import (
 	"dnote/ext"
 	"dnote/mdfiles"
 	"fmt"
+	"os/exec"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -28,36 +29,40 @@ func openLinkCmd(id string) tea.Cmd {
 	}
 }
 
-func startEditor(path string) tea.Cmd {
-	return func() tea.Msg {
-		c := ext.GetEditorNewPane(path)
+func startEditor(path string, newPane bool) tea.Cmd {
+	if newPane {
 
-		if err := c.Run(); err != nil {
-			return statusMsg{fmt.Sprintf("Failed editing: %s", err)}
+		return func() tea.Msg {
+			c := ext.GetEditorNewPane(path)
+
+			if err := c.Run(); err != nil {
+				return statusMsg{fmt.Sprintf("Failed editing: %s", err)}
+			}
+
+			return editorFinishedMsg{}
 		}
-
-		return editorFinishedMsg{}
 	}
-	//
-	// exec.Command(editorPath, arg...)
-	//
-	// return tea.ExecProcess(c, func(err error) tea.Msg {
-	// 	if err != nil {
-	// 		panic(err)
-	// 		return statusMsg{fmt.Sprintf("Failed editing: %s", err)}
-	// 	} else {
-	// 		return editorFinishedMsg{}
-	// 	}
-	// })
+
+	editor := ext.GetEditor()
+
+	c := exec.Command(editor, path)
+
+	return tea.ExecProcess(c, func(err error) tea.Msg {
+		if err != nil {
+			return statusMsg{fmt.Sprintf("Failed editing: %s", err)}
+		} else {
+			return editorFinishedMsg{}
+		}
+	})
 }
 
-func openEditor(noteBook *mdfiles.MdDirectory, id string) tea.Cmd {
+func openEditor(noteBook *mdfiles.MdDirectory, id string, newPane bool) tea.Cmd {
 	note := noteBook.FindNote(id)
 	if note == nil {
 		return func() tea.Msg { return statusMsg{"Failed opening " + id} }
 	}
 
-	return startEditor(note.Path)
+	return startEditor(note.Path, newPane)
 }
 
 func refreshNotebook(path string) tea.Cmd {
@@ -71,9 +76,9 @@ func refreshNotebook(path string) tea.Cmd {
 	}
 }
 
-func addNoteCmd(title string) tea.Cmd {
+func addNoteCmd(title string, newPane bool) tea.Cmd {
 	return func() tea.Msg {
-		return addNoteMessage{title}
+		return addNoteMessage{title, newPane}
 	}
 }
 

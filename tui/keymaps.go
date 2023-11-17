@@ -6,11 +6,14 @@ type appKeyMap struct {
 	Quit           key.Binding
 	Search         key.Binding
 	EditNode       key.Binding
+	EditNodeAlt    key.Binding
 	Back           key.Binding
 	Forward        key.Binding
+	RefreshNotes   key.Binding
 	StartCmd       key.Binding
 	QuickOpen      key.Binding
 	AddNote        key.Binding
+	AddNoteAlt     key.Binding
 	OpenRandomNote key.Binding
 	OpenLastNote   key.Binding
 }
@@ -57,6 +60,10 @@ var defaultAppKeyMap = appKeyMap{
 		key.WithKeys("e"),
 		key.WithHelp("e", "edit note"),
 	),
+	EditNodeAlt: key.NewBinding(
+		key.WithKeys("alt+e"),
+		key.WithHelp("alt+e", "edit note same pane"),
+	),
 	Back: key.NewBinding(
 		key.WithKeys("ctrl+o"),
 		key.WithHelp("ctrl+o", "back"),
@@ -64,6 +71,10 @@ var defaultAppKeyMap = appKeyMap{
 	Forward: key.NewBinding(
 		key.WithKeys("tab"),
 		key.WithHelp("tab", "forward"),
+	),
+	RefreshNotes: key.NewBinding(
+		key.WithKeys("r"),
+		key.WithHelp("r", "refresh notes"),
 	),
 	StartCmd: key.NewBinding(
 		key.WithKeys("."),
@@ -76,6 +87,10 @@ var defaultAppKeyMap = appKeyMap{
 	AddNote: key.NewBinding(
 		key.WithKeys("a"),
 		key.WithHelp("a", "add note"),
+	),
+	AddNoteAlt: key.NewBinding(
+		key.WithKeys("alt+a"),
+		key.WithHelp("alt+a", "add note same pane"),
 	),
 	OpenRandomNote: key.NewBinding(
 		key.WithKeys("m"),

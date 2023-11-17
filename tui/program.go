@@ -3,7 +3,6 @@ package tui
 import (
 	"dnote/mdfiles"
 	"dnote/render"
-	"fmt"
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
@@ -73,20 +72,26 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keymap.Search):
 			return m, emitMsgCmd(startSearchMsg{""})
 		case key.Matches(msg, m.keymap.EditNode):
-			return m, m.edit()
+			return m, m.edit(true)
+		case key.Matches(msg, m.keymap.EditNodeAlt):
+			return m, m.edit(false)
 		case key.Matches(msg, m.keymap.Back):
 			m.setHistoryItem(m.history.GoBack())
 			return m, nil
 		case key.Matches(msg, m.keymap.Forward):
 			m.setHistoryItem(m.history.GoForward())
 			return m, nil
+		case key.Matches(msg, m.keymap.RefreshNotes):
+			return m, refreshNotebook(m.noteBook.Path())
 		case key.Matches(msg, m.keymap.StartCmd):
 			return m, m.commandBar.focus()
 		case key.Matches(msg, m.keymap.QuickOpen):
 			m.commandBar.startOpen(msg.String())
 			return m, nil
 		case key.Matches(msg, m.keymap.AddNote):
-			return m, m.commandBar.startAdd()
+			return m, m.commandBar.startAdd(true)
+		case key.Matches(msg, m.keymap.AddNoteAlt):
+			return m, m.commandBar.startAdd(false)
 		case key.Matches(msg, m.keymap.OpenRandomNote):
 			return m, emitMsgCmd(openRandomMsg{})
 		case key.Matches(msg, m.keymap.OpenLastNote):
@@ -108,7 +113,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case startSearchMsg:
 		m.commandBar.startSearch(msg.query)
 	case editorFinishedMsg:
-		return m, refreshNotebook(m.noteBook.Path())
 	case refreshNotebookMsg:
 		return m, refreshNotebook(m.noteBook.Path())
 	case openRandomMsg:
@@ -120,12 +124,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.statusMsg = "Error creating note"
 			return m, nil
 		}
-		return m, openEditor(m.noteBook, note.ID)
+		return m, openEditor(m.noteBook, note.ID, msg.newPane)
 	case openLastMsg:
 		note := m.noteBook.LastNote()
 		return m, openLinkCmd(note.ID)
 	case noteBookLoadedMsg:
 		m.setNotebook(msg.noteBook)
+		return m, emitStatusMsgCmd("Refreshed")
 	case openLinkMsg:
 		m.openNote(msg.id, true)
 	case saveToCollectionMsg:
@@ -137,7 +142,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case resetCollectionMsg:
 		m.noteBook.ResetCollection()
 	case tea.WindowSizeMsg:
-		m.statusMsg = fmt.Sprintf("Changed size to %dx%d", msg.Width, msg.Height)
 		m.setSize(msg.Width, msg.Height)
 	}
 
@@ -195,13 +199,13 @@ func (m *model) setNotebook(notebook *mdfiles.MdDirectory) {
 	}
 }
 
-func (m *model) edit() tea.Cmd {
+func (m *model) edit(newPane bool) tea.Cmd {
 	item := m.history.GetCurrent()
 	if item.kind != kindNote {
 		return nil
 	}
 
-	return openEditor(m.noteBook, item.value)
+	return openEditor(m.noteBook, item.value, newPane)
 }
 
 func (m *model) openNote(id string, nav bool) {

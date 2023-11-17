@@ -14,7 +14,10 @@ type noteBookLoadedMsg struct{ noteBook *mdfiles.MdDirectory }
 type openRandomMsg struct{}
 type openLastMsg struct{}
 
-type addNoteMessage struct{ title string }
+type addNoteMessage struct {
+	title   string
+	newPane bool
+}
 
 type resetCollectionMsg struct{}
 type saveToCollectionMsg struct{}

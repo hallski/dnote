@@ -14,7 +14,7 @@ func GetEditor() string {
 
 func GetEditorNewPane(path string) *exec.Cmd {
 	editor := GetEditor()
-	cmd := exec.Command("kitten", "@launch", editor, path)
+	cmd := exec.Command("kitten", "@launch", "--cwd", "current", editor, path)
 	return cmd
 }
 

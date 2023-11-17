@@ -3,6 +3,8 @@ package tui
 import (
 	"dnote/mdfiles"
 	"dnote/render"
+	"os"
+	"time"
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
@@ -246,6 +248,31 @@ func Run(noteBook *mdfiles.MdDirectory, openId string) error {
 	m := initialModel(noteBook)
 	m.openNote(openId, true)
 	p := tea.NewProgram(m)
+
+	// Poor mans directory watcher
+	// Tried with fsnotify/fsnotify but it gave lots of events for each
+	// change and stopped triggering after a short while
+	path := noteBook.Path()
+	go func() {
+		fileInfo, err := os.Stat(path)
+		if err != nil {
+			panic(err)
+		}
+
+		for {
+			time.Sleep(500 * time.Millisecond)
+
+			fi, err := os.Stat(path)
+			if err != nil {
+				panic(err)
+			}
+
+			if fi.ModTime() != fileInfo.ModTime() {
+				p.Send(refreshNotebookMsg{})
+			}
+			fileInfo = fi
+		}
+	}()
 
 	_, err := p.Run()
 

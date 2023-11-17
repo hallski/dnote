@@ -32,7 +32,6 @@ func openLinkCmd(id string) tea.Cmd {
 
 func startEditor(path string, newPane bool) tea.Cmd {
 	if newPane {
-
 		return func() tea.Msg {
 			c := ext.GetEditorNewPane(path)
 

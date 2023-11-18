@@ -188,7 +188,7 @@ func (m *commandBar) focus() tea.Cmd {
 	return m.textField.Focus()
 }
 
-func (m *commandBar) focused() bool {
+func (m *commandBar) inputActive() bool {
 	return m.textField.Focused()
 }
 

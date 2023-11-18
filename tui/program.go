@@ -4,6 +4,7 @@ import (
 	"dnote/ext"
 	"dnote/mdfiles"
 	"dnote/render"
+	"fmt"
 	"os"
 	"time"
 
@@ -57,14 +58,15 @@ func initialModel(noteBook *mdfiles.MdDirectory) model {
 }
 
 func (m model) Init() tea.Cmd {
-	return getStatusCmd(m.noteBook.Path())
+	return nil
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case m.commandBar.focused():
+		// If command bar is active, key bindings should be sent there
+		case m.commandBar.inputActive():
 			var cmd tea.Cmd
 			m.commandBar, cmd = m.commandBar.Update(msg)
 			return m, cmd
@@ -242,15 +244,10 @@ func (m *model) setHistoryItem(item historyItem) {
 	}
 }
 
-func Run(noteBook *mdfiles.MdDirectory, openId string) error {
-	m := initialModel(noteBook)
-	m.openNote(openId, true)
-	p := tea.NewProgram(m)
-
-	// Poor mans directory watcher
-	// Tried with fsnotify/fsnotify but it gave lots of events for each
-	// change and stopped triggering after a short while
-	path := noteBook.Path()
+// Poor mans directory watcher
+// Tried with fsnotify/fsnotify but it gave lots of events for each
+// change and stopped triggering after a short while
+func startFileMonitor(p *tea.Program, path string) {
 	go func() {
 		fileInfo, err := os.Stat(path)
 		if err != nil {
@@ -271,6 +268,34 @@ func Run(noteBook *mdfiles.MdDirectory, openId string) error {
 			fileInfo = fi
 		}
 	}()
+}
+
+func startGitMonitor(p *tea.Program, path string) {
+	client, err := ext.NewGitClient(path)
+	if err != nil {
+		p.Send(statusMsg{"Couldn't find Git executable"})
+		return
+	}
+
+	go func() {
+		for {
+			status, err := client.Status()
+			if err != nil {
+				p.Send(statusMsg{fmt.Sprintf("Failed to check git status: %s", err)})
+			}
+
+			p.Send(gitStatusMsg{status})
+		}
+	}()
+}
+
+func Run(noteBook *mdfiles.MdDirectory, openId string) error {
+	m := initialModel(noteBook)
+	m.openNote(openId, true)
+	p := tea.NewProgram(m)
+
+	startFileMonitor(p, noteBook.Path())
+	startGitMonitor(p, noteBook.Path())
 
 	_, err := p.Run()
 

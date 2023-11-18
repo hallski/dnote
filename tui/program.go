@@ -102,6 +102,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, emitMsgCmd(openPrevNoteMsg{})
 		case key.Matches(msg, m.keymap.NextNote):
 			return m, emitMsgCmd(openNextNoteMsg{})
+		case key.Matches(msg, m.keymap.GitCommit):
+			if m.gitStatus == ext.Dirty {
+				return m, gitCommitCmd(m.noteBook.Path(), "")
+			}
+			return m, emitStatusMsgCmd("Nothing to commit")
+		case key.Matches(msg, m.keymap.GitSync):
+			return m, gitSyncCmd(m.noteBook.Path())
 		}
 		var cmd tea.Cmd
 		if m.showDoc {
@@ -116,6 +123,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.showDoc = false
 	case startSearchMsg:
 		m.commandBar.startSearch(msg.query)
+	case gitCommandFinishedMsg:
+		return m, tea.Batch(
+			emitStatusMsgCmd(msg.result), getGitStatusCmd(m.noteBook.Path()),
+		)
 	case notesDirModifiedMsg:
 		path := m.noteBook.Path()
 		return m, tea.Batch(refreshNotebook(path), getGitStatusCmd(path))
@@ -174,7 +185,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // Render the entire UI
 func (m model) View() string {
-	title := render.Titlebar(m.width, m.noteBook.LastNote().ID)
+	// TODO: Git Quick Test
+	gitStatus := render.StyleHighGreen.Render("█")
+	if m.gitStatus == ext.Dirty {
+		gitStatus = render.StyleHighRed.Render("█")
+	}
+
+	title := render.Titlebar(m.width, m.noteBook.LastNote().ID) + gitStatus
 
 	view := ""
 	if m.showDoc {
@@ -183,13 +200,7 @@ func (m model) View() string {
 		view = m.search.View()
 	}
 
-	// TODO: Quick Test
-	gitStatus := render.StyleHighGreen.Render("█")
-	if m.gitStatus == ext.Dirty {
-		gitStatus = render.StyleHighRed.Render("█")
-	}
-
-	return lipgloss.JoinVertical(0, title, view, gitStatus+m.commandBar.View())
+	return lipgloss.JoinVertical(0, title, view, m.commandBar.View())
 }
 
 func (m *model) setSize(width, height int) {
@@ -201,8 +212,7 @@ func (m *model) setSize(width, height int) {
 
 	m.doc.setSize(m.width, mainViewSize)
 	m.search.setSize(m.width, mainViewSize)
-	// TODO: -1 here is for Git quick test, remove this later
-	m.commandBar.setSize(m.width-1, CommandBarHeight)
+	m.commandBar.setSize(m.width, CommandBarHeight)
 }
 
 func (m *model) setNotebook(notebook *mdfiles.MdDirectory) {

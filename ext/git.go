@@ -75,10 +75,28 @@ func (client *GitClient) Pull(path string) error {
 	return nil
 }
 
-func (client *GitClient) Commit(path string) error {
-	_, err := client.runCommand("commit", "-m", "Commit from dNote")
+func (client *GitClient) Commit(msg string) error {
+	if _, err := client.runCommand("add", "."); err != nil {
+		return err
+	}
 
-	if err != nil {
+	if _, err := client.runCommand("commit", "-m", msg); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (client *GitClient) PullRebasePush() error {
+	if _, err := client.runCommand("pull"); err != nil {
+		return err
+	}
+
+	if _, err := client.runCommand("rebase", "origin/main"); err != nil {
+		return err
+	}
+
+	if _, err := client.runCommand("push", "origin"); err != nil {
 		return err
 	}
 

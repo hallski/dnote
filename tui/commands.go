@@ -103,3 +103,37 @@ func getGitStatusCmd(path string) tea.Cmd {
 		return gitStatusMsg{status}
 	}
 }
+
+func gitCommitCmd(path string, msg string) tea.Cmd {
+	if msg == "" {
+		msg = "Update from dNote"
+	}
+
+	return func() tea.Msg {
+		client, err := ext.NewGitClient(path)
+		if err != nil {
+			return statusMsg{"Couldn't find Git executable"}
+		}
+
+		if err := client.Commit(msg); err != nil {
+			return statusMsg{fmt.Sprintf("Failed to commit: %s", err)}
+		}
+
+		return gitCommandFinishedMsg{"Commited"}
+	}
+}
+
+func gitSyncCmd(path string) tea.Cmd {
+	return func() tea.Msg {
+		client, err := ext.NewGitClient(path)
+		if err != nil {
+			return statusMsg{"Couldn't find Git executable"}
+		}
+
+		if err := client.PullRebasePush(); err != nil {
+			return statusMsg{"Failed to sync with remote"}
+		}
+
+		return gitCommandFinishedMsg{"Successfully sycned with remote"}
+	}
+}

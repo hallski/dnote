@@ -18,6 +18,8 @@ type appKeyMap struct {
 	OpenLastNote   key.Binding
 	NextNote       key.Binding
 	PrevNote       key.Binding
+	GitCommit      key.Binding
+	GitSync        key.Binding
 }
 
 type searchKeymap struct {
@@ -109,6 +111,14 @@ var defaultAppKeyMap = appKeyMap{
 	PrevNote: key.NewBinding(
 		key.WithKeys("["),
 		key.WithHelp("[", "previous note"),
+	),
+	GitCommit: key.NewBinding(
+		key.WithKeys("g"),
+		key.WithHelp("g", "git commit with default msg"),
+	),
+	GitSync: key.NewBinding(
+		key.WithKeys("alt+g"),
+		key.WithHelp("alt+g", "git sync with remote"),
 	),
 }
 

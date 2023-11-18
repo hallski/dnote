@@ -110,5 +110,6 @@ var NrHitsStyle = lipgloss.NewStyle().Foreground(ColorYellow)
 
 var TagsStyle = lipgloss.NewStyle().Foreground(ColorHighBlue)
 
-var GitCleanStyle = StyleHighGreen.Copy()
+var GitCleanStyle = StyleDarkGray.Copy()
 var GitDirtyStyle = StyleHighRed.Copy()
+var GitUpdatingStyle = StyleHighMagenta.Copy()

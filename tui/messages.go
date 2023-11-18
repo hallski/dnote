@@ -33,4 +33,6 @@ type startSearchMsg struct{ query string }
 type searchMsg struct{ query string }
 
 type gitStatusMsg struct{ status ext.GitStatus }
+
+type gitCommandStartedMsg struct{ operation string }
 type gitCommandFinishedMsg struct{ result string }

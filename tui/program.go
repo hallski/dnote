@@ -123,10 +123,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.showDoc = false
 	case startSearchMsg:
 		m.commandBar.startSearch(msg.query)
-	case gitCommandFinishedMsg:
-		return m, tea.Batch(
-			emitStatusMsgCmd(msg.result), getGitStatusCmd(m.noteBook.Path()),
-		)
 	case notesDirModifiedMsg:
 		path := m.noteBook.Path()
 		return m, tea.Batch(refreshNotebook(path), getGitStatusCmd(path))
@@ -135,6 +131,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case gitStatusMsg:
 		m.gitStatus = msg.status
 		return m, nil
+	case gitCommandStartedMsg:
+		m.gitStatus = ext.Updating
+		return m, emitStatusMsgCmd(msg.operation)
+	case gitCommandFinishedMsg:
+		return m, tea.Batch(
+			emitStatusMsgCmd(msg.result), getGitStatusCmd(m.noteBook.Path()),
+		)
 	case openRandomMsg:
 		note := m.noteBook.RandomNote()
 		return m, openLinkCmd(note.ID)

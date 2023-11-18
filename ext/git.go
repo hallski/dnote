@@ -10,6 +10,7 @@ type GitStatus int
 const (
 	Clean GitStatus = iota
 	Dirty
+	Updating
 )
 
 type GitClient struct {

@@ -14,6 +14,8 @@ func Titlebar(width int, lastId string, gitStatus ext.GitStatus) string {
 	gitStatusStyle := GitCleanStyle
 	if gitStatus == ext.Dirty {
 		gitStatusStyle = GitDirtyStyle
+	} else if gitStatus == ext.Updating {
+		gitStatusStyle = GitUpdatingStyle
 	}
 
 	style := lipgloss.NewStyle().Foreground(DividerColor)

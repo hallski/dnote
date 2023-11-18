@@ -89,12 +89,12 @@ func timeoutStatusCmd(statusId int) tea.Cmd {
 }
 
 func getGitStatusCmd(path string) tea.Cmd {
-	return func() tea.Msg {
-		client, err := ext.NewGitClient(path)
-		if err != nil {
-			return statusMsg{"Couldn't find Git executable"}
-		}
+	client, err := ext.NewGitClient(path)
+	if err != nil {
+		return emitStatusMsgCmd("Couldn't find Git executable")
+	}
 
+	return func() tea.Msg {
 		status, err := client.Status()
 		if err != nil {
 			return statusMsg{fmt.Sprintf("Failed to check git status: %s", err)}
@@ -105,35 +105,39 @@ func getGitStatusCmd(path string) tea.Cmd {
 }
 
 func gitCommitCmd(path string, msg string) tea.Cmd {
+	client, err := ext.NewGitClient(path)
+	if err != nil {
+		return emitStatusMsgCmd("Couldn't find Git executable")
+	}
+
 	if msg == "" {
 		msg = "Update from dNote"
 	}
 
-	return func() tea.Msg {
-		client, err := ext.NewGitClient(path)
-		if err != nil {
-			return statusMsg{"Couldn't find Git executable"}
-		}
+	return tea.Batch(
+		emitMsgCmd(gitCommandStartedMsg{}),
+		func() tea.Msg {
+			if err := client.Commit(msg); err != nil {
+				return statusMsg{fmt.Sprintf("Failed to commit: %s", err)}
+			}
 
-		if err := client.Commit(msg); err != nil {
-			return statusMsg{fmt.Sprintf("Failed to commit: %s", err)}
-		}
-
-		return gitCommandFinishedMsg{"Commited"}
-	}
+			return gitCommandFinishedMsg{"Commited"}
+		})
 }
 
 func gitSyncCmd(path string) tea.Cmd {
-	return func() tea.Msg {
-		client, err := ext.NewGitClient(path)
-		if err != nil {
-			return statusMsg{"Couldn't find Git executable"}
-		}
-
-		if err := client.PullRebasePush(); err != nil {
-			return statusMsg{"Failed to sync with remote"}
-		}
-
-		return gitCommandFinishedMsg{"Successfully sycned with remote"}
+	client, err := ext.NewGitClient(path)
+	if err != nil {
+		return emitStatusMsgCmd("Couldn't find Git executable")
 	}
+
+	return tea.Batch(
+		emitMsgCmd(gitCommandStartedMsg{"Syncing with remote"}),
+		func() tea.Msg {
+			if err := client.PullRebasePush(); err != nil {
+				return gitCommandFinishedMsg{"Failed to sync with remote"}
+			}
+
+			return gitCommandFinishedMsg{"Successfully synced with remote"}
+		})
 }

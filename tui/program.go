@@ -41,9 +41,6 @@ type model struct {
 
 	enteringCmd bool
 	commandBar  commandBar
-
-	statusMsg string
-	statusId  int
 }
 
 func initialModel(noteBook *mdfiles.MdDirectory) model {
@@ -56,8 +53,6 @@ func initialModel(noteBook *mdfiles.MdDirectory) model {
 		doc:        newDoc(0, 0),
 		search:     newSearchModel(noteBook),
 		commandBar: newCommandBar(),
-		statusMsg:  "",
-		statusId:   1,
 	}
 }
 
@@ -118,18 +113,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.search.setQuery(msg.query)
 		m.history.Push(historyItem{kindSearch, msg.query})
 		m.showDoc = false
-	case statusMsg:
-		m.statusMsg = msg.s
-		m.statusId++
-		return m, timeoutStatusCmd(m.statusId)
-	case statusMsgTimeoutMsg:
-		if m.statusId == msg.id {
-			m.statusMsg = ""
-		}
-		return m, nil
 	case startSearchMsg:
 		m.commandBar.startSearch(msg.query)
-	case editorFinishedMsg:
 	case refreshNotebookMsg:
 		return m, refreshNotebook(m.noteBook.Path())
 	case gitStatusMsg:
@@ -150,8 +135,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case addNoteMessage:
 		note, err := m.noteBook.CreateNote(msg.title)
 		if err != nil {
-			m.statusMsg = "Error creating note"
-			return m, nil
+			return m, emitStatusMsgCmd("Error creating note")
 		}
 		return m, openEditor(m.noteBook, note.ID, msg.keepFocus)
 	case openLastMsg:
@@ -201,15 +185,7 @@ func (m model) View() string {
 		gitStatus = render.StyleHighRed.Render("█")
 	}
 
-	var statusBar string
-	if m.commandBar.focused() {
-		statusBar = gitStatus + m.commandBar.View()
-	} else {
-		statusStyle := lipgloss.NewStyle().Width(m.width)
-		statusBar = gitStatus + statusStyle.Render(m.statusMsg)
-	}
-
-	return lipgloss.JoinVertical(0, title, view, statusBar)
+	return lipgloss.JoinVertical(0, title, view, gitStatus+m.commandBar.View())
 }
 
 func (m *model) setSize(width, height int) {

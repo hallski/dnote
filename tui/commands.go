@@ -37,7 +37,7 @@ func startEditor(path string, keepFocus bool) tea.Cmd {
 			return statusMsg{fmt.Sprintf("Failed editing: %s", err)}
 		}
 
-		return editorFinishedMsg{}
+		return editorStartedMsg{}
 	}
 }
 

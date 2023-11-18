@@ -19,6 +19,9 @@ type commandBar struct {
 	keymap commandBarKeymap
 
 	textField textinput.Model
+
+	statusMsg string
+	statusId  int
 }
 
 func newCommandBar() commandBar {
@@ -27,46 +30,61 @@ func newCommandBar() commandBar {
 	return commandBar{
 		keymap:    defaultCmdKeyMap,
 		textField: textfield,
+		statusMsg: "",
+		statusId:  1,
 	}
 }
-func (cb commandBar) Init() tea.Cmd {
+func (m commandBar) Init() tea.Cmd {
 	return nil
 }
 
-func (cb commandBar) Update(msg tea.Msg) (commandBar, tea.Cmd) {
+func (m commandBar) Update(msg tea.Msg) (commandBar, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
 		//
-		case key.Matches(msg, cb.keymap.Exit):
-			cb.textField.SetValue("")
-			cb.textField.Blur()
-			return cb, nil
-		case key.Matches(msg, cb.keymap.Commit):
-			cmd := cb.inputCmd()
-			cb.textField.SetValue("")
-			cb.textField.Blur()
-			return cb, cmd
+		case key.Matches(msg, m.keymap.Exit):
+			m.textField.SetValue("")
+			m.textField.Blur()
+			return m, nil
+		case key.Matches(msg, m.keymap.Commit):
+			cmd := m.inputCmd()
+			m.textField.SetValue("")
+			m.textField.Blur()
+			return m, cmd
 		}
 
+	case statusMsg:
+		m.statusMsg = msg.s
+		m.statusId++
+		return m, timeoutStatusCmd(m.statusId)
+	case statusMsgTimeoutMsg:
+		if m.statusId == msg.id {
+			m.statusMsg = ""
+		}
+		return m, nil
 	}
 	var cmd tea.Cmd
-	cb.textField, cmd = cb.textField.Update(msg)
-	return cb, cmd
+	m.textField, cmd = m.textField.Update(msg)
+	return m, cmd
 }
 
-func (cb commandBar) View() string {
+func (m commandBar) View() string {
+	if !m.textField.Focused() {
+		statusStyle := lipgloss.NewStyle().Width(m.width)
+		return statusStyle.Render(m.statusMsg)
+	}
 
 	cmdStyle := lipgloss.NewStyle().Foreground(render.ColorHighCyan).Bold(true)
 	style := lipgloss.NewStyle().Foreground(render.ColorWhite)
 
-	if cmdEnd(cb.textField.Value()) > 0 {
-		cb.textField.TextStyle = cmdStyle
+	if cmdEnd(m.textField.Value()) > 0 {
+		m.textField.TextStyle = cmdStyle
 	} else {
-		cb.textField.TextStyle = style
+		m.textField.TextStyle = style
 	}
 
-	return cb.textField.View()
+	return m.textField.View()
 }
 
 type command struct {
@@ -136,8 +154,8 @@ var commands = []command{
 	},
 }
 
-func (cb *commandBar) inputCmd() tea.Cmd {
-	input := cb.textField.Value()
+func (m *commandBar) inputCmd() tea.Cmd {
+	input := m.textField.Value()
 	for _, c := range commands {
 		prefix := c.name
 		if c.hasArgs {
@@ -161,43 +179,39 @@ func cmdEnd(input string) int {
 	return 0
 }
 
-func (cb *commandBar) setSize(width, height int) {
-	cb.width, cb.height = width, height
-	cb.textField.Width = width
+func (m *commandBar) setSize(width, height int) {
+	m.width, m.height = width, height
+	m.textField.Width = width
 }
 
-func (cb *commandBar) focus() tea.Cmd {
-	return cb.textField.Focus()
+func (m *commandBar) focus() tea.Cmd {
+	return m.textField.Focus()
 }
 
-func (cb *commandBar) blur() {
-	cb.textField.Blur()
+func (m *commandBar) focused() bool {
+	return m.textField.Focused()
 }
 
-func (cb *commandBar) focused() bool {
-	return cb.textField.Focused()
+func (m *commandBar) startOpen(v string) tea.Cmd {
+	m.textField.SetValue("open " + v)
+	return m.textField.Focus()
 }
 
-func (cb *commandBar) startOpen(v string) tea.Cmd {
-	cb.textField.SetValue("open " + v)
-	return cb.textField.Focus()
-}
-
-func (cb *commandBar) startAdd(keepFocus bool) tea.Cmd {
+func (m *commandBar) startAdd(keepFocus bool) tea.Cmd {
 	cmd := "add"
 	if keepFocus {
 		cmd = "Add"
 	}
-	cb.textField.SetValue(cmd + " ")
-	return cb.textField.Focus()
+	m.textField.SetValue(cmd + " ")
+	return m.textField.Focus()
 }
 
-func (cb *commandBar) startSearch(query string) tea.Cmd {
+func (m *commandBar) startSearch(query string) tea.Cmd {
 	input := "search " + query
 	if query != "" {
 		input += " "
 	}
 
-	cb.textField.SetValue(input)
-	return cb.textField.Focus()
+	m.textField.SetValue(input)
+	return m.textField.Focus()
 }

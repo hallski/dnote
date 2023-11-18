@@ -12,9 +12,21 @@ func GetEditor() string {
 	return os.Getenv("EDITOR")
 }
 
-func GetEditorNewPane(path string) *exec.Cmd {
+func GetEditorNewPane(path string, keepFocus bool) *exec.Cmd {
+	args := []string{
+		"@launch",
+		"--cwd",
+		"current",
+	}
+
+	if keepFocus {
+		args = append(args, "--keep-focus")
+	}
+
 	editor := GetEditor()
-	cmd := exec.Command("kitten", "@launch", "--cwd", "current", editor, path)
+	args = append(args, editor, path)
+
+	cmd := exec.Command("kitten", args...)
 	return cmd
 }
 

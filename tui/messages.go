@@ -18,8 +18,8 @@ type openNextNoteMsg struct{}
 type openPrevNoteMsg struct{}
 
 type addNoteMessage struct {
-	title   string
-	newPane bool
+	title     string
+	keepFocus bool
 }
 
 type resetCollectionMsg struct{}

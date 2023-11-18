@@ -87,3 +87,19 @@ func timeoutStatusCmd(statusId int) tea.Cmd {
 		return statusMsgTimeoutMsg{statusId}
 	})
 }
+
+func getGitStatusCmd(path string) tea.Cmd {
+	return func() tea.Msg {
+		client, err := ext.NewGitClient(path)
+		if err != nil {
+			return statusMsg{"Couldn't find Git executable"}
+		}
+
+		status, err := client.Status()
+		if err != nil {
+			return statusMsg{fmt.Sprintf("Failed to check git status: %s", err)}
+		}
+
+		return gitStatusMsg{status}
+	}
+}

@@ -4,7 +4,6 @@ import (
 	"dnote/ext"
 	"dnote/mdfiles"
 	"dnote/render"
-	"fmt"
 	"os"
 	"time"
 
@@ -58,7 +57,7 @@ func initialModel(noteBook *mdfiles.MdDirectory) model {
 }
 
 func (m model) Init() tea.Cmd {
-	return nil
+	return getGitStatusCmd(m.noteBook.Path())
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -117,6 +116,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.showDoc = false
 	case startSearchMsg:
 		m.commandBar.startSearch(msg.query)
+	case notesDirModifiedMsg:
+		path := m.noteBook.Path()
+		return m, tea.Batch(refreshNotebook(path), getGitStatusCmd(path))
 	case refreshNotebookMsg:
 		return m, refreshNotebook(m.noteBook.Path())
 	case gitStatusMsg:
@@ -263,28 +265,9 @@ func startFileMonitor(p *tea.Program, path string) {
 			}
 
 			if fi.ModTime() != fileInfo.ModTime() {
-				p.Send(refreshNotebookMsg{})
+				p.Send(notesDirModifiedMsg{})
 			}
 			fileInfo = fi
-		}
-	}()
-}
-
-func startGitMonitor(p *tea.Program, path string) {
-	client, err := ext.NewGitClient(path)
-	if err != nil {
-		p.Send(statusMsg{"Couldn't find Git executable"})
-		return
-	}
-
-	go func() {
-		for {
-			status, err := client.Status()
-			if err != nil {
-				p.Send(statusMsg{fmt.Sprintf("Failed to check git status: %s", err)})
-			}
-
-			p.Send(gitStatusMsg{status})
 		}
 	}()
 }
@@ -295,7 +278,6 @@ func Run(noteBook *mdfiles.MdDirectory, openId string) error {
 	p := tea.NewProgram(m)
 
 	startFileMonitor(p, noteBook.Path())
-	startGitMonitor(p, noteBook.Path())
 
 	_, err := p.Run()
 

@@ -24,7 +24,7 @@ func GetEditorNewPane(path string, keepFocus bool) *exec.Cmd {
 	}
 
 	editor := GetEditor()
-	args = append(args, editor, path)
+	args = append(args, "zsh", "-ic", editor+" "+path)
 
 	cmd := exec.Command("kitten", args...)
 	return cmd

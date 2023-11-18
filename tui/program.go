@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"dnote/ext"
 	"dnote/mdfiles"
 	"dnote/render"
 	"os"
@@ -24,7 +25,8 @@ type historyItem struct {
 }
 
 type model struct {
-	noteBook *mdfiles.MdDirectory
+	noteBook  *mdfiles.MdDirectory
+	gitStatus ext.GitStatus
 
 	keymap appKeyMap
 
@@ -39,29 +41,28 @@ type model struct {
 
 	enteringCmd bool
 	commandBar  commandBar
-	statusMsg   string
 
-	statusId int
+	statusMsg string
+	statusId  int
 }
 
 func initialModel(noteBook *mdfiles.MdDirectory) model {
 	return model{
-		noteBook,
-		defaultAppKeyMap,
-		NewHistory[historyItem](),
-		0, 0,
-		true,
-		newDoc(0, 0),
-		newSearchModel(noteBook),
-		false,
-		newCommandBar(),
-		"",
-		1,
+		noteBook: noteBook,
+		keymap:   defaultAppKeyMap,
+		history:  NewHistory[historyItem](),
+
+		showDoc:    true,
+		doc:        newDoc(0, 0),
+		search:     newSearchModel(noteBook),
+		commandBar: newCommandBar(),
+		statusMsg:  "",
+		statusId:   1,
 	}
 }
 
 func (m model) Init() tea.Cmd {
-	return nil
+	return getStatusCmd(m.noteBook.Path())
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -131,6 +132,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case editorFinishedMsg:
 	case refreshNotebookMsg:
 		return m, refreshNotebook(m.noteBook.Path())
+	case gitStatusMsg:
+		// TODO: HERE IS WHERE I CONTINUE ON THE GIT IMPLEMENTATION!
+		m.gitStatus = msg.status
+		return m, nil
 	case openRandomMsg:
 		note := m.noteBook.RandomNote()
 		return m, openLinkCmd(note.ID)
@@ -190,12 +195,18 @@ func (m model) View() string {
 		view = m.search.View()
 	}
 
+	// TODO: Quick Test
+	gitStatus := render.StyleHighGreen.Render("█")
+	if m.gitStatus == ext.Dirty {
+		gitStatus = render.StyleHighRed.Render("█")
+	}
+
 	var statusBar string
 	if m.commandBar.focused() {
-		statusBar = m.commandBar.View()
+		statusBar = gitStatus + m.commandBar.View()
 	} else {
 		statusStyle := lipgloss.NewStyle().Width(m.width)
-		statusBar = statusStyle.Render(m.statusMsg)
+		statusBar = gitStatus + statusStyle.Render(m.statusMsg)
 	}
 
 	return lipgloss.JoinVertical(0, title, view, statusBar)
@@ -210,7 +221,8 @@ func (m *model) setSize(width, height int) {
 
 	m.doc.setSize(m.width, mainViewSize)
 	m.search.setSize(m.width, mainViewSize)
-	m.commandBar.setSize(m.width, CommandBarHeight)
+	// TODO: -1 here is for Git quick test, remove this later
+	m.commandBar.setSize(m.width-1, CommandBarHeight)
 }
 
 func (m *model) setNotebook(notebook *mdfiles.MdDirectory) {

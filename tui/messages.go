@@ -1,6 +1,9 @@
 package tui
 
-import "dnote/mdfiles"
+import (
+	"dnote/ext"
+	"dnote/mdfiles"
+)
 
 type openLinkMsg struct {
 	id string
@@ -27,3 +30,5 @@ type saveToCollectionMsg struct{}
 
 type startSearchMsg struct{ query string }
 type searchMsg struct{ query string }
+
+type gitStatusMsg struct{ status ext.GitStatus }

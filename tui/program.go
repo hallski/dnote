@@ -133,7 +133,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case refreshNotebookMsg:
 		return m, refreshNotebook(m.noteBook.Path())
 	case gitStatusMsg:
-		// TODO: HERE IS WHERE I CONTINUE ON THE GIT IMPLEMENTATION!
 		m.gitStatus = msg.status
 		return m, nil
 	case openRandomMsg:
@@ -185,13 +184,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // Render the entire UI
 func (m model) View() string {
-	// TODO: Git Quick Test
-	gitStatus := render.StyleHighGreen.Render("█")
-	if m.gitStatus == ext.Dirty {
-		gitStatus = render.StyleHighRed.Render("█")
-	}
-
-	title := render.Titlebar(m.width, m.noteBook.LastNote().ID) + gitStatus
+	title := render.Titlebar(m.width, m.noteBook.LastNote().ID, m.gitStatus)
 
 	view := ""
 	if m.showDoc {

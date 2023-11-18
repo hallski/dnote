@@ -109,3 +109,6 @@ var CurrentIdStyle = lipgloss.NewStyle().Foreground(ColorYellow)
 var NrHitsStyle = lipgloss.NewStyle().Foreground(ColorYellow)
 
 var TagsStyle = lipgloss.NewStyle().Foreground(ColorHighBlue)
+
+var GitCleanStyle = StyleHighGreen.Copy()
+var GitDirtyStyle = StyleHighRed.Copy()

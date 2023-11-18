@@ -1,6 +1,7 @@
 package render
 
 import (
+	"dnote/ext"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
@@ -9,7 +10,11 @@ import (
 
 const TitleBarHeight = 2
 
-func Titlebar(width int, lastId string) string {
+func Titlebar(width int, lastId string, gitStatus ext.GitStatus) string {
+	gitStatusStyle := GitCleanStyle
+	if gitStatus == ext.Dirty {
+		gitStatusStyle = GitDirtyStyle
+	}
 
 	style := lipgloss.NewStyle().Foreground(DividerColor)
 
@@ -17,7 +22,9 @@ func Titlebar(width int, lastId string) string {
 		StyleHighRed.Render("Thinkadus") +
 		style.Render(" /")
 
-	end := style.Render("/ l.id ") +
+	end := style.Render("─/ ") +
+		gitStatusStyle.Render("") +
+		style.Render(" / ") +
 		StyleHighCyan.Render(lastId) +
 		style.Render(" /─")
 

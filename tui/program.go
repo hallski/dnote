@@ -149,6 +149,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.showDoc {
 			return m, openInDirectionCmd(m.noteBook, m.doc.note, mdfiles.Forward)
 		}
+	case openEditorWithNoteIdMsg:
+		return m, openEditor(m.noteBook, msg.id, msg.keepFocus)
 	case addNoteMessage:
 		note, err := m.noteBook.CreateNote(msg.title)
 		if err != nil {

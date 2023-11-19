@@ -20,6 +20,10 @@ type openRandomMsg struct{}
 type openLastMsg struct{}
 type openNextNoteMsg struct{}
 type openPrevNoteMsg struct{}
+type openEditorWithNoteIdMsg struct {
+	id        string
+	keepFocus bool
+}
 
 type addNoteMessage struct {
 	title     string

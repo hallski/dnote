@@ -52,6 +52,9 @@ func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 		case m.links.GetLinkFromShortcut(msg.String()) != core.ShortcutLink{}:
 			// Match any key that is a link shortcut
 			return m, openLinkCmd(m.links.GetLinkFromShortcut(msg.String()).ID)
+		case m.altShortcut(msg.String()) != core.ShortcutLink{}:
+			link := m.altShortcut(msg.String())
+			return m, emitMsgCmd(openEditorWithNoteIdMsg{link.ID, true})
 		}
 		var cmd tea.Cmd
 		m.viewport, cmd = m.viewport.Update(msg)
@@ -214,6 +217,14 @@ func (m *docModel) setSize(width, height int) {
 
 	m.viewport.Width = width
 	m.viewport.Height = height - render.BottomBarHeight
+}
+
+func (m *docModel) altShortcut(keys string) core.ShortcutLink {
+	if !strings.HasPrefix(keys, "alt+") {
+		return core.ShortcutLink{}
+	}
+
+	return m.links.GetLinkFromShortcut(keys[4:])
 }
 
 func newDoc(width, height int) docModel {

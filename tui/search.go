@@ -56,6 +56,9 @@ func (m searchModel) Update(msg tea.Msg) (searchModel, tea.Cmd) {
 		case m.links.GetLinkFromShortcut(msg.String()) != core.ShortcutLink{}:
 			// Match any key that is a link shortcut
 			return m, openLinkCmd(m.links.GetLinkFromShortcut(msg.String()).ID)
+		case m.altShortcut(msg.String()) != core.ShortcutLink{}:
+			link := m.altShortcut(msg.String())
+			return m, emitMsgCmd(openEditorWithNoteIdMsg{link.ID, true})
 		}
 
 		var cmd tea.Cmd
@@ -124,4 +127,12 @@ func (m *searchModel) setResult(result *search.Result) {
 
 	m.links = core.NewDocLinks(ll)
 	m.render()
+}
+
+func (m *searchModel) altShortcut(keys string) core.ShortcutLink {
+	if !strings.HasPrefix(keys, "alt+") {
+		return core.ShortcutLink{}
+	}
+
+	return m.links.GetLinkFromShortcut(keys[4:])
 }

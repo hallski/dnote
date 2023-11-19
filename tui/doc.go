@@ -66,7 +66,8 @@ func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 func (m docModel) View() string {
 	bottomBar := render.BottomBarNote(m.note, m.width)
 
-	return lipgloss.JoinVertical(0, m.viewport.View(), bottomBar)
+	s := lipgloss.NewStyle().PaddingLeft(1)
+	return lipgloss.JoinVertical(0, s.Render(m.viewport.View()), bottomBar)
 }
 
 func (m *docModel) nextLink() {

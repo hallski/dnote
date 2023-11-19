@@ -70,7 +70,9 @@ func (m searchModel) Update(msg tea.Msg) (searchModel, tea.Cmd) {
 
 func (m searchModel) View() string {
 	bottomBar := render.BottomBarSearch(m.result, m.width)
-	return lipgloss.JoinVertical(0, m.viewport.View(), bottomBar)
+	s := lipgloss.NewStyle().PaddingLeft(1)
+
+	return lipgloss.JoinVertical(0, s.Render(m.viewport.View()), bottomBar)
 }
 
 var style = lipgloss.NewStyle().

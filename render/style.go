@@ -39,7 +39,8 @@ var StyleHighMagenta = lipgloss.NewStyle().Foreground(ColorHighMagenta)
 var StyleWhite = lipgloss.NewStyle().Foreground(ColorWhite)
 
 var DividerColor = ColorDarkGray
-var StyleDivider = lipgloss.NewStyle().Foreground(ColorDarkGray)
+
+var StyleDivider = lipgloss.NewStyle().Foreground(DividerColor)
 var ColorPanelBackground = lipgloss.Color("#222222")
 
 var BacklinksBackgroundStyle = lipgloss.NewStyle().
@@ -111,5 +112,8 @@ var NrHitsStyle = lipgloss.NewStyle().Foreground(ColorYellow)
 var TagsStyle = lipgloss.NewStyle().Foreground(ColorHighBlue)
 
 var GitCleanStyle = StyleDarkGray.Copy()
-var GitDirtyStyle = StyleHighRed.Copy()
+var GitDirtyStyle = StyleYellow.Copy()
 var GitUpdatingStyle = StyleHighMagenta.Copy()
+
+var TitleBarColor = lipgloss.Color("#391f8b")
+var TitleBarTextColor = ColorWhite

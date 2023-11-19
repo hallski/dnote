@@ -21,7 +21,7 @@ func renderBar(content string, width int) string {
 
 	startLen := ansi.PrintableRuneWidth(start)
 	padLen := max(0, width-startLen)
-	return "\n" + start + style.Render(strings.Repeat("─", padLen))
+	return "\n" + start + StyleDivider.Render(strings.Repeat("─", padLen))
 }
 
 func BottomBarNote(note *core.Note, width int) string {

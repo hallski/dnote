@@ -17,6 +17,7 @@ func GetEditorNewPane(path string, keepFocus bool) *exec.Cmd {
 		"@launch",
 		"--cwd",
 		"current",
+		"--copy-env",
 	}
 
 	if keepFocus {
@@ -24,7 +25,7 @@ func GetEditorNewPane(path string, keepFocus bool) *exec.Cmd {
 	}
 
 	editor := GetEditor()
-	args = append(args, "zsh", "-ic", editor+" "+path)
+	args = append(args, editor, path)
 
 	cmd := exec.Command("kitten", args...)
 	return cmd

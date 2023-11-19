@@ -15,19 +15,19 @@ var style = lipgloss.NewStyle().Foreground(ColorDarkGray)
 const BottomBarHeight = 2
 
 func renderBar(content string, width int) string {
-	end := StyleDivider.Render("[ ") +
+	start := StyleDivider.Render("─[ ") +
 		content +
-		StyleDivider.Render(" ]─")
+		StyleDivider.Render(" ]")
 
-	endLen := ansi.PrintableRuneWidth(end)
-	padLen := max(0, width-endLen)
-	return "\n" + style.Render(strings.Repeat("─", padLen)) + end
+	startLen := ansi.PrintableRuneWidth(start)
+	padLen := max(0, width-startLen)
+	return "\n" + start + style.Render(strings.Repeat("─", padLen))
 }
 
 func BottomBarNote(note *core.Note, width int) string {
-	info := CurrentDateStyle.Render(note.Date.Format("2006-01-02")) +
+	info := CurrentIdStyle.Render(note.ID) +
 		StyleDivider.Render("::") +
-		CurrentIdStyle.Render(note.ID)
+		CurrentDateStyle.Render(note.Date.Format("2006-01-02"))
 
 	return renderBar(info, width)
 }
@@ -35,8 +35,8 @@ func BottomBarNote(note *core.Note, width int) string {
 func BottomBarSearch(result *search.Result, width int) string {
 	hits := strconv.Itoa(len(result.ListNotes()))
 	info :=
-		style.Render("hits ") +
-			NrHitsStyle.Render(hits)
+		NrHitsStyle.Render(hits) +
+			style.Render(" hits")
 
 	return renderBar(info, width)
 }

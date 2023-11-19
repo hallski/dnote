@@ -24,11 +24,11 @@ func Titlebar(width int, lastId string, gitStatus ext.GitStatus) string {
 		StyleHighRed.Render("Thinkadus") +
 		style.Render(" /")
 
-	end := style.Render("─/ ") +
+	end := style.Render("─[ ") +
 		gitStatusStyle.Render("") +
-		style.Render(" / ") +
+		style.Render(" :: ") +
 		StyleHighCyan.Render(lastId) +
-		style.Render(" /─")
+		style.Render(" ]─")
 
 	startLen := ansi.PrintableRuneWidth(start)
 	endLen := ansi.PrintableRuneWidth(end)

@@ -38,8 +38,8 @@ var StyleHighCyan = lipgloss.NewStyle().Foreground(ColorHighCyan)
 var StyleHighMagenta = lipgloss.NewStyle().Foreground(ColorHighMagenta)
 var StyleWhite = lipgloss.NewStyle().Foreground(ColorWhite)
 
-var DividerColor = ColorDarkGray
-
+// var StyleDivider = lipgloss.NewStyle().Foreground(DividerColor)
+var DividerColor = lipgloss.Color("#391f8b")
 var StyleDivider = lipgloss.NewStyle().Foreground(DividerColor)
 var ColorPanelBackground = lipgloss.Color("#222222")
 

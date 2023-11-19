@@ -19,14 +19,20 @@ func renderBar(content string, width int) string {
 		content +
 		StyleDivider.Render(" ]")
 
+	s := StyleDivider.Copy().Foreground(ColorWhite).Background(DividerColor)
+	end := StyleDivider.Render("▀ ▀▄▀▄██") +
+		s.Render("dNote") +
+		StyleDivider.Render("██▀▄▀▄ ▄")
+
 	startLen := ansi.PrintableRuneWidth(start)
-	padLen := max(0, width-startLen)
-	return "\n" + start + StyleDivider.Render(strings.Repeat("─", padLen))
+	endLen := ansi.PrintableRuneWidth(end)
+	padLen := max(0, width-startLen-endLen)
+	return "\n" + start + StyleDivider.Render(strings.Repeat("─", padLen)) + end
 }
 
 func BottomBarNote(note *core.Note, width int) string {
 	info := CurrentIdStyle.Render(note.ID) +
-		StyleDivider.Render("::") +
+		StyleDarkGray.Render("::") +
 		CurrentDateStyle.Render(note.Date.Format("2006-01-02"))
 
 	return renderBar(info, width)

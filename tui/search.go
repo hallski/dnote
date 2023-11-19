@@ -114,7 +114,6 @@ func (m *searchModel) setCollection(collection search.FullTextCollection) {
 }
 
 func (m *searchModel) setQuery(query string) {
-	fmt.Printf("SEARCH %s", query)
 	m.setResult(search.NewFullText(query, m.collection))
 }
 

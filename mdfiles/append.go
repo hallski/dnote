@@ -18,7 +18,7 @@ func AddToFile(path string, content string) error {
 		return err
 	}
 
-	if _, err := tmpFile.Write([]byte("\n\n" + content)); err != nil {
+	if _, err := tmpFile.Write([]byte("\n" + content)); err != nil {
 		return err
 	}
 

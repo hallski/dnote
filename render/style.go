@@ -41,7 +41,7 @@ var StyleWhite = lipgloss.NewStyle().Foreground(ColorWhite)
 // var StyleDivider = lipgloss.NewStyle().Foreground(DividerColor)
 var DividerColor = lipgloss.Color("#391f8b")
 var StyleDivider = lipgloss.NewStyle().Foreground(DividerColor)
-var ColorPanelBackground = lipgloss.Color("#222222")
+var ColorPanelBackground = lipgloss.Color("#232532")
 
 var BacklinksBackgroundStyle = lipgloss.NewStyle().
 	Background(ColorPanelBackground).
@@ -49,7 +49,7 @@ var BacklinksBackgroundStyle = lipgloss.NewStyle().
 
 var BacklinksLinkTitlestyle = lipgloss.NewStyle().
 	Foreground(ColorWhite).
-	Background(lipgloss.Color("#222222"))
+	Background(ColorPanelBackground)
 
 var BacklinksTitleStyle = lipgloss.NewStyle().
 	Foreground(ColorDarkGray).

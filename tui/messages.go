@@ -40,3 +40,5 @@ type gitStatusMsg struct{ status ext.GitStatus }
 
 type gitCommandStartedMsg struct{ operation string }
 type gitCommandFinishedMsg struct{ result string }
+
+type addInboxMsg struct{ content string }

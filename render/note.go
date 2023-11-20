@@ -31,6 +31,7 @@ func addLinkHack(id string) string {
 func removeLinkStyleHack(s string) string {
 	return strings.Replace(s, "qwq", "", -1)
 }
+
 func Note(note *core.Note, docLinks *core.DocLinks, width int) (string, int) {
 	r, err := glamour.NewTermRenderer(
 		glamour.WithStyles(GetGlamming()),
@@ -74,28 +75,28 @@ func Note(note *core.Note, docLinks *core.DocLinks, width int) (string, int) {
 
 	md = removeLinkStyleHack(md)
 
-	var idx = 0
+	var tagIdx = 0
 	md = reTagBack.ReplaceAllStringFunc(md,
 		func(s string) string {
-			tag := tags[idx]
-			idx++
+			tag := tags[tagIdx]
+			tagIdx++
 			return TagsStyle.Render(tag)
 		},
 	)
 
-	idx = 0
+	var lastLinkIdx = 0
 	md = linkReplacementRE.ReplaceAllStringFunc(md,
 		func(s string) string {
 			linkID := s[2:5]
-			active := docLinks.IsActive(idx)
+			active := docLinks.IsActive(tagIdx)
 			sc := docLinks.GetShortcut(linkID)
-			idx++
+			lastLinkIdx++
 
 			return renderLink(linkID, sc, active, DocLinkStyles)
 		},
 	)
 
-	return md, idx
+	return md, lastLinkIdx
 }
 
 func renderLink(link, sc string, active bool, styles LinkStyles) string {

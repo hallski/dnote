@@ -152,6 +152,13 @@ var commands = []command{
 			return addNoteCmd(input, true)
 		},
 	},
+	{
+		"inbox",
+		true,
+		func(input string) tea.Cmd {
+			return emitMsgCmd(addInboxMsg{input})
+		},
+	},
 }
 
 func (m *commandBar) inputCmd() tea.Cmd {

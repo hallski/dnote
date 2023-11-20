@@ -131,6 +131,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case gitStatusMsg:
 		m.gitStatus = msg.status
 		return m, nil
+	case addInboxMsg:
+		m.noteBook.AddToInbox(msg.content)
+		return m, nil
 	case gitCommandStartedMsg:
 		m.gitStatus = ext.Updating
 		return m, emitStatusMsgCmd(msg.operation)

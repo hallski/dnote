@@ -2,6 +2,12 @@ package mdfiles
 
 import "os"
 
+func AddToInbox(path, content string) error {
+	toAdd := "- [ ] " + content
+
+	return AddToFile(path, toAdd)
+}
+
 func AddToFile(path string, content string) error {
 	oldContent, err := os.ReadFile(path)
 	if err != nil {

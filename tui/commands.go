@@ -141,3 +141,19 @@ func gitSyncCmd(path string) tea.Cmd {
 			return gitCommandFinishedMsg{"Successfully synced with remote"}
 		})
 }
+
+func saveToInboxCmd(notebook *mdfiles.MdDirectory, content string) tea.Cmd {
+	inbox := notebook.GetInbox()
+
+	return func() tea.Msg {
+		if inbox == nil {
+			return statusMsg{"Couldn't find inbox"}
+		}
+
+		if err := mdfiles.AddToInbox(inbox.Path, content); err != nil {
+			return statusMsg{"Failed to save to inbox"}
+		}
+
+		return statusMsg{"Add to inbox"}
+	}
+}

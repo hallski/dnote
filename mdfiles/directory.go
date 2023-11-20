@@ -174,15 +174,9 @@ func (mdd *MdDirectory) Migrate() error {
 	return nil
 }
 
-func (mdd *MdDirectory) AddToInbox(content string) error {
-	inbox := mdd.FindNote("000")
-	if inbox == nil {
-		return fmt.Errorf("Couldn't find inbox note (000)")
-	}
-
-	toAdd := "- [ ] " + content
-
-	return AddToFile(inbox.Path, toAdd)
+func (mdd *MdDirectory) GetInbox() *core.Note {
+	// Right now, this is how the inbox is represented
+	return mdd.FindNote("000")
 }
 
 func (mdd *MdDirectory) collectionFilename() string {

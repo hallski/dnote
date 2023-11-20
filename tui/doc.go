@@ -3,18 +3,13 @@ package tui
 import (
 	"dnote/core"
 	"dnote/render"
-	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/lipgloss"
 )
-
-const docMaxWidth = 84
 
 type docModel struct {
 	keymap docKeymap
@@ -23,8 +18,7 @@ type docModel struct {
 
 	width, height int
 
-	note         *core.Note
-	preprocessed string
+	note *core.Note
 
 	viewport viewport.Model
 }
@@ -80,130 +74,15 @@ func (m *docModel) prevLink() {
 	m.render()
 }
 
-var linkReplacementRE = regexp.MustCompile(fmt.Sprintf("\\|\\|([0-9]{%d})\\|\\|",
-	core.IDLength))
-
-var tagsRE = regexp.MustCompile("\\s#+[-\\w]+\\b")
-var tagsReplacementRE = regexp.MustCompile("#qzq##+[-\\w]+#qzq#")
-
-// Adds a hack to support wiki links even though Glamour do not support them
-// Since [[ is part of ANSI escape codes, replace them with || before parsing
-// with Glamour.
-// The *qwq* before and after is to ensure that Glamor will insert separate
-// style codes for those (effectively, ensuring that whatever comes after the
-// link will get a new style applied.
-func addLinkHack(id string) string {
-	return "||" + id + "||*qwq*"
-}
-
-func addTagsHack(id string) string {
-	return " #qzq#" + id + "#qzq#"
-}
-
-// Remove the insert qwq (only leaving the escape code and reset in the document
-// This is fine as nothing will actually use those codes
-func removeLinkStyleHack(s string) string {
-	return strings.Replace(s, "qwq", "", -1)
-}
-
-func (m *docModel) processNoteContent() {
-	var links []string
-	processed := core.LinkRegexp.ReplaceAllStringFunc(m.note.Content,
-		func(s string) string {
-			id := s[2:5]
-			links = append(links, id)
-			return addLinkHack(id)
-		},
-	)
-
-	processed = tagsRE.ReplaceAllStringFunc(processed,
-		func(s string) string {
-			return addTagsHack(s[1:])
-		})
-
-	for _, bl := range m.note.BackLinks.ListNotes() {
-		links = append(links, bl.ID)
-	}
-	m.links = core.NewDocLinks(links)
-	m.preprocessed = processed
-}
-
 func (m *docModel) render() {
-	r, err := glamour.NewTermRenderer(
-		glamour.WithStyles(render.GetGlamming()),
-		glamour.WithWordWrap(min(m.width, docMaxWidth)),
-	)
+	md, idx := render.Note(m.note, &m.links, m.width)
+	backlinks := render.BackLinks(m.note, idx, &m.links, m.width)
 
-	md, err := r.Render(m.preprocessed)
-	if err != nil {
-		panic(err)
-	}
-
-	md = removeLinkStyleHack(md)
-
-	var idx = 0
-	md = linkReplacementRE.ReplaceAllStringFunc(md,
-		func(s string) string {
-			linkID := s[2:5]
-			active := m.links.IsActive(idx)
-			sc := m.links.GetShortcut(linkID)
-			idx++
-
-			return renderLink(linkID, sc, active, render.DocLinkStyles)
-		},
-	)
-
-	md = tagsReplacementRE.ReplaceAllStringFunc(md,
-		func(s string) string {
-			return render.TagsStyle.Render(s[5 : len(s)-5])
-		})
-
-	// Crude backlink support
-	builder := new(strings.Builder)
-	if len(m.note.BackLinks.ListNotes()) > 0 {
-		bls := new(strings.Builder)
-
-		beforeText := "─ Backlinks "
-		beforeLen := m.width - len([]rune(beforeText))
-		if beforeLen > 0 {
-			border := strings.Repeat("─", beforeLen)
-			fmt.Fprintln(bls, render.BacklinksTitleStyle.Render(beforeText+border+"\n"))
-		}
-
-		render.LinkList(bls, m.note.BackLinks, &m.links,
-			idx, render.BackLinkListStyles)
-
-		box := render.BacklinksBoxStyle.Copy().
-			Width(m.width - render.BacklinksBoxStyle.GetHorizontalBorderSize())
-
-		fmt.Fprintf(builder, box.Render(bls.String()))
-	}
-
-	m.viewport.SetContent(md + "\n" + builder.String() + "\n")
-}
-
-func renderLink(link, sc string, active bool, styles render.LinkStyles) string {
-	var style = styles.Inactive
-	if active {
-		style = styles.Active
-	}
-
-	if sc == "" {
-		return styles.Bracket.Render("[[") +
-			style.Render(link) +
-			styles.Bracket.Render("]]")
-	}
-
-	return styles.Bracket.Render("[") +
-		styles.Shortcut.Render(sc) +
-		styles.Bracket.Render("|") +
-		style.Render(link) +
-		styles.Bracket.Render("]")
+	m.viewport.SetContent(md + "\n" + backlinks + "\n")
 }
 
 func (m *docModel) renderNote(note *core.Note) {
 	m.note = note
-	m.processNoteContent()
 	m.render()
 	m.viewport.SetYOffset(0)
 }

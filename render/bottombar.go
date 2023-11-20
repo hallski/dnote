@@ -19,10 +19,7 @@ func renderBar(content string, width int) string {
 		content +
 		StyleDivider.Render(" ]")
 
-	s := StyleDivider.Copy().Foreground(ColorWhite).Background(DividerColor)
-	end := StyleDivider.Render("▀ ▀▄▀▄██") +
-		s.Render("dNote") +
-		StyleDivider.Render("██▀▄▀▄ ▄")
+	end := BarGraphics("dNote")
 
 	startLen := ansi.PrintableRuneWidth(start)
 	endLen := ansi.PrintableRuneWidth(end)
@@ -32,7 +29,7 @@ func renderBar(content string, width int) string {
 
 func BottomBarNote(note *core.Note, width int) string {
 	info := CurrentIdStyle.Render(note.ID) +
-		StyleDarkGray.Render("::") +
+		StyleDarkGray.Render(" :: ") +
 		CurrentDateStyle.Render(note.Date.Format("2006-01-02"))
 
 	return renderBar(info, width)

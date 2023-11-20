@@ -20,11 +20,7 @@ func Titlebar(width int, lastId string, gitStatus ext.GitStatus) string {
 
 	style := lipgloss.NewStyle().Foreground(TitleBarColor)
 
-	titleStyle := StyleHighRed.Copy().Background(TitleBarColor).Foreground(TitleBarTextColor)
-
-	start := style.Render("▀ ▀▄▀▄██") +
-		titleStyle.Render("Thinkadus") +
-		style.Render("██▀▄▀▄ ▄")
+	start := BarGraphics("Thinkadus")
 
 	end := style.Render("─[ ") +
 		gitStatusStyle.Render("") +

@@ -126,11 +126,6 @@ func (mdd *MdDirectory) Path() string {
 	return mdd.path
 }
 
-func (mdd *MdDirectory) DeleteNote(id int) error {
-	// TODO: Implement
-	return nil
-}
-
 func (mdd *MdDirectory) RandomNote() *core.Note {
 	return mdd.notes[rand.Intn(len(mdd.notes))]
 }

@@ -20,6 +20,7 @@ type appKeyMap struct {
 	PrevNote       key.Binding
 	GitCommit      key.Binding
 	GitSync        key.Binding
+	AddInbox       key.Binding
 }
 
 type searchKeymap struct {
@@ -119,6 +120,10 @@ var defaultAppKeyMap = appKeyMap{
 	GitSync: key.NewBinding(
 		key.WithKeys("alt+g"),
 		key.WithHelp("alt+g", "git sync with remote"),
+	),
+	AddInbox: key.NewBinding(
+		key.WithKeys("i"),
+		key.WithHelp("i", "add to inbox"),
 	),
 }
 

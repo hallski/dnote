@@ -109,6 +109,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, emitStatusMsgCmd("Nothing to commit")
 		case key.Matches(msg, m.keymap.GitSync):
 			return m, gitSyncCmd(m.noteBook.Path())
+		case key.Matches(msg, m.keymap.AddInbox):
+			return m, m.commandBar.startInbox()
 		}
 		var cmd tea.Cmd
 		if m.showDoc {

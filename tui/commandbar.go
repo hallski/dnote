@@ -222,3 +222,8 @@ func (m *commandBar) startSearch(query string) tea.Cmd {
 	m.textField.SetValue(input)
 	return m.textField.Focus()
 }
+
+func (m *commandBar) startInbox() tea.Cmd {
+	m.textField.SetValue("inbox ")
+	return m.textField.Focus()
+}

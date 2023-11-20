@@ -109,7 +109,7 @@ var CurrentDateStyle = lipgloss.NewStyle().Foreground(ColorLowCyan)
 var CurrentIdStyle = lipgloss.NewStyle().Foreground(ColorYellow)
 var NrHitsStyle = lipgloss.NewStyle().Foreground(ColorYellow)
 
-var TagsStyle = lipgloss.NewStyle().Foreground(ColorHighBlue)
+var TagsStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#fe2fac"))
 
 var GitCleanStyle = StyleDarkGray.Copy()
 var GitDirtyStyle = StyleYellow.Copy()

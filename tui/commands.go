@@ -134,7 +134,7 @@ func gitSyncCmd(path string) tea.Cmd {
 	return tea.Batch(
 		emitMsgCmd(gitCommandStartedMsg{"Syncing with remote"}),
 		func() tea.Msg {
-			if err := client.PullRebasePush(); err != nil {
+			if err := client.FetchRebasePush(); err != nil {
 				return gitCommandFinishedMsg{"Failed to sync with remote"}
 			}
 

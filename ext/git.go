@@ -88,8 +88,8 @@ func (client *GitClient) Commit(msg string) error {
 	return nil
 }
 
-func (client *GitClient) PullRebasePush() error {
-	if _, err := client.runCommand("pull"); err != nil {
+func (client *GitClient) FetchRebasePush() error {
+	if _, err := client.runCommand("fetch"); err != nil {
 		return err
 	}
 

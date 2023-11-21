@@ -82,8 +82,8 @@ var defaultAppKeyMap = appKeyMap{
 		key.WithHelp("r", "refresh notes"),
 	),
 	StartCmd: key.NewBinding(
-		key.WithKeys(":"),
-		key.WithHelp(":", "start command"),
+		key.WithKeys("."),
+		key.WithHelp(".", "start command"),
 	),
 	QuickOpen: key.NewBinding(
 		key.WithKeys(getStrings(quickOpen)...),

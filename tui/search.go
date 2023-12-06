@@ -28,7 +28,7 @@ type searchModel struct {
 }
 
 func newSearchModel(collection search.FullTextCollection) searchModel {
-	return searchModel{collection: collection, keymap: defaultSearchKeyMap, showTags: true}
+	return searchModel{collection: collection, keymap: defaultSearchKeyMap}
 }
 
 func (m searchModel) Init() tea.Cmd {

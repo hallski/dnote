@@ -20,7 +20,7 @@ func BackLinks(note *core.Note, docLinkIdx int, docLinks *core.DocLinks, width i
 			fmt.Fprintln(bls, BacklinksTitleStyle.Render(beforeText+border+"\n"))
 		}
 
-		LinkList(bls, note.BackLinks, docLinks, docLinkIdx, BackLinkListStyles)
+		LinkList(bls, note.BackLinks, docLinks, docLinkIdx, false, BackLinkListStyles)
 
 		box := BacklinksBoxStyle.Copy().
 			Width(width - BacklinksBoxStyle.GetHorizontalBorderSize())

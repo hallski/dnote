@@ -4,16 +4,30 @@ import (
 	"dnote/core"
 	"fmt"
 	"io"
+	"strings"
+
+	"github.com/muesli/ansi"
 )
 
 // Render a list of links
-func LinkList(out io.Writer, lister core.NoteLister, links *core.DocLinks, linkOffset int, styles LinkListStyles) {
+func LinkList(
+	out io.Writer,
+	lister core.NoteLister,
+	links *core.DocLinks,
+	linkOffset int,
+	showTags bool,
+	styles LinkListStyles) {
 	for i, note := range lister.ListNotes() {
 		link := links.GetLink(note.ID)
 		active := links.IsActive(linkOffset + i)
-		fmt.Fprintf(out, "  • %s%s\n",
-			RenderLink(link, active, styles.linkStyles),
-			styles.titleStyle.Render(" "+note.Title))
+		indentPlusLink := fmt.Sprintf("  • %s ",
+			RenderLink(link, active, styles.linkStyles))
+		fmt.Fprintf(out, "%s%s\n", indentPlusLink, styles.titleStyle.Render(note.Title))
+		if showTags && len(note.Tags) > 0 {
+			tagsIndent := strings.Repeat(" ", ansi.PrintableRuneWidth(indentPlusLink))
+			tags := strings.Join(note.Tags, ", ")
+			fmt.Fprintf(out, "%s%s\n", tagsIndent, styles.tagStyle.Render(tags))
+		}
 	}
 }
 

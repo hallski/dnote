@@ -28,6 +28,7 @@ type searchKeymap struct {
 	PrevLink     key.Binding
 	OpenLink     key.Binding
 	ExtendSearch key.Binding
+	ToggleTags   key.Binding
 }
 
 type docKeymap struct {
@@ -158,6 +159,10 @@ var defaultSearchKeyMap = searchKeymap{
 	ExtendSearch: key.NewBinding(
 		key.WithKeys("s"),
 		key.WithHelp("s", "edit search"),
+	),
+	ToggleTags: key.NewBinding(
+		key.WithKeys("t"),
+		key.WithHelp("t", "toggle tags"),
 	),
 }
 

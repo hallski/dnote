@@ -23,10 +23,12 @@ type searchModel struct {
 
 	result *search.Result
 	links  core.DocLinks
+
+	showTags bool
 }
 
 func newSearchModel(collection search.FullTextCollection) searchModel {
-	return searchModel{collection: collection, keymap: defaultSearchKeyMap}
+	return searchModel{collection: collection, keymap: defaultSearchKeyMap, showTags: true}
 }
 
 func (m searchModel) Init() tea.Cmd {
@@ -53,6 +55,10 @@ func (m searchModel) Update(msg tea.Msg) (searchModel, tea.Cmd) {
 			}
 		case key.Matches(msg, m.keymap.ExtendSearch):
 			return m, emitMsgCmd(startSearchMsg{m.result.Query})
+		case key.Matches(msg, m.keymap.ToggleTags):
+			m.showTags = !m.showTags
+			m.render()
+			return m, nil
 		case m.links.GetLinkFromShortcut(msg.String()) != core.ShortcutLink{}:
 			// Match any key that is a link shortcut
 			return m, openLinkCmd(m.links.GetLinkFromShortcut(msg.String()).ID)
@@ -100,7 +106,7 @@ func (m *searchModel) render() {
 
 	fmt.Fprintln(builder, box)
 	render.LinkList(builder,
-		m.result, &m.links, 0, render.DocLinkListStyles)
+		m.result, &m.links, 0, m.showTags, render.DocLinkListStyles)
 
 	m.viewport.SetContent(builder.String() + "\n")
 }

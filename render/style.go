@@ -72,6 +72,7 @@ type LinkStyles struct {
 type LinkListStyles struct {
 	linkStyles LinkStyles
 	titleStyle lipgloss.Style
+	tagStyle   lipgloss.Style
 }
 
 var DocLinkStyles = LinkStyles{
@@ -95,11 +96,13 @@ var BackLinkStyles = LinkStyles{
 var DocLinkListStyles = LinkListStyles{
 	DocLinkStyles,
 	lipgloss.NewStyle().Foreground(ColorLightGray),
+	TagsStyle,
 }
 
 var BackLinkListStyles = LinkListStyles{
 	BackLinkStyles,
 	BacklinksLinkTitlestyle,
+	TagsStyle,
 }
 
 var DocNoteIdStyle = lipgloss.NewStyle().

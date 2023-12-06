@@ -134,3 +134,11 @@ func (l *DocLinks) GetLinkFromShortcut(shortcut string) ShortcutLink {
 func (l *DocLinks) IsActive(idx int) bool {
 	return idx == l.curLink
 }
+
+func (l *DocLinks) SetCurrent(id string) {
+	for idx, link := range l.links {
+		if link.ID == id {
+			l.curLink = idx
+		}
+	}
+}

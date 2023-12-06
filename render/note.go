@@ -65,7 +65,9 @@ func Note(note *core.Note, docLinks *core.DocLinks, width int) (string, int) {
 		links = append(links, bl.ID)
 	}
 
+	current := docLinks.Current()
 	*docLinks = core.NewDocLinks(links)
+	docLinks.SetCurrent(current)
 	preprocessed := processed
 
 	md, err := r.Render(preprocessed)
@@ -88,7 +90,8 @@ func Note(note *core.Note, docLinks *core.DocLinks, width int) (string, int) {
 	md = linkReplacementRE.ReplaceAllStringFunc(md,
 		func(s string) string {
 			linkID := s[2:5]
-			active := docLinks.IsActive(tagIdx)
+			active := linkID == docLinks.Current()
+
 			sc := docLinks.GetShortcut(linkID)
 			lastLinkIdx++
 

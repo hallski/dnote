@@ -112,13 +112,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keymap.AddInbox):
 			return m, m.commandBar.startInbox()
 		}
-		var cmd tea.Cmd
-		if m.showDoc {
-			m.doc, cmd = m.doc.Update(msg)
-		} else {
-			m.search, cmd = m.search.Update(msg)
-		}
-		return m, cmd
 	case searchMsg:
 		m.search.setQuery(msg.query)
 		m.history.Push(historyItem{kindSearch, msg.query})
@@ -287,7 +280,7 @@ func startFileMonitor(p *tea.Program, path string) {
 func Run(noteBook *mdfiles.MdDirectory, openId string) error {
 	m := initialModel(noteBook)
 	m.openNote(openId, true)
-	p := tea.NewProgram(m)
+	p := tea.NewProgram(m, tea.WithMouseCellMotion())
 
 	startFileMonitor(p, noteBook.Path())
 

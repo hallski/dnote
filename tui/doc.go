@@ -50,11 +50,10 @@ func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 			link := m.altShortcut(msg.String())
 			return m, emitMsgCmd(openEditorWithNoteIdMsg{link.ID, true})
 		}
-		var cmd tea.Cmd
-		m.viewport, cmd = m.viewport.Update(msg)
-		return m, cmd
 	}
-	return m, nil
+	var cmd tea.Cmd
+	m.viewport, cmd = m.viewport.Update(msg)
+	return m, cmd
 }
 
 func (m docModel) View() string {

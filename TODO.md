@@ -1,13 +1,16 @@
-
 - [ ] Choose a file with a fuzzy list
 - [x] Render that file using Markdown
 - [x] Support edit file in Vim
 - [x] Support follow links
+- [x] A concept of an inbox 
+- [x] Mouse scroll support
+- [ ] Mouse click support on links
 
-## Wishlist
+## Wishlist/Considerations
 
-- [ ] A concept of an inbox 
 - [ ] Sources, https://xwmx.github.io/nb/ had a really nice thing (bookmarks)
+- [ ] Link name, for long note titles, being able to specify a shorter title to
+      use when linking
 
 ## Useful
 

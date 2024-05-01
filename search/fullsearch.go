@@ -56,5 +56,9 @@ func NewFullText(query string, collection FullTextCollection) *Result {
 		}
 	}
 
+	slices.SortFunc(notes, func(a, b *core.Note) int {
+		return len(b.BackLinks.ListNotes()) - len(a.BackLinks.ListNotes())
+	})
+
 	return &Result{query, notes}
 }

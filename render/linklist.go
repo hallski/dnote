@@ -10,7 +10,8 @@ import (
 )
 
 func renderBackLinks(note *core.Note, styles LinkListStyles) string {
-	return fmt.Sprintf("%s%s%s",
+	return fmt.Sprintf("%s%s%s%s",
+		styles.titleStyle.Render(" "),
 		styles.linkStyles.Bracket.Render("("),
 		styles.backLinkCountStyle.Render(fmt.Sprintf("%d", len(note.BackLinks.ListNotes()))),
 		styles.linkStyles.Bracket.Render(")"))
@@ -27,9 +28,10 @@ func LinkList(
 	for i, note := range lister.ListNotes() {
 		link := links.GetLink(note.ID)
 		active := links.IsActive(linkOffset + i)
-		indentPlusLink := fmt.Sprintf("  • %s ",
+		indentPlusLink := fmt.Sprintf("  • %s",
 			RenderLink(link, active, styles.linkStyles))
-		fmt.Fprintf(out, "%s%s %s\n", indentPlusLink, styles.titleStyle.Render(note.Title), renderBackLinks(note, styles))
+		fmt.Fprintf(out, "%s%s%s\n", indentPlusLink, styles.titleStyle.Render(
+			fmt.Sprintf(" %s", note.Title)), renderBackLinks(note, styles))
 		if showTags && len(note.Tags) > 0 {
 			tagsIndent := strings.Repeat(" ", ansi.PrintableRuneWidth(indentPlusLink))
 			tags := strings.Join(note.Tags, ", ")

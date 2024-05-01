@@ -70,9 +70,10 @@ type LinkStyles struct {
 }
 
 type LinkListStyles struct {
-	linkStyles LinkStyles
-	titleStyle lipgloss.Style
-	tagStyle   lipgloss.Style
+	linkStyles         LinkStyles
+	titleStyle         lipgloss.Style
+	tagStyle           lipgloss.Style
+	backLinkCountStyle lipgloss.Style
 }
 
 var DocLinkStyles = LinkStyles{
@@ -97,12 +98,14 @@ var DocLinkListStyles = LinkListStyles{
 	DocLinkStyles,
 	lipgloss.NewStyle().Foreground(ColorLightGray),
 	TagsStyle,
+	BackLinkCountStyle,
 }
 
 var BackLinkListStyles = LinkListStyles{
 	BackLinkStyles,
 	BacklinksLinkTitlestyle,
-	TagsStyle,
+	TagsStyle.Copy().Inherit(BacklinksBackgroundStyle),
+	BackLinkCountStyle.Copy().Inherit(BacklinksBackgroundStyle),
 }
 
 var DocNoteIdStyle = lipgloss.NewStyle().
@@ -113,6 +116,7 @@ var CurrentIdStyle = lipgloss.NewStyle().Foreground(ColorYellow)
 var NrHitsStyle = lipgloss.NewStyle().Foreground(ColorYellow)
 
 var TagsStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#fe2fac"))
+var BackLinkCountStyle = lipgloss.NewStyle().Foreground(ColorHighRed)
 
 var GitCleanStyle = StyleDarkGray.Copy()
 var GitDirtyStyle = StyleYellow.Copy()

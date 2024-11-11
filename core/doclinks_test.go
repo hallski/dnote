@@ -67,12 +67,13 @@ func TestLookupShortcuts(t *testing.T) {
 	l := NewDocLinks([]string{"l1", "l2", "l3"})
 
 	sc := l.GetShortcut("l2")
-	if l.GetLink(sc) != "l2" {
+	if sc != "B" {
 		t.Errorf("expected l2, got %s", l.GetLink(sc))
 	}
 
-	if l.GetLink("D") != "" {
-		t.Errorf("expected empty string, got %s", l.GetLink("D"))
+	expected := ShortcutLink{}
+	if l.GetLinkFromShortcut("D") != expected {
+		t.Errorf("expected empty link, got %+v", l.GetLinkFromShortcut("D"))
 	}
 }
 

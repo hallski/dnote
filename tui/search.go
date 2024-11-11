@@ -2,8 +2,8 @@ package tui
 
 import (
 	"dnote/core"
-	"dnote/render"
 	"dnote/search"
+	"dnote/tui/render"
 	"fmt"
 	"strings"
 

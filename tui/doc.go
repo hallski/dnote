@@ -2,7 +2,7 @@ package tui
 
 import (
 	"dnote/core"
-	"dnote/render"
+	"dnote/tui/render"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"

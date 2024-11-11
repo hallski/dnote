@@ -3,7 +3,7 @@ package tui
 import (
 	"dnote/ext"
 	"dnote/mdfiles"
-	"dnote/render"
+	"dnote/tui/render"
 	"os"
 	"time"
 

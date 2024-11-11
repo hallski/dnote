@@ -32,7 +32,7 @@ func loadNote(path string) (*core.Note, error) {
 		Path:    path,
 		Content: sContent,
 		Date:    getDate(sContent),
-		Title:   getTitle(sContent),
+		Title:   getTitle(sContent, id),
 		Tags:    getTags(sContent),
 		Links:   core.ExtractLinks(sContent),
 	}
@@ -66,7 +66,7 @@ func createNote(path string, id string, title string) (*core.Note, error) {
 	return note, nil
 }
 
-func getTitle(content string) string {
+func getTitle(content, id string) string {
 	re := regexp.MustCompile("# (.*)")
 
 	result := re.FindStringSubmatch(content)
@@ -74,7 +74,7 @@ func getTitle(content string) string {
 		return string(result[1])
 	}
 
-	return ""
+	return id
 }
 
 func getDate(content string) time.Time {
@@ -82,7 +82,7 @@ func getDate(content string) time.Time {
 
 	result := re.FindStringSubmatch(content)
 	if result == nil {
-		panic("Failed to find date")
+		return time.Now()
 	}
 
 	date, err := time.Parse("2006-01-02", result[1])
@@ -110,7 +110,7 @@ func getFileID(path string) (string, error) {
 
 	fileWithoutExt, ext, found := strings.Cut(base, ".")
 	if !found || ext != "md" {
-		return "", fmt.Errorf("Filename not following convention of id.md: %s",
+		return "", fmt.Errorf("filename not following convention of id.md: %s",
 			path)
 	}
 
@@ -120,7 +120,7 @@ func getFileID(path string) (string, error) {
 func addTimestampToNote(path string, timestamp time.Time) error {
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
-		return fmt.Errorf("Failed to append timestamp: %s", err)
+		return fmt.Errorf("failed to append timestamp: %s", err)
 	}
 	defer f.Close()
 

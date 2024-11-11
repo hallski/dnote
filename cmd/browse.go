@@ -12,7 +12,8 @@ var browseCmd = &cobra.Command{
 	Short: "Open TUI",
 	Long:  "Open terminal UI for interactiving with notes",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var openId = mdfiles.PadID("1")
+		// TODO: This is not going to work since we don't have this note
+		var openId = mdfiles.PadID("Index")
 		if len(args) > 0 {
 			note := notes.FindNote(args[0])
 			if note != nil {

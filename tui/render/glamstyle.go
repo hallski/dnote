@@ -1,11 +1,11 @@
 package render
 
 import (
-	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/glamour/ansi"
+	"github.com/charmbracelet/glamour/styles"
 )
 
-var s = glamour.DarkStyleConfig
+var s = styles.DarkStyleConfig
 
 func GetGlamming() ansi.StyleConfig {
 	s.H1.Prefix = "# "
@@ -19,4 +19,3 @@ func GetGlamming() ansi.StyleConfig {
 
 func boolPtr(b bool) *bool       { return &b }
 func stringPtr(s string) *string { return &s }
-func uintPtr(u uint) *uint       { return &u }

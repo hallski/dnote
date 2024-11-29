@@ -26,6 +26,8 @@ func loadNote(path string) (*core.Note, error) {
 	}
 
 	sContent := string(content)
+	title := getTitle(sContent, id)
+	sContent = "# " + title + "\n\n" + sContent
 
 	note := &core.Note{
 		ID:      id,
@@ -67,7 +69,7 @@ func createNote(path string, id string, title string) (*core.Note, error) {
 }
 
 func getTitle(content, id string) string {
-	re := regexp.MustCompile("# (.*)")
+	re := regexp.MustCompile("^# (.*)")
 
 	result := re.FindStringSubmatch(content)
 	if result != nil {

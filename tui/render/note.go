@@ -2,7 +2,6 @@ package render
 
 import (
 	"dnote/core"
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -11,10 +10,9 @@ import (
 
 const docMaxWidth = 84
 
-var linkReplacementRE = regexp.MustCompile(fmt.Sprintf("\\|\\|([0-9]{%d})\\|\\|",
-	core.IDLength))
+var linkReplacementRE = regexp.MustCompile(`\|\|([a-zA-Z0-9\&\? ]+)\|\|`)
 
-var tagsRE = regexp.MustCompile("\\s(#+[-\\w]+)")
+var tagsRE = regexp.MustCompile(`\s(#+[-\w]+)`)
 
 // Adds a hack to support wiki links even though Glamour do not support them
 // Since [[ is part of ANSI escape codes, replace them with || before parsing
@@ -33,7 +31,7 @@ func removeLinkStyleHack(s string) string {
 }
 
 func Note(note *core.Note, docLinks *core.DocLinks, width int) (string, int) {
-	r, err := glamour.NewTermRenderer(
+	r, _ := glamour.NewTermRenderer(
 		glamour.WithStyles(GetGlamming()),
 		glamour.WithWordWrap(min(width, docMaxWidth)),
 	)
@@ -41,14 +39,15 @@ func Note(note *core.Note, docLinks *core.DocLinks, width int) (string, int) {
 	var links []string
 	processed := core.LinkRegexp.ReplaceAllStringFunc(note.Content,
 		func(s string) string {
-			id := s[2:5]
+			end := len(s) - 2
+			id := s[2:end]
 			links = append(links, id)
 			return addLinkHack(id)
 		},
 	)
 
-	re := regexp.MustCompile("[^# \\n]")
-	reTagBack := regexp.MustCompile("#+\\$+")
+	re := regexp.MustCompile(`[^# \n]`)
+	reTagBack := regexp.MustCompile(`#+\$+`)
 
 	var tags []string
 	processed = tagsRE.ReplaceAllStringFunc(processed,
@@ -89,7 +88,8 @@ func Note(note *core.Note, docLinks *core.DocLinks, width int) (string, int) {
 	var lastLinkIdx = 0
 	md = linkReplacementRE.ReplaceAllStringFunc(md,
 		func(s string) string {
-			linkID := s[2:5]
+			end := len(s) - 2
+			linkID := s[2:end]
 			active := linkID == docLinks.Current()
 
 			sc := docLinks.GetShortcut(linkID)

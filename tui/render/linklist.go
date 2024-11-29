@@ -30,8 +30,7 @@ func LinkList(
 		active := links.IsActive(linkOffset + i)
 		indentPlusLink := fmt.Sprintf("  • %s",
 			RenderLink(link, active, styles.linkStyles))
-		fmt.Fprintf(out, "%s%s%s\n", indentPlusLink, styles.titleStyle.Render(
-			fmt.Sprintf(" %s", note.Title)), renderBackLinks(note, styles))
+		fmt.Fprintf(out, "%s%s\n", indentPlusLink, renderBackLinks(note, styles))
 		if showTags && len(note.Tags) > 0 {
 			tagsIndent := strings.Repeat(" ", ansi.PrintableRuneWidth(indentPlusLink))
 			tags := strings.Join(note.Tags, ", ")

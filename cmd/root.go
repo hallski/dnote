@@ -8,10 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var notes *mdfiles.MdDirectory
-
-var title string
-
 func getNotesPath() string {
 	path := os.Getenv("DNOTES")
 	if path == "" {
@@ -44,8 +40,6 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	dir := getNotesPath()
 	os.Chdir(dir)
-
-	notes = loadNotes()
 
 	rootCmd.Execute()
 }

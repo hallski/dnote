@@ -1,9 +1,11 @@
 package cmd
 
 import (
-	"dnote/mdfiles"
 	"dnote/tui"
+	"fmt"
+	"os"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
 
@@ -12,16 +14,16 @@ var browseCmd = &cobra.Command{
 	Short: "Open TUI",
 	Long:  "Open terminal UI for interactiving with notes",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// TODO: This is not going to work since we don't have this note
-		var openId = mdfiles.PadID("Index")
-		if len(args) > 0 {
-			note := notes.FindNote(args[0])
-			if note != nil {
-				openId = note.ID
+		if len(os.Getenv("DEBUG")) > 0 {
+			f, err := tea.LogToFile("debug.log", "debug")
+			if err != nil {
+				fmt.Println("fatal:", err)
+				os.Exit(1)
 			}
+			defer f.Close()
 		}
 
-		return tui.Run(notes, openId)
+		return tui.Run(getNotesPath(), args[0])
 	},
 }
 

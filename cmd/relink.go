@@ -14,6 +14,7 @@ var relinkCmd = &cobra.Command{
 	Use:   "relink",
 	Short: "Recreate links from stdin",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		notes := loadNotes()
 		reader := bufio.NewReader(os.Stdin)
 
 		for {

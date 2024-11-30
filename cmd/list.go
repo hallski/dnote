@@ -61,6 +61,7 @@ var lsCmd = &cobra.Command{
 	Short: "List all notes",
 	Long:  "List all files together with ID",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		notes := loadNotes()
 		showOrphans, err := cmd.Flags().GetBool("orphans")
 		if err != nil {
 			return err

@@ -45,6 +45,8 @@ var viewCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var note *core.Note
 
+		notes := loadNotes()
+
 		random := false
 		if len(args) > 0 {
 			note = notes.FindNote(args[0])

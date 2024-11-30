@@ -15,6 +15,7 @@ var linksCmd = &cobra.Command{
 	Short: "Create links for IDs",
 	Long:  "Create an index link list for notes with IDs",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		notes := loadNotes()
 		useStored, err := cmd.Flags().GetBool("stored")
 		if err != nil {
 			return err

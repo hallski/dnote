@@ -13,6 +13,7 @@ var inboxCmd = &cobra.Command{
 	Short: "Add to inbox",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		notes := loadNotes()
 		inbox := notes.GetInbox()
 		if inbox == nil {
 			return fmt.Errorf("Couldn't find inbox")

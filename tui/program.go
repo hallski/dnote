@@ -4,6 +4,7 @@ import (
 	"dnote/ext"
 	"dnote/mdfiles"
 	"dnote/tui/render"
+	"log"
 	"os"
 	"time"
 
@@ -113,10 +114,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, m.commandBar.startInbox()
 		}
 	case searchMsg:
+		log.Printf("Searching for %s\n", msg.query)
 		m.search.setQuery(msg.query)
 		m.history.Push(historyItem{kindSearch, msg.query})
 		m.showDoc = false
 	case startSearchMsg:
+		log.Println("Starting search")
 		m.commandBar.startSearch(msg.query)
 	case notesDirModifiedMsg:
 		path := m.noteBook.Path()
@@ -277,14 +280,27 @@ func startFileMonitor(p *tea.Program, path string) {
 	}()
 }
 
-func Run(noteBook *mdfiles.MdDirectory, openId string) error {
+func Run(notesPath, openId string) error {
+	log.Printf("Starting...")
+	noteBook, err := mdfiles.Load(notesPath)
+	if err != nil {
+		panic(err)
+	}
+
+	note := noteBook.FindNote(openId)
+	if note != nil {
+		openId = note.ID
+	} else {
+		openId = "Index"
+	}
+
 	m := initialModel(noteBook)
 	m.openNote(openId, true)
 	p := tea.NewProgram(m, tea.WithMouseCellMotion())
 
 	startFileMonitor(p, noteBook.Path())
 
-	_, err := p.Run()
+	_, err = p.Run()
 
 	return err
 }

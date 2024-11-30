@@ -11,6 +11,8 @@ var addCmd = &cobra.Command{
 	Short: "Create and open new note",
 	Long:  "Creates a new note with the next available ID and opens it in editor",
 	RunE: func(cmd *cobra.Command, _ []string) error {
+		notes := loadNotes()
+
 		title, err := cmd.Flags().GetString("title")
 		if err != nil {
 			return err
@@ -24,6 +26,8 @@ var addCmd = &cobra.Command{
 		return ext.EditNote(note)
 	},
 }
+
+var title string
 
 func init() {
 	rootCmd.AddCommand(addCmd)

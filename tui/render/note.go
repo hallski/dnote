@@ -10,7 +10,7 @@ import (
 
 const docMaxWidth = 84
 
-var linkReplacementRE = regexp.MustCompile(`\|\|([a-zA-Z0-9\&\? ]+)\|\|`)
+var linkReplacementRE = regexp.MustCompile(`\|\|([a-zA-Z0-9\&\?\- ]+)\|\|`)
 
 var tagsRE = regexp.MustCompile(`\s(#+[-\w]+)`)
 

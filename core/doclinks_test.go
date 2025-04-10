@@ -50,30 +50,65 @@ func TestWrapping(t *testing.T) {
 }
 
 func TestAssignShortcuts(t *testing.T) {
-	l := NewDocLinks([]string{"l1", "l2", "l3"})
+	l := NewDocLinks([]string{"l1", "l2", "l3", "l4", "l5"})
 
 	sc := l.GetShortcut("l1")
 	if sc != "A" {
 		t.Errorf("expected A, got %s", sc)
 	}
 
+	sc = l.GetShortcut("l2")
+	if sc != "B" {
+		t.Errorf("expected A, got %s", sc)
+	}
+
+	sc = l.GetShortcut("l3")
+	if sc != "C" {
+		t.Errorf("expected A, got %s", sc)
+	}
+
 	sc = l.GetShortcut("l4")
+	if sc != "D" {
+		t.Errorf("expected A, got %s", sc)
+	}
+
+	sc = l.GetShortcut("l6")
 	if sc != "" {
 		t.Errorf("expected empty string, got %s", sc)
 	}
 }
 
 func TestLookupShortcuts(t *testing.T) {
-	l := NewDocLinks([]string{"l1", "l2", "l3"})
+	l := NewDocLinks([]string{"l1", "l2", "l3", "l4", "l5"})
 
-	sc := l.GetShortcut("l2")
-	if sc != "B" {
-		t.Errorf("expected l2, got %s", l.GetLink(sc))
+	link := l.GetLink("l1")
+	if link.Shortcut != "A" {
+		t.Errorf("expected A, got %s", link.Shortcut)
+	}
+
+	link = l.GetLink("l2")
+	if link.Shortcut != "B" {
+		t.Errorf("expected B, got %s", link.Shortcut)
+	}
+
+	link = l.GetLink("l3")
+	if link.Shortcut != "C" {
+		t.Errorf("expected C, got %s", link.Shortcut)
+	}
+
+	link = l.GetLink("l4")
+	if link.Shortcut != "D" {
+		t.Errorf("expected D, got %s", link.Shortcut)
+	}
+
+	link = l.GetLink("l5")
+	if link.Shortcut != "E" {
+		t.Errorf("expected E, got %s", link.Shortcut)
 	}
 
 	expected := ShortcutLink{}
-	if l.GetLinkFromShortcut("D") != expected {
-		t.Errorf("expected empty link, got %+v", l.GetLinkFromShortcut("D"))
+	if l.GetLinkFromShortcut("F") != expected {
+		t.Errorf("expected empty link, got %+v", l.GetLinkFromShortcut("F"))
 	}
 }
 

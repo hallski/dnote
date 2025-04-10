@@ -8,13 +8,6 @@ package core
 
 var shortcuts = []byte("ABCDEFGHIJKLMNOPQRSTUVXYZ")
 
-type cycleDirection uint
-
-const (
-	forward cycleDirection = iota
-	backward
-)
-
 type ShortcutLink struct {
 	ID       string
 	Shortcut string
@@ -53,29 +46,27 @@ func NewDocLinks(links []string) DocLinks {
 	return DocLinks{ll, first}
 }
 
-func (l *DocLinks) cycle(dir cycleDirection) {
+func (l *DocLinks) Next() {
 	length := len(l.links)
 
 	if length <= 0 {
 		return
 	}
 
-	if dir == forward {
-		l.curLink = (l.curLink + 1) % length
-	} else {
-		if l.curLink < 0 {
-			l.curLink = 0
-		}
-		l.curLink = (l.curLink + length - 1) % length
-	}
-}
-
-func (l *DocLinks) Next() {
-	l.cycle(forward)
+	l.curLink = (l.curLink + 1) % length
 }
 
 func (l *DocLinks) Prev() {
-	l.cycle(backward)
+	length := len(l.links)
+
+	if length <= 0 {
+		return
+	}
+
+	if l.curLink < 0 {
+		l.curLink = 0
+	}
+	l.curLink = (l.curLink + length - 1) % length
 }
 
 func (l *DocLinks) Current() string {

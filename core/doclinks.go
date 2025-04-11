@@ -112,6 +112,10 @@ func (l *DocLinks) GetLink(id string) ShortcutLink {
 	return ShortcutLink{}
 }
 
+func (l *DocLinks) HasShortcut(shortcut string) bool {
+	return l.GetLinkFromShortcut(shortcut) != ShortcutLink{}
+}
+
 func (l *DocLinks) GetLinkFromShortcut(shortcut string) ShortcutLink {
 	for _, link := range l.links {
 		if link.Shortcut == shortcut {

@@ -43,9 +43,10 @@ func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 			if l != "" {
 				return m, openLinkCmd(l)
 			}
-		case m.links.GetLinkFromShortcut(msg.String()) != core.ShortcutLink{}:
+		case m.links.HasShortcut(msg.String()):
 			// Match any key that is a link shortcut
-			return m, openLinkCmd(m.links.GetLinkFromShortcut(msg.String()).ID)
+			l := m.links.GetLinkFromShortcut(msg.String())
+			return m, openLinkCmd(l.ID)
 		case m.altShortcut(msg.String()) != core.ShortcutLink{}:
 			link := m.altShortcut(msg.String())
 			return m, emitMsgCmd(openEditorWithNoteIdMsg{link.ID, true})

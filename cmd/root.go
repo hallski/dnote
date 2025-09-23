@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"log"
 	"os"
 
+	"dnote/config"
 	"dnote/mdfiles"
+	"dnote/tui/render"
 
 	"github.com/spf13/cobra"
 )
@@ -42,6 +45,14 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+	// Initialize configuration
+	if err := config.InitConfig(); err != nil {
+		log.Fatalf("Failed to initialize config: %v", err)
+	}
+
+	// Initialize styles after config is loaded
+	render.InitializeStyles()
+
 	dir := getNotesPath()
 	os.Chdir(dir)
 

@@ -1,6 +1,7 @@
 package ext
 
 import (
+	"dnote/config"
 	"dnote/core"
 	"os"
 	"os/exec"
@@ -9,16 +10,30 @@ import (
 // Interact with $EDITOR
 
 func GetEditor() string {
+	cfg := config.GetConfig()
+
+	// If use_environment is true and EDITOR is set, use it
+	if cfg.Editor.UseEnvironment {
+		if editor := os.Getenv("EDITOR"); editor != "" {
+			return editor
+		}
+	}
+
+	// Use configured editor command if set
+	if cfg.Editor.Command != "" {
+		return cfg.Editor.Command
+	}
+
+	// Fallback to EDITOR environment variable
 	return os.Getenv("EDITOR")
 }
 
 func GetEditorNewPane(path string, keepFocus bool) *exec.Cmd {
-	args := []string{
-		"@launch",
-		"--cwd",
-		"current",
-		"--copy-env",
-	}
+	cfg := config.GetConfig()
+
+	// Start with configured terminal args
+	args := make([]string, len(cfg.Editor.TerminalArgs))
+	copy(args, cfg.Editor.TerminalArgs)
 
 	if keepFocus {
 		args = append(args, "--keep-focus")
@@ -27,7 +42,7 @@ func GetEditorNewPane(path string, keepFocus bool) *exec.Cmd {
 	editor := GetEditor()
 	args = append(args, editor, path)
 
-	cmd := exec.Command("kitten", args...)
+	cmd := exec.Command(cfg.Editor.Terminal, args...)
 	return cmd
 }
 

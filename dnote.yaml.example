@@ -1,0 +1,74 @@
+# dNote Configuration
+# Copy this file to ~/.config/dnote.yaml or dnote.yaml in your notes directory
+
+editor:
+  # Command to use as editor (leave empty to use $EDITOR)
+  command: ""
+  # Terminal multiplexer command
+  terminal: "kitten"
+  # Arguments for terminal multiplexer
+  terminal_args:
+    - "@launch"
+    - "--cwd"
+    - "current"
+    - "--copy-env"
+  # Whether to fall back to $EDITOR environment variable
+  use_environment: true
+
+search:
+  # Full-text search command
+  command: "ugrep"
+  # Default arguments for search command
+  args:
+    - "-l"        # Show matching files
+    - "-i"        # Ignore case
+    - "--bool"    # Boolean search
+    - "--files"   # Match in entire file
+    - "--format=%a%~"
+
+theme:
+  colors:
+    # Base color palette (16-color terminal palette)
+    black: "#000000"
+    low_red: "#aa0000"
+    low_green: "#00aa00"
+    brown: "#aa5500"
+    low_blue: "#0000aa"
+    low_magenta: "#aa00aa"
+    low_cyan: "#00aaaa"
+    light_gray: "#aaaaaa"
+    dark_gray: "#555555"
+    high_red: "#ff5555"
+    high_green: "#55ff55"
+    yellow: "#ffff55"
+    high_blue: "#5555ff"
+    high_cyan: "#55ffff"
+    high_magenta: "#ff55ff"
+    white: "#ffffff"
+
+    # UI-specific colors
+    divider: "#391f8b"
+    panel_background: "#232532"
+    title_bar: "#391f8b"
+    title_bar_text: "#ffffff"
+    tags: "#fe2fac"
+
+  glamour:
+    h1_color: "#ffff66"
+
+# Alternative theme examples:
+# For a light theme, you might use:
+# theme:
+#   colors:
+#     black: "#000000"
+#     white: "#ffffff"
+#     panel_background: "#f5f5f5"
+#     divider: "#cccccc"
+#     # ... etc
+
+# For a high-contrast theme:
+# theme:
+#   colors:
+#     black: "#000000"
+#     white: "#ffffff"
+#     # ... etc

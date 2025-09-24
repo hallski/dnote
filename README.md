@@ -1,18 +1,14 @@
 # dnote
 
-This is cli to work with my notes as Markdown files.
+This is cli to work with my notes as Markdown files. It's primarely built to
+serve my own needs with the idea that anyone who have different needs can fork
+and extend their own version.
 
-Requirements:
-* Work in conjunction to Vim
-* Offline mode supported
-* Text based and easily editable as such
-* Be able to serve/view the files as HTML with working links
+## Features
 
-Nice to haves:
-* Be able to view the files in Github
+- Files are numbered from 001.md (once you reach 1000 notes, update IDLength and run `dnote migrate` to update the notes)
 
-It's also being used to learn a bit of Go.
-
-## Inspire by
-Found https://github.com/rwxrob/keg/ that inspired me to drop zettlekasten ids.
+## Setup
+Copy ./dnote.yaml.example to ~/.config/dnote.yaml and edit it to work for your
+setup.
 

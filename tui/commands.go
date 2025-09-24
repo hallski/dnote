@@ -30,9 +30,9 @@ func openLinkCmd(id string) tea.Cmd {
 	}
 }
 
-func startEditor(path string, keepFocus bool) tea.Cmd {
+func startEditor(path string) tea.Cmd {
 	return func() tea.Msg {
-		c := ext.GetEditorNewPane(path, keepFocus)
+		c := ext.GetEditorInteractive(path)
 		if err := c.Run(); err != nil {
 			return statusMsg{fmt.Sprintf("Failed editing: %s", err)}
 		}
@@ -41,13 +41,13 @@ func startEditor(path string, keepFocus bool) tea.Cmd {
 	}
 }
 
-func openEditor(noteBook *mdfiles.MdDirectory, id string, keepFocus bool) tea.Cmd {
+func openEditor(noteBook *mdfiles.MdDirectory, id string) tea.Cmd {
 	note := noteBook.FindNote(id)
 	if note == nil {
 		return func() tea.Msg { return statusMsg{"Failed opening " + id} }
 	}
 
-	return startEditor(note.Path, keepFocus)
+	return startEditor(note.Path)
 }
 
 func refreshNotebook(path string) tea.Cmd {
@@ -61,9 +61,9 @@ func refreshNotebook(path string) tea.Cmd {
 	}
 }
 
-func addNoteCmd(title string, keepFocus bool) tea.Cmd {
+func addNoteCmd(title string) tea.Cmd {
 	return func() tea.Msg {
-		return addNoteMessage{title, keepFocus}
+		return addNoteMessage{title}
 	}
 }
 

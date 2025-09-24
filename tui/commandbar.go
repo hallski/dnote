@@ -142,14 +142,7 @@ var commands = []command{
 		"add",
 		true,
 		func(input string) tea.Cmd {
-			return addNoteCmd(input, false)
-		},
-	},
-	{
-		"Add",
-		true,
-		func(input string) tea.Cmd {
-			return addNoteCmd(input, true)
+			return addNoteCmd(input)
 		},
 	},
 	{
@@ -204,11 +197,8 @@ func (m *commandBar) startOpen(v string) tea.Cmd {
 	return m.textField.Focus()
 }
 
-func (m *commandBar) startAdd(keepFocus bool) tea.Cmd {
+func (m *commandBar) startAdd() tea.Cmd {
 	cmd := "add"
-	if keepFocus {
-		cmd = "Add"
-	}
 	m.textField.SetValue(cmd + " ")
 	return m.textField.Focus()
 }

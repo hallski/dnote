@@ -65,7 +65,7 @@ func (m searchModel) Update(msg tea.Msg) (searchModel, tea.Cmd) {
 			return m, openLinkCmd(l.ID)
 		case m.altShortcut(msg.String()) != core.ShortcutLink{}:
 			link := m.altShortcut(msg.String())
-			return m, emitMsgCmd(openEditorWithNoteIdMsg{link.ID, true})
+			return m, emitMsgCmd(openEditorWithNoteIdMsg{link.ID})
 		}
 
 		var cmd tea.Cmd

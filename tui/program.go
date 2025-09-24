@@ -74,9 +74,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keymap.Search):
 			return m, emitMsgCmd(startSearchMsg{""})
 		case key.Matches(msg, m.keymap.EditNode):
-			return m, m.edit(false)
+			return m, m.edit()
 		case key.Matches(msg, m.keymap.EditNodeAlt):
-			return m, m.edit(true)
+			return m, m.edit()
 		case key.Matches(msg, m.keymap.Back):
 			m.setHistoryItem(m.history.GoBack())
 			return m, nil
@@ -91,9 +91,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.commandBar.startOpen(msg.String())
 			return m, nil
 		case key.Matches(msg, m.keymap.AddNote):
-			return m, m.commandBar.startAdd(false)
-		case key.Matches(msg, m.keymap.AddNoteAlt):
-			return m, m.commandBar.startAdd(true)
+			return m, m.commandBar.startAdd()
 		case key.Matches(msg, m.keymap.OpenRandomNote):
 			return m, emitMsgCmd(openRandomMsg{})
 		case key.Matches(msg, m.keymap.OpenLastNote):
@@ -147,13 +145,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, openInDirectionCmd(m.noteBook, m.doc.note, mdfiles.Forward)
 		}
 	case openEditorWithNoteIdMsg:
-		return m, openEditor(m.noteBook, msg.id, msg.keepFocus)
+		return m, openEditor(m.noteBook, msg.id)
 	case addNoteMessage:
 		note, err := m.noteBook.CreateNote(msg.title)
 		if err != nil {
 			return m, emitStatusMsgCmd("Error creating note")
 		}
-		return m, openEditor(m.noteBook, note.ID, msg.keepFocus)
+		return m, openEditor(m.noteBook, note.ID)
 	case openLastMsg:
 		note := m.noteBook.LastNote()
 		return m, openLinkCmd(note.ID)
@@ -220,13 +218,13 @@ func (m *model) setNotebook(notebook *mdfiles.MdDirectory) {
 	}
 }
 
-func (m *model) edit(keepFocus bool) tea.Cmd {
+func (m *model) edit() tea.Cmd {
 	item := m.history.GetCurrent()
 	if item.kind != kindNote {
 		return nil
 	}
 
-	return openEditor(m.noteBook, item.value, keepFocus)
+	return openEditor(m.noteBook, item.value)
 }
 
 func (m *model) openNote(id string, nav bool) {

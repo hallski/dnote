@@ -66,10 +66,6 @@ var defaultAppKeyMap = appKeyMap{
 		key.WithKeys("e"),
 		key.WithHelp("e", "edit note"),
 	),
-	EditNodeAlt: key.NewBinding(
-		key.WithKeys("alt+e"),
-		key.WithHelp("alt+e", "edit note same pane"),
-	),
 	Back: key.NewBinding(
 		key.WithKeys("ctrl+o"),
 		key.WithHelp("ctrl+o", "back"),
@@ -93,10 +89,6 @@ var defaultAppKeyMap = appKeyMap{
 	AddNote: key.NewBinding(
 		key.WithKeys("a"),
 		key.WithHelp("a", "add note"),
-	),
-	AddNoteAlt: key.NewBinding(
-		key.WithKeys("alt+a"),
-		key.WithHelp("alt+a", "add note same pane"),
 	),
 	OpenRandomNote: key.NewBinding(
 		key.WithKeys("m"),

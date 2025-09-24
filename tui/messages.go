@@ -21,13 +21,11 @@ type openLastMsg struct{}
 type openNextNoteMsg struct{}
 type openPrevNoteMsg struct{}
 type openEditorWithNoteIdMsg struct {
-	id        string
-	keepFocus bool
+	id string
 }
 
 type addNoteMessage struct {
-	title     string
-	keepFocus bool
+	title string
 }
 
 type resetCollectionMsg struct{}

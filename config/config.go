@@ -16,8 +16,7 @@ type Config struct {
 
 type EditorConfig struct {
 	Command        string   `mapstructure:"command"`
-	Terminal       string   `mapstructure:"terminal"`
-	TerminalArgs   []string `mapstructure:"terminal_args"`
+	Args           []string `mapstructure:"args"`
 	UseEnvironment bool     `mapstructure:"use_environment"`
 }
 
@@ -99,7 +98,11 @@ func InitConfig() error {
 
 func setDefaults() {
 	// Editor defaults
-	viper.SetDefault("editor.command", "")
+	viper.SetDefault("editor.command", "alacritty")
+	viper.SetDefault("editor.args", []string{
+		"-e",
+		"nvim",
+	})
 	viper.SetDefault("editor.terminal", "kitten")
 	viper.SetDefault("editor.terminal_args", []string{
 		"@launch",

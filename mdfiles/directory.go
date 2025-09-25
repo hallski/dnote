@@ -3,6 +3,7 @@ package mdfiles
 import (
 	"fmt"
 	"io/fs"
+	"log"
 	"math/rand"
 	"os"
 	"path"
@@ -34,10 +35,12 @@ func noteLoader(notes *[]*core.Note) fs.WalkDirFunc {
 
 		note, err := loadNote(path)
 		if err != nil {
-			return fmt.Errorf("Failed to read note %s, error %s", path, err)
+			log.Printf("Failed loading file at path: %s\n", path)
+			os.Exit(1)
 		}
 
 		*notes = append(*notes, note)
+
 		return nil
 	}
 }

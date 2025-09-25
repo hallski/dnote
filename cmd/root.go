@@ -54,6 +54,7 @@ func Execute() {
 	render.InitializeStyles()
 
 	dir := getNotesPath()
+
 	info, err := os.Stat(dir)
 	if os.IsNotExist(err) {
 		os.Mkdir(dir, 0700)

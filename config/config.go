@@ -26,8 +26,7 @@ type SearchConfig struct {
 }
 
 type ThemeConfig struct {
-	Colors  ColorPalette  `mapstructure:"colors"`
-	Glamour GlamourConfig `mapstructure:"glamour"`
+	Colors ColorPalette `mapstructure:"colors"`
 }
 
 type ColorPalette struct {
@@ -55,10 +54,10 @@ type ColorPalette struct {
 	TitleBar        string `mapstructure:"title_bar"`
 	TitleBarText    string `mapstructure:"title_bar_text"`
 	Tags            string `mapstructure:"tags"`
-}
 
-type GlamourConfig struct {
 	H1Color string `mapstructure:"h1_color"`
+	H2Color string `mapstructure:"h2_color"`
+	H3Color string `mapstructure:"h3_color"`
 }
 
 var cfg *Config
@@ -123,22 +122,22 @@ func setDefaults() {
 
 func setThemeDefaults() {
 	// Base color palette
-	viper.SetDefault("theme.colors.black", "#000000")
-	viper.SetDefault("theme.colors.low_red", "#aa0000")
-	viper.SetDefault("theme.colors.low_green", "#00aa00")
-	viper.SetDefault("theme.colors.brown", "#aa5500")
-	viper.SetDefault("theme.colors.low_blue", "#0000aa")
-	viper.SetDefault("theme.colors.low_magenta", "#aa00aa")
-	viper.SetDefault("theme.colors.low_cyan", "#00aaaa")
-	viper.SetDefault("theme.colors.light_gray", "#aaaaaa")
-	viper.SetDefault("theme.colors.dark_gray", "#555555")
-	viper.SetDefault("theme.colors.high_red", "#ff5555")
-	viper.SetDefault("theme.colors.high_green", "#55ff55")
-	viper.SetDefault("theme.colors.yellow", "#ffff55")
-	viper.SetDefault("theme.colors.high_blue", "#5555ff")
-	viper.SetDefault("theme.colors.high_cyan", "#55ffff")
-	viper.SetDefault("theme.colors.high_magenta", "#ff55ff")
-	viper.SetDefault("theme.colors.white", "#ffffff")
+	viper.SetDefault("theme.colors.black", "0")
+	viper.SetDefault("theme.colors.low_red", "1")
+	viper.SetDefault("theme.colors.low_green", "2")
+	viper.SetDefault("theme.colors.brown", "3")
+	viper.SetDefault("theme.colors.low_blue", "4")
+	viper.SetDefault("theme.colors.low_magenta", "5")
+	viper.SetDefault("theme.colors.low_cyan", "6")
+	viper.SetDefault("theme.colors.light_gray", "7")
+	viper.SetDefault("theme.colors.dark_gray", "8")
+	viper.SetDefault("theme.colors.high_red", "9")
+	viper.SetDefault("theme.colors.high_green", "10")
+	viper.SetDefault("theme.colors.yellow", "11")
+	viper.SetDefault("theme.colors.high_blue", "12")
+	viper.SetDefault("theme.colors.high_magenta", "13")
+	viper.SetDefault("theme.colors.high_cyan", "14")
+	viper.SetDefault("theme.colors.white", "15")
 
 	// UI-specific colors
 	viper.SetDefault("theme.colors.divider", "#391f8b")
@@ -148,7 +147,9 @@ func setThemeDefaults() {
 	viper.SetDefault("theme.colors.tags", "#fe2fac")
 
 	// Glamour defaults
-	viper.SetDefault("theme.glamour.h1_color", "#ffff66")
+	viper.SetDefault("theme.colors.h1_color", "#ff00ff")
+	viper.SetDefault("theme.colors.h2_color", "")
+	viper.SetDefault("theme.colors.h3_color", "")
 }
 
 // GetConfig returns the loaded configuration

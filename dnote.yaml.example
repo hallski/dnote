@@ -29,6 +29,7 @@ search:
 theme:
   colors:
     # Base color palette (16-color terminal palette)
+    # See https://github.com/charmbracelet/lipgloss?tab=readme-ov-file#colors
     black: "#000000"
     low_red: "#aa0000"
     low_green: "#00aa00"
@@ -54,7 +55,7 @@ theme:
     tags: "#fe2fac"
 
   glamour:
-    h1_color: "#ffff66"
+    h1_color: "#ffff55"
 
 # Alternative theme examples:
 # For a light theme, you might use:

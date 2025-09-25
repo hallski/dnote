@@ -42,8 +42,9 @@ var configCmd = &cobra.Command{
 		fmt.Printf("  Title Bar: %s\n", cfg.Theme.Colors.TitleBar)
 		fmt.Printf("  Title Bar Text: %s\n", cfg.Theme.Colors.TitleBarText)
 		fmt.Printf("  Tags: %s\n", cfg.Theme.Colors.Tags)
-		fmt.Println()
-		fmt.Printf("Glamour H1 Color: %s\n", cfg.Theme.Glamour.H1Color)
+		fmt.Printf("  H1 Color: %s\n", cfg.Theme.Colors.H1Color)
+		fmt.Printf("  H2 Color: %s\n", cfg.Theme.Colors.H2Color)
+		fmt.Printf("  H3 Color: %s\n", cfg.Theme.Colors.H3Color)
 	},
 }
 

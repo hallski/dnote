@@ -13,7 +13,13 @@ func GetGlamming() ansi.StyleConfig {
 
 	s.H1.Prefix = "# "
 	s.H1.BackgroundColor = stringPtr("")
-	s.H1.Color = stringPtr(cfg.Theme.Glamour.H1Color)
+	s.H1.Color = stringPtr(cfg.Theme.Colors.H1Color)
+	if cfg.Theme.Colors.H2Color != "" {
+		s.H2.Color = stringPtr(cfg.Theme.Colors.H2Color)
+	}
+	if cfg.Theme.Colors.H3Color != "" {
+		s.H3.Color = stringPtr(cfg.Theme.Colors.H3Color)
+	}
 
 	s.BlockQuote.Italic = boolPtr(true)
 

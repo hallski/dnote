@@ -54,8 +54,22 @@ func Execute() {
 	render.InitializeStyles()
 
 	dir := getNotesPath()
+	info, err := os.Stat(dir)
+	if os.IsNotExist(err) {
+		os.Mkdir(dir, 0700)
+	} else {
+		if !info.IsDir() {
+			log.Fatalf("%s is not a directory", dir)
+			return
+		}
+	}
+
 	os.Chdir(dir)
 
+	notes = loadNotes()
+	if notes.IsEmpty() {
+		bootstrapDirectory()
+	}
 	notes = loadNotes()
 
 	rootCmd.Execute()

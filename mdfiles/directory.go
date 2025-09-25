@@ -159,6 +159,10 @@ func (mdd *MdDirectory) LastNote() *core.Note {
 	return mdd.notes[len(mdd.notes)-1]
 }
 
+func (mdd *MdDirectory) IsEmpty() bool {
+	return len(mdd.notes) == 0
+}
+
 func (mdd *MdDirectory) Rename(oldID, newID string) error {
 	return changeID(mdd, oldID, newID)
 }

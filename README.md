@@ -19,6 +19,7 @@ opening by ID.
 - Fuzzy and full text search
 - Git commit/sync 
 - Lightweight inbox support 
+- CLI options to interact with notes
 
 ## Keyboard shortcuts
 

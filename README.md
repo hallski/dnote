@@ -1,14 +1,28 @@
 # dnote
 
-This is cli to work with my notes as Markdown files. It's primarely built to
-serve my own needs with the idea that anyone who have different needs can fork
-and extend their own version.
+A terminal based notes application using Markdown files and wikilinks to link
+notes. It has a TUI for browsing the notes and a CLI for interacting with them
+as commands.
+
+dNote does not support editing directly but work together with an external
+editor. When used with another terminal editor the suggestion is to use either a
+terminal multiplexer (like tmux) or open a new terminal with the editor.
+
+![](./images/screenshot.png)
 
 ## Features
 
-- Files are numbered from 001.md (once you reach 1000 notes, update IDLength and run `dnote migrate` to update the notes)
+- Notes have three digit IDs to make them easy to remember and type in when
+opening by ID.
+- Links have uppercase shortcuts to make navigation fast.
+
+## Requirements
+
+dNote makes use of [ugrep](https://github.com/Genivia/ugrep) for searching.
 
 ## Setup
-Copy ./dnote.yaml.example to ~/.config/dnote.yaml and edit it to work for your
-setup.
+Copy ./dnote.yaml.example to ~/.config/dnote.yaml and edit it to work for your setup.
+
+Set the environmental variable `DNOTES` to point at the directory of your notes
+(adding a default notes directory to settings is planned, [#3]).
 

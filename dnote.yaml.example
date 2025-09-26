@@ -1,30 +1,22 @@
 # dNote Configuration
 # Copy this file to ~/.config/dnote.yaml or dnote.yaml in your notes directory
 
-editor:
-  # Command to use as editor (leave empty to use $EDITOR)
-  command: ""
-  # Terminal multiplexer command
-  terminal: "kitten"
-  # Arguments for terminal multiplexer
-  terminal_args:
-    - "@launch"
-    - "--cwd"
-    - "current"
-    - "--copy-env"
-  # Whether to fall back to $EDITOR environment variable
-  use_environment: true
+notes:
+  default_dir: "~/dNotes"
 
-search:
-  # Full-text search command
-  command: "ugrep"
-  # Default arguments for search command
+editor:
+  # Command to run to open your editor
+ 
+  # For example to use nvim in a new terminal
+  command: "alacritty" # Open a new terminal
   args:
-    - "-l"        # Show matching files
-    - "-i"        # Ignore case
-    - "--bool"    # Boolean search
-    - "--files"   # Match in entire file
-    - "--format=%a%~"
+    - "-e"
+    - "nvim"
+
+  # To use Zed
+  # command: "zed"
+  # args:
+  #   - "-n"
 
 theme:
   colors:

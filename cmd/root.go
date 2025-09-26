@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"dnote/config"
 	"dnote/mdfiles"
@@ -15,21 +18,45 @@ var notes *mdfiles.MdDirectory
 
 var title string
 
-func getNotesPath() string {
-	path := os.Getenv("DNOTES")
-	if path == "" {
-		var err error
-		path, err = os.Getwd()
+func expandPath(path string) (string, error) {
+	if strings.HasPrefix(path, "~") {
+		homeDir, err := os.UserHomeDir()
 		if err != nil {
-			path = "."
+			return "", fmt.Errorf("Failed to expand user homedir")
 		}
+
+		return filepath.Join(homeDir, path[2:]), nil
 	}
 
-	return path
+	return path, nil
+}
+
+func getNotesPath() (string, error) {
+	cfg := config.GetConfig()
+
+	possiblePaths := []string{os.Getenv("DNOTES"), cfg.Notes.DefaultDir}
+
+	for _, path := range possiblePaths {
+		if path == "" {
+			continue
+		}
+
+		expandedPath, err := expandPath(path)
+		if err != nil {
+			return "", err
+		}
+		return expandedPath, nil
+	}
+
+	return "", fmt.Errorf("No paths found")
 }
 
 func loadNotes() *mdfiles.MdDirectory {
-	loadedNotes, err := mdfiles.Load(getNotesPath())
+	path, err := getNotesPath()
+	if err != nil {
+		panic(err)
+	}
+	loadedNotes, err := mdfiles.Load(path)
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +80,11 @@ func Execute() {
 	// Initialize styles after config is loaded
 	render.InitializeStyles()
 
-	dir := getNotesPath()
+	dir, err := getNotesPath()
+	if err != nil {
+		log.Fatalf("Could not find notes path, set DNOTES or configure it in config")
+		return
+	}
 
 	info, err := os.Stat(dir)
 	if os.IsNotExist(err) {

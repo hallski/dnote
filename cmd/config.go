@@ -16,9 +16,10 @@ var configCmd = &cobra.Command{
 
 		fmt.Println("Current Configuration:")
 		fmt.Println("=====================")
+		fmt.Printf("Default notes directory: %s\n", cfg.Notes.DefaultDir)
+		fmt.Println()
 		fmt.Printf("Editor Command: %s\n", cfg.Editor.Command)
 		fmt.Printf("Editor Args: %s\n", cfg.Editor.Args)
-		fmt.Printf("Use Environment: %t\n", cfg.Editor.UseEnvironment)
 		fmt.Println()
 		fmt.Println("Theme Colors:")
 		fmt.Printf("  Black: %s\n", cfg.Theme.Colors.Black)

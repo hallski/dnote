@@ -29,7 +29,10 @@ func init() {
 }
 
 func bootstrapDirectory() (*mdfiles.MdDirectory, error) {
-	dir := getNotesPath()
+	dir, err := getNotesPath()
+	if err != nil {
+		return nil, err
+	}
 
 	// Check if directory already has markdown files
 	files, err := filepath.Glob(filepath.Join(dir, "*.md"))

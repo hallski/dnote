@@ -9,20 +9,19 @@ import (
 )
 
 type Config struct {
+	Notes  NotesConfig  `mapstructure:"notes"`
 	Editor EditorConfig `mapstructure:"editor"`
-	Search SearchConfig `mapstructure:"search"`
 	Theme  ThemeConfig  `mapstructure:"theme"`
+}
+
+type NotesConfig struct {
+	DefaultDir string `mapstructure:"default_dir"`
 }
 
 type EditorConfig struct {
 	Command        string   `mapstructure:"command"`
 	Args           []string `mapstructure:"args"`
 	UseEnvironment bool     `mapstructure:"use_environment"`
-}
-
-type SearchConfig struct {
-	Command string   `mapstructure:"command"`
-	Args    []string `mapstructure:"args"`
 }
 
 type ThemeConfig struct {
@@ -96,6 +95,8 @@ func InitConfig() error {
 }
 
 func setDefaults() {
+	viper.SetDefault("notes.default_dir", "~/dNotes2")
+
 	// Editor defaults
 	viper.SetDefault("editor.command", "alacritty")
 	viper.SetDefault("editor.args", []string{

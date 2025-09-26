@@ -12,9 +12,9 @@ terminal multiplexer (like tmux) or open a new terminal with the editor.
 
 ## Features
 
-- Notes have three digit IDs to make them easy to remember and type in when
-opening by ID.
-- Links have uppercase shortcuts to make navigation fast.
+- Notes are markdown files on disk, each named after a three digit ID
+- Notes can be linked and will show back links (links to the note)
+- Quick navigation to follow links
 - Full keyboard navigation
 - Fuzzy and full text search
 - Git commit/sync 
@@ -22,6 +22,14 @@ opening by ID.
 - CLI options to interact with notes
 
 ## Keyboard shortcuts
+
+### Opening a specific note
+To navigate to a specific note, just start writing the node ID (left-padding of zeroes are done automatically. To open note 001, press `1<enter>`.
+
+### Follow links
+Links have shortcuts, consisting of uppercase A-Z. To follow a link press the corresponding shortcut. For notes with more links than can fit A-Z, `ctrl-n` and `ctrl-p` can navigate between them and `enter` opens the currently selected link.
+
+### Other shortcuts
 
 - `a`: add (write title)
 - `e`: edit current not
@@ -41,6 +49,7 @@ opening by ID.
 - `ctrl-o`: navigate back
 - `ctrl-n`: jump to next link
 - `ctrl-p`: jump to previous link
+- `.`: open the command input
 
 ## Requirements
 

@@ -95,7 +95,7 @@ func InitConfig() error {
 }
 
 func setDefaults() {
-	viper.SetDefault("notes.default_dir", "~/dNotes2")
+	viper.SetDefault("notes.default_dir", "~/dNotes")
 
 	// Editor defaults
 	viper.SetDefault("editor.command", "alacritty")

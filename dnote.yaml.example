@@ -45,8 +45,6 @@ theme:
     title_bar: "#391f8b"
     title_bar_text: "#ffffff"
     tags: "#fe2fac"
-
-  glamour:
     h1_color: "#ffff55"
 
 # Alternative theme examples:

@@ -1,11 +1,12 @@
 package ext
 
 import (
-	"dnote/config"
-	"dnote/core"
 	"fmt"
 	"os"
 	"os/exec"
+
+	"dnote/config"
+	"dnote/core"
 )
 
 // Interact with $EDITOR

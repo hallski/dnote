@@ -14,7 +14,7 @@ var outCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		note := notes.FindNote(args[0])
 		if note != nil {
-			return fmt.Errorf(strings.Join(note.Links, " "))
+			return fmt.Errorf("%s", strings.Join(note.Links, " "))
 		}
 
 		return nil

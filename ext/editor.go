@@ -1,7 +1,6 @@
 package ext
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 
@@ -12,14 +11,7 @@ import (
 // Interact with $EDITOR
 
 func GetEditor() string {
-	// If use_environment is true and EDITOR is set, use it
-	if editor := os.Getenv("EDITOR"); editor != "" {
-		return editor
-	} else {
-		fmt.Errorf("No editor defined")
-	}
-
-	return ""
+	return os.Getenv("EDITOR")
 }
 
 func GetEditorInteractive(path string) *exec.Cmd {

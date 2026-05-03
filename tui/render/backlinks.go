@@ -25,7 +25,7 @@ func BackLinks(note *core.Note, docLinkIdx int, docLinks *core.DocLinks, width i
 		box := BacklinksBoxStyle.Copy().
 			Width(width - BacklinksBoxStyle.GetHorizontalBorderSize())
 
-		fmt.Fprintf(builder, box.Render(bls.String()))
+		fmt.Fprint(builder, box.Render(bls.String()))
 	}
 
 	return builder.String()

@@ -3,7 +3,7 @@ package tui
 import (
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 )
 
 // From https://gist.github.com/meowgorithm/1777377a43373f563476a2bcb7d89306
@@ -49,7 +49,7 @@ func (b BoxWithLabel) Render(label, content string, width int) string {
 	top := topLeft + renderedLabel + topBorderStyler(gap) + topRight
 
 	// Render the rest of the box
-	bottom := b.BoxStyle.Copy().
+	bottom := b.BoxStyle.
 		BorderTop(false).
 		Width(width).
 		Render(content)

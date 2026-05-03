@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/charmbracelet/glamour"
+	"charm.land/glamour/v2"
 )
 
 const docMaxWidth = 84

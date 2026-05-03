@@ -7,9 +7,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/charmbracelet/bubbles/key"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/key"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 type historyKind uint
@@ -62,7 +62,7 @@ func (m model) Init() tea.Cmd {
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch {
 		// If command bar is active, key bindings should be sent there
 		case m.commandBar.inputActive():
@@ -183,7 +183,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 // Render the entire UI
-func (m model) View() string {
+func (m model) View() tea.View {
 	title := render.Titlebar(m.width, m.noteBook.LastNote().ID, m.gitStatus)
 
 	view := ""
@@ -193,7 +193,11 @@ func (m model) View() string {
 		view = m.search.View()
 	}
 
-	return lipgloss.JoinVertical(0, title, view, m.commandBar.View())
+	content := lipgloss.JoinVertical(0, title, view, m.commandBar.View())
+	v := tea.NewView(content)
+	v.AltScreen = true
+	v.MouseMode = tea.MouseModeCellMotion
+	return v
 }
 
 func (m *model) setSize(width, height int) {
@@ -278,7 +282,7 @@ func startFileMonitor(p *tea.Program, path string) {
 func Run(noteBook *mdfiles.MdDirectory, openId string) error {
 	m := initialModel(noteBook)
 	m.openNote(openId, true)
-	p := tea.NewProgram(m, tea.WithMouseCellMotion())
+	p := tea.NewProgram(m)
 
 	startFileMonitor(p, noteBook.Path())
 

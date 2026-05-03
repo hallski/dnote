@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/key"
-	"github.com/charmbracelet/bubbles/viewport"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/key"
+	"charm.land/bubbles/v2/viewport"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 type searchModel struct {
@@ -37,7 +37,7 @@ func (m searchModel) Init() tea.Cmd {
 
 func (m searchModel) Update(msg tea.Msg) (searchModel, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch {
 		case key.Matches(msg, m.keymap.NextLink):
 			m.links.Next()
@@ -114,7 +114,7 @@ func (m *searchModel) render() {
 
 func (m *searchModel) setSize(width, height int) {
 	m.width, m.height = width, height
-	m.viewport = viewport.New(width, height-render.BottomBarHeight)
+	m.viewport = viewport.New(viewport.WithWidth(width), viewport.WithHeight(height-render.BottomBarHeight))
 	m.render()
 }
 

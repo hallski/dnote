@@ -2,33 +2,34 @@ package render
 
 import (
 	"dnote/config"
+	"image/color"
 
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 )
 
 // Color variables - these will be initialized from config
 var (
-	ColorBlack           lipgloss.Color
-	ColorLowRed          lipgloss.Color
-	ColorLowGreen        lipgloss.Color
-	ColorBrown           lipgloss.Color
-	ColorLowBlue         lipgloss.Color
-	ColorLowMagenta      lipgloss.Color
-	ColorLowCyan         lipgloss.Color
-	ColorLightGray       lipgloss.Color
-	ColorDarkGray        lipgloss.Color
-	ColorHighRed         lipgloss.Color
-	ColorHighGreen       lipgloss.Color
-	ColorYellow          lipgloss.Color
-	ColorHighBlue        lipgloss.Color
-	ColorHighCyan        lipgloss.Color
-	ColorHighMagenta     lipgloss.Color
-	ColorWhite           lipgloss.Color
-	DividerColor         lipgloss.Color
-	ColorPanelBackground lipgloss.Color
-	TitleBarColor        lipgloss.Color
-	TitleBarTextColor    lipgloss.Color
-	TagsColor            lipgloss.Color
+	ColorBlack           color.Color
+	ColorLowRed          color.Color
+	ColorLowGreen        color.Color
+	ColorBrown           color.Color
+	ColorLowBlue         color.Color
+	ColorLowMagenta      color.Color
+	ColorLowCyan         color.Color
+	ColorLightGray       color.Color
+	ColorDarkGray        color.Color
+	ColorHighRed         color.Color
+	ColorHighGreen       color.Color
+	ColorYellow          color.Color
+	ColorHighBlue        color.Color
+	ColorHighCyan        color.Color
+	ColorHighMagenta     color.Color
+	ColorWhite           color.Color
+	DividerColor         color.Color
+	ColorPanelBackground color.Color
+	TitleBarColor        color.Color
+	TitleBarTextColor    color.Color
+	TagsColor            color.Color
 )
 
 // Style variables - these will be initialized after colors
@@ -167,10 +168,10 @@ func initializeComplexStyles() {
 	}
 
 	BackLinkStyles = LinkStyles{
-		Inactive: DocLinkStyles.Inactive.Copy().Inherit(BacklinksBackgroundStyle),
-		Active:   DocLinkStyles.Active.Copy().Inherit(BacklinksBackgroundStyle),
-		Shortcut: DocLinkStyles.Shortcut.Copy().Inherit(BacklinksBackgroundStyle),
-		Bracket:  DocLinkStyles.Bracket.Copy().Inherit(BacklinksBackgroundStyle),
+		Inactive: DocLinkStyles.Inactive.Inherit(BacklinksBackgroundStyle),
+		Active:   DocLinkStyles.Active.Inherit(BacklinksBackgroundStyle),
+		Shortcut: DocLinkStyles.Shortcut.Inherit(BacklinksBackgroundStyle),
+		Bracket:  DocLinkStyles.Bracket.Inherit(BacklinksBackgroundStyle),
 	}
 
 	TagsStyle = lipgloss.NewStyle().Foreground(TagsColor)
@@ -186,15 +187,15 @@ func initializeComplexStyles() {
 	BackLinkListStyles = LinkListStyles{
 		BackLinkStyles,
 		BacklinksLinkTitlestyle,
-		TagsStyle.Copy().Inherit(BacklinksBackgroundStyle),
-		BackLinkCountStyle.Copy().Inherit(BacklinksBackgroundStyle),
+		TagsStyle.Inherit(BacklinksBackgroundStyle),
+		BackLinkCountStyle.Inherit(BacklinksBackgroundStyle),
 	}
 
 	DocNoteIdStyle = lipgloss.NewStyle().Foreground(ColorHighGreen)
 	CurrentDateStyle = lipgloss.NewStyle().Foreground(ColorLowCyan)
 	CurrentIdStyle = lipgloss.NewStyle().Foreground(ColorYellow)
 	NrHitsStyle = lipgloss.NewStyle().Foreground(ColorYellow)
-	GitCleanStyle = StyleDarkGray.Copy()
-	GitDirtyStyle = StyleYellow.Copy()
-	GitUpdatingStyle = StyleHighMagenta.Copy()
+	GitCleanStyle = StyleDarkGray
+	GitDirtyStyle = StyleYellow
+	GitUpdatingStyle = StyleHighMagenta
 }

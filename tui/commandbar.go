@@ -5,10 +5,10 @@ import (
 	"dnote/tui/render"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/key"
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/key"
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 const CommandBarHeight = 1
@@ -26,7 +26,6 @@ type commandBar struct {
 
 func newCommandBar() commandBar {
 	textfield := textinput.New()
-	textfield.Cursor.Blink = true
 	return commandBar{
 		keymap:    defaultCmdKeyMap,
 		textField: textfield,
@@ -40,7 +39,7 @@ func (m commandBar) Init() tea.Cmd {
 
 func (m commandBar) Update(msg tea.Msg) (commandBar, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch {
 		//
 		case key.Matches(msg, m.keymap.Exit):
@@ -76,13 +75,15 @@ func (m commandBar) View() string {
 	}
 
 	cmdStyle := lipgloss.NewStyle().Foreground(render.ColorHighCyan).Bold(true)
-	style := lipgloss.NewStyle().Foreground(render.ColorWhite)
+	normalStyle := lipgloss.NewStyle().Foreground(render.ColorWhite)
 
+	styles := m.textField.Styles()
 	if cmdEnd(m.textField.Value()) > 0 {
-		m.textField.TextStyle = cmdStyle
+		styles.Focused.Text = cmdStyle
 	} else {
-		m.textField.TextStyle = style
+		styles.Focused.Text = normalStyle
 	}
+	m.textField.SetStyles(styles)
 
 	return m.textField.View()
 }
@@ -181,7 +182,7 @@ func cmdEnd(input string) int {
 
 func (m *commandBar) setSize(width, height int) {
 	m.width, m.height = width, height
-	m.textField.Width = width
+	m.textField.SetWidth(width)
 }
 
 func (m *commandBar) focus() tea.Cmd {

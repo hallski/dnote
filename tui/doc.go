@@ -5,10 +5,10 @@ import (
 	"dnote/tui/render"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/key"
-	"github.com/charmbracelet/bubbles/viewport"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/key"
+	"charm.land/bubbles/v2/viewport"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 type docModel struct {
@@ -29,7 +29,7 @@ func (m docModel) Init() tea.Cmd {
 
 func (m docModel) Update(msg tea.Msg) (docModel, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch {
 		case key.Matches(msg, m.keymap.NextLink):
 			m.nextLink()
@@ -95,8 +95,8 @@ func (m *docModel) setSize(width, height int) {
 		m.render()
 	}
 
-	m.viewport.Width = width
-	m.viewport.Height = height - render.BottomBarHeight
+	m.viewport.SetWidth(width)
+	m.viewport.SetHeight(height - render.BottomBarHeight)
 }
 
 func (m *docModel) altShortcut(keys string) core.ShortcutLink {
@@ -110,7 +110,7 @@ func (m *docModel) altShortcut(keys string) core.ShortcutLink {
 func newDoc(width, height int) docModel {
 	m := docModel{
 		keymap:   defaultDocKeyMap,
-		viewport: viewport.New(width, height),
+		viewport: viewport.New(viewport.WithWidth(width), viewport.WithHeight(height)),
 		links:    core.NewDocLinks([]string{}),
 	}
 

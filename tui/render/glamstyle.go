@@ -3,13 +3,13 @@ package render
 import (
 	"dnote/config"
 
-	"github.com/charmbracelet/glamour"
-	"github.com/charmbracelet/glamour/ansi"
+	"charm.land/glamour/v2/ansi"
+	glamourstyles "charm.land/glamour/v2/styles"
 )
 
 func GetGlamming() ansi.StyleConfig {
 	cfg := config.GetConfig()
-	s := glamour.DarkStyleConfig
+	s := glamourstyles.DarkStyleConfig
 
 	s.H1.Prefix = "# "
 	s.H1.BackgroundColor = stringPtr("")

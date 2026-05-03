@@ -20,8 +20,8 @@ type appKeyMap struct {
 	PrevNote       key.Binding
 	GitCommit      key.Binding
 	GitSync        key.Binding
-	AddInbox        key.Binding
-	Suspend         key.Binding
+	AddInbox       key.Binding
+	Suspend        key.Binding
 }
 
 type searchKeymap struct {
@@ -72,8 +72,8 @@ var defaultAppKeyMap = appKeyMap{
 		key.WithHelp("ctrl+o", "back"),
 	),
 	Forward: key.NewBinding(
-		key.WithKeys("tab"),
-		key.WithHelp("tab", "forward"),
+		key.WithKeys("ctrl+i"),
+		key.WithHelp("ctrl+i", "forward"),
 	),
 	RefreshNotes: key.NewBinding(
 		key.WithKeys("r"),

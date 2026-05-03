@@ -109,6 +109,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, gitSyncCmd(m.noteBook.Path())
 		case key.Matches(msg, m.keymap.AddInbox):
 			return m, m.commandBar.startInbox()
+		case key.Matches(msg, m.keymap.Suspend):
+			return m, tea.Suspend
 		}
 	case searchMsg:
 		m.search.setQuery(msg.query)
